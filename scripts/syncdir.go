@@ -135,8 +135,8 @@ func pruneEmptyFolders(dst string) {
 	filepath.Walk(dst, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			for p := range foldersToPrune {
-				if strings.HasPrefix(p, path) {
-					return nil
+				if strings.HasPrefix(path, p) {
+					delete(foldersToPrune, p)
 				}
 			}
 			foldersToPrune[path] = true
