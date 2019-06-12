@@ -9,9 +9,9 @@
 ## how to link build_rig and target project ?
 
 build_rig has a build driver script that does:
-	- syncdir.py scan
+	- syncdir scan
 	- re-execute itself in the container
-	- syncdir.py sync
+	- syncdir sync
 	- run build script from target
 
 the build driver needs:
@@ -25,16 +25,13 @@ the build driver needs:
 |   `-- Dockerfile
 |-- docker-compose.yml  <-- need to know the shared folder
 |-- readme.md
-|-- vscode_tmpl
-|   |-- launch.json <-- 
-|   `-- tasks.json <-- folder to sync
+|-- .vscode
+|   |-- launch.json
+|   `-- tasks.json
 `-- scripts
-    |-- build_driver.sh <-- need to know container name, folder to sync and how to build
-    `-- syncdir.py
+    |-- build_driver.sh
+    `-- syncdir.go
 ```
-
-- build/clean on builder
-- debug on builder
 
 - document customisation points:
 	- shared folder
@@ -44,11 +41,6 @@ the build driver needs:
 
 
 # todo:
-	1. get sync and build to work
-	2. check error messages path remapping
-	3. get debugging to work
-	4. sync shall use gitignore
-	5. get clean to work
 	6. get syncback to work
 	7. document
 	8. extensions ?

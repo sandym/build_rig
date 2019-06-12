@@ -4,18 +4,31 @@
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
-		
 		{
-			"name": "Launch",
-			"type": "go",
+			"name": "Launch test_project",
+			"type": "cppdbg",
 			"request": "launch",
-			"mode": "auto",
-			"program": "${workspaceFolder}/scripts/syncdir.go",
-			"env": {},
-			"args": [ "-sync",
-				"/opt/llvm_build/src",
-				"/Users/sandy/projets/build_rig/scripts/test"
-			]
+			"program": "/work/test_project/build/test_project",
+			"args": [],
+			"stopAtEntry": true,
+			"cwd": "/work/test_project/build",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"pipeTransport": {
+				"pipeCwd": "/usr/bin",
+				"pipeProgram": "/usr/local/bin/docker",
+				"pipeArgs": [
+					"exec",
+					"-i",
+					"builder",
+					"sh", "-c"
+				],
+				"debuggerPath": "/usr/bin/gdb"
+			},
+			"sourceFileMap": {
+				"/work/test_project": "${workspaceFolder:test_project}"
+			}
 		}
 	]
 }

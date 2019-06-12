@@ -4,11 +4,12 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build centos7",
+            "label": "> build",
             "type": "shell",
-            "command": "../scripts/do_build.sh",
+            "command": "${workspaceFolder:build_rig}/scripts/build_driver.sh",
             "args": [
-                "centos7_builder"
+				"builder",
+				"${workspaceFolder:test_project}"
             ],
             "group": {
                 "kind": "build",
@@ -16,7 +17,7 @@
             },
             "problemMatcher": {
                 "owner": "cpp",
-                "fileLocation": ["relative", "${workspaceRoot}"],
+                "fileLocation": ["relative", "${workspaceRoot:test_project}"],
                 "pattern": {
                     "regexp": "^/work/code/(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -25,20 +26,31 @@
                     "severity": 4,
                     "message": 5
                 }
-            }
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": true
+			}
         },
         {
-            "label": "clean centos7",
+            "label": "> clean",
             "type": "shell",
             "command": "docker",
             "args": [
                 "exec",
                 "-ti",
-                "centos7_builder",
-                "rm", "-rf", "/work/sutils/tests/build"
+				"builder",
+				"/tmp/syncdir", "-clean", "/work/test_project"
             ],
             "group": "build",
-            "problemMatcher": []
+			"problemMatcher": [],
+			"options": {
+				"statusbar": "hide"
+			}
         }
     ]
 }

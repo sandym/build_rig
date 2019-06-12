@@ -2,13 +2,12 @@
 
 function syncdir()
 {
-	if [ "${1}/syncdir.go" -nt /tmp/syncdir ]
+	if [ ! -f /tmp/syncdir ] || [ "${1}/syncdir.go" -nt /tmp/syncdir ]
 	then
-	 	`cd ${1} ; go build -o /tmp/syncdir`;
+	 	`cd ${1} ; go build -o /tmp/syncdir 2> /dev/null`;
 	fi
 	shift
 	/tmp/syncdir $@
-	echo ""
 }
 
 if [ ! -f "/.dockerenv" ]
@@ -22,18 +21,21 @@ then
 	shift
 	PROJECT=$1
 	shift
-	
+	PROJECT_NAME=`basename $PROJECT`
+
 	syncdir "$SCRIPTS" "-scan" "$PROJECT"
 
-	# docker exec -ti $CONTAINER /scripts/build_driver.pl $@
+	docker exec -ti $CONTAINER /scripts/build_driver.sh $PROJECT_NAME $@
 else
 	# in container
 
-	echo "$SCRIPTS"
-	# my $projectName = basename $project;
-	syncdir "/scripts" '-sync' "/share/$projectName" "/work/$projectName"
+	PROJECT_NAME=$1
+	shift
 
-	cd "/work/$projectName"
+	syncdir "/scripts" '-sync' "/share/$PROJECT_NAME" "/work/$PROJECT_NAME"
+	echo ""
+
+	cd "/work/$PROJECT_NAME"
 	./build.sh $@
 
 fi

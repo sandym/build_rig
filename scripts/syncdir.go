@@ -17,6 +17,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -52,7 +53,6 @@ func main() {
 		flag.PrintDefaults()
 	}
 }
-
 func captureLines(cmd *exec.Cmd, wd string) []string {
 	cmd.Dir = wd
 	var stdout bytes.Buffer
@@ -64,12 +64,10 @@ func captureLines(cmd *exec.Cmd, wd string) []string {
 	return make([]string, 0, 0)
 }
 func gitListAllFiles(src string) []string {
-
 	result := captureLines(exec.Command("git", "ls-files"), src)
 	return append(result, captureLines(exec.Command("git", "ls-files", "--others", "--exclude-standard"), src)...)
 }
 func updateScan(src string) {
-
 	if !isDirectory(src) {
 		log.Fatalf("%s is not a directory", src)
 	}
@@ -102,23 +100,18 @@ func updateScan(src string) {
 					allFiles = append(allFiles, path.Join(relpath, v))
 				}
 			}
-			continue
 		} else if finfo.Mode().IsRegular() || (finfo.Mode()&os.ModeSymlink) != 0 {
-			timestamp := finfo.ModTime()
-			fmt.Fprintf(w, "%d %s", timestamp.Unix(), relpath)
+			fmt.Fprintf(w, "%d %s", finfo.ModTime().Unix(), relpath)
 
-			switch {
-			case (finfo.Mode() & os.ModeSymlink) != 0:
+			if (finfo.Mode() & os.ModeSymlink) != 0 {
 				ln, err := os.Readlink(srcpath)
 				check(err)
-				fmt.Fprintf(w, " -> %s\n", ln)
-			case finfo.Mode().IsRegular():
-				fmt.Fprintf(w, "\n")
+				fmt.Fprintf(w, " -> %s", ln)
 			}
+			fmt.Fprintf(w, "\n")
 		}
 	}
 }
-
 func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
 	// read .lastsync
 	//   first line is the last sync timestamp
@@ -137,7 +130,20 @@ func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
 	}
 	return lastSync, lastSyncFiles
 }
-func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
+func pruneEmptyFolders(dst string) {
+	foldersToPrune := make(map[string]bool)
+	filepath.Walk(dst, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			for p := range foldersToPrune {
+				if strings.HasPrefix(p, path) {
+					return nil
+				}
+			}
+			foldersToPrune[path] = true
+		}
+		return nil
+	})
+
 	for p := range foldersToPrune {
 		for p != dst {
 			if !isFolderEmpty(p) {
@@ -149,9 +155,7 @@ func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
 		}
 	}
 }
-
 func syncFolders(src, dst string) {
-
 	if !isDirectory(src) {
 		log.Fatalf("%s is not a directory", src)
 	}
@@ -233,14 +237,12 @@ func syncFolders(src, dst string) {
 	}
 
 	// anything left in lastSyncFiles should be deleted
-	foldersToPrune := make(map[string]bool)
 	for k := range lastSyncFiles {
 		p := path.Join(dst, k)
 		fmt.Printf("deleting %s\n", p)
 		os.Remove(p)
-		foldersToPrune[path.Dir(p)] = true
 	}
-	pruneEmptyFolders(dst, foldersToPrune)
+	pruneEmptyFolders(dst)
 
 	// write the new .lastsync
 	file, err := os.Create(path.Join(dst, ".lastsync"))
@@ -254,7 +256,6 @@ func syncFolders(src, dst string) {
 	}
 }
 func cleanFolder(dst string) {
-
 	if !isDirectory(dst) {
 		return
 	}
@@ -262,8 +263,6 @@ func cleanFolder(dst string) {
 	fmt.Printf("cleaning %s\n", dst)
 
 	_, lastSyncFiles := readLastSync(dst)
-
-	foldersToPrune := make(map[string]bool)
 
 	stack := make([]string, 0, 16)
 	stack = append(stack, dst)
@@ -286,14 +285,12 @@ func cleanFolder(dst string) {
 					p := path.Join(dst, relpath)
 					fmt.Printf("deleting %s\n", p)
 					os.Remove(p)
-					foldersToPrune[path.Dir(p)] = true
 				}
 			}
 		}
 	}
-	pruneEmptyFolders(dst, foldersToPrune)
+	pruneEmptyFolders(dst)
 }
-
 func isFolderEmpty(p string) bool {
 	f, err := os.Open(p)
 	if err != nil {
@@ -307,19 +304,16 @@ func isDirectory(path string) bool {
 	fileInfo, err := os.Stat(path)
 	return err == nil && fileInfo.IsDir()
 }
-
 func check(e error) {
 	if e != nil {
 		log.Fatal(e)
 	}
 }
-
 func copyFile(src, dst string) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
 		return
 	}
-
 	if !sourceFileStat.Mode().IsRegular() {
 		return
 	}
@@ -338,21 +332,15 @@ func copyFile(src, dst string) {
 		os.Chmod(dst, sourceFileStat.Mode()&os.ModePerm|0111)
 	}
 }
-
-const chunkSize = 64000
-
 func filesAreDifferent(file1, file2 string) bool {
-
 	f1, err := os.Open(file1)
 	if err != nil {
 		return false
 	}
-
 	f2, err := os.Open(file2)
 	if err != nil {
 		return false
 	}
-
 	f1Info, err := f1.Stat()
 	if err != nil {
 		return false
@@ -390,9 +378,7 @@ func filesAreDifferent(file1, file2 string) bool {
 		}
 	}
 }
-
 func backsyncFolders(dst, src string) {
-
 	if !isDirectory(dst) {
 		log.Fatalf("%s is not a directory", dst)
 	}
@@ -411,9 +397,7 @@ func backsyncFolders(dst, src string) {
 		}
 	}
 }
-
 func buildHeaders(dst string, folders []string) {
-
 	err := os.RemoveAll(dst)
 	check(err)
 	err = os.MkdirAll(dst, 0755)
@@ -434,7 +418,7 @@ func buildHeaders(dst string, folders []string) {
 				name := finfo.Name()
 				srcpath := path.Join(p, name)
 				if finfo.IsDir() {
-					if name == "bin" {
+					if name == "bin" || name == "share" {
 						continue
 					}
 					stack = append(stack, srcpath)
@@ -458,4 +442,4 @@ func buildHeaders(dst string, folders []string) {
 	}
 }
 
-// 461
+// 445
