@@ -50,7 +50,15 @@ func main() {
 	case *headersPtr && len(flag.Args()) >= 2:
 		buildHeaders(flag.Args()[0], flag.Args()[1:])
 	default:
-		flag.PrintDefaults()
+		// take a guess
+		switch {
+		case len(flag.Args()) == 1:
+			updateScan(flag.Args()[0])
+		case len(flag.Args()) == 2:
+			syncFolders(flag.Args()[0], flag.Args()[1])
+		default:
+			flag.PrintDefaults()
+		}
 	}
 }
 func captureLines(cmd *exec.Cmd, wd string) []string {
@@ -84,14 +92,20 @@ func updateScan(src string) {
 		n := len(allFiles)
 		relpath := allFiles[n-1]
 		allFiles = allFiles[:n-1]
-		if len(relpath) == 0 || relpath == ".tosync" || strings.Contains(relpath, ".git") {
+		if len(relpath) == 0 ||
+			relpath == ".tosync" ||
+			strings.HasSuffix(relpath, ".DS_Store") ||
+			strings.Contains(relpath, ".git") {
 			continue
 		}
 
 		srcpath := path.Join(src, relpath)
 
 		finfo, err := os.Lstat(srcpath)
-		check(err)
+		if err != nil {
+			// probably a deleted file
+			continue
+		}
 		if finfo.Mode().IsDir() {
 			// probably a submodule, recurse
 			otherFiles := gitListAllFiles(srcpath)
@@ -130,20 +144,21 @@ func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
 	}
 	return lastSync, lastSyncFiles
 }
-func pruneEmptyFolders(dst string) {
-	foldersToPrune := make(map[string]bool)
-	filepath.Walk(dst, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			for p := range foldersToPrune {
-				if strings.HasPrefix(path, p) {
-					delete(foldersToPrune, p)
+func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
+	if foldersToPrune == nil {
+		foldersToPrune = make(map[string]bool)
+		filepath.Walk(dst, func(path string, info os.FileInfo, err error) error {
+			if info.IsDir() {
+				for p := range foldersToPrune {
+					if strings.HasPrefix(path, p) {
+						delete(foldersToPrune, p)
+					}
 				}
+				foldersToPrune[path] = true
 			}
-			foldersToPrune[path] = true
-		}
-		return nil
-	})
-
+			return nil
+		})
+	}
 	for p := range foldersToPrune {
 		for p != dst {
 			if !isFolderEmpty(p) {
@@ -237,12 +252,14 @@ func syncFolders(src, dst string) {
 	}
 
 	// anything left in lastSyncFiles should be deleted
+	foldersToPrune := make(map[string]bool)
 	for k := range lastSyncFiles {
 		p := path.Join(dst, k)
 		fmt.Printf("deleting %s\n", p)
 		os.Remove(p)
+		foldersToPrune[path.Dir(p)] = true
 	}
-	pruneEmptyFolders(dst)
+	pruneEmptyFolders(dst, foldersToPrune)
 
 	// write the new .lastsync
 	file, err := os.Create(path.Join(dst, ".lastsync"))
@@ -289,7 +306,7 @@ func cleanFolder(dst string) {
 			}
 		}
 	}
-	pruneEmptyFolders(dst)
+	pruneEmptyFolders(dst, nil)
 }
 func isFolderEmpty(p string) bool {
 	f, err := os.Open(p)
@@ -418,7 +435,7 @@ func buildHeaders(dst string, folders []string) {
 				name := finfo.Name()
 				srcpath := path.Join(p, name)
 				if finfo.IsDir() {
-					if name == "bin" || name == "share" {
+					if name == "bin" || name == "share" || name == "lib" {
 						continue
 					}
 					stack = append(stack, srcpath)
@@ -429,7 +446,11 @@ func buildHeaders(dst string, folders []string) {
 						ext == ".cc" ||
 						ext == ".c" ||
 						ext == ".cpp" ||
-						ext == ".hpp" {
+						ext == ".hpp" ||
+						ext == ".ipp" ||
+						ext == ".tcc" ||
+						ext == ".inc" ||
+						ext == ".inl" {
 						err = os.MkdirAll(path.Join(dst, p), 0755)
 						check(err)
 						copyFile(srcpath, path.Join(dst, srcpath))

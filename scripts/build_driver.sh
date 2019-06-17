@@ -1,21 +1,18 @@
 #!/bin/sh
 
+SCRIPTS=`dirname "$0"`
+SCRIPTS=`cd "${SCRIPTS}" ; pwd`
+
 function syncdir()
 {
-	if [ ! -f /tmp/syncdir ] || [ "${1}/syncdir.go" -nt /tmp/syncdir ]
-	then
-	 	`cd ${1} ; go build -o /tmp/syncdir 2> /dev/null`;
-	fi
+	SYNCDIR=$1
 	shift
-	/tmp/syncdir $@
+	"${SCRIPTS}/$SYNCDIR" $@
 }
 
 if [ ! -f "/.dockerenv" ]
 then
 	# in host
-
-	SCRIPTS=`dirname "$0"`
-	SCRIPTS=`cd "$SCRIPTS" ; pwd`
 
 	CONTAINER=$1
 	shift
@@ -23,7 +20,13 @@ then
 	shift
 	PROJECT_NAME=`basename $PROJECT`
 
-	syncdir "$SCRIPTS" "-scan" "$PROJECT"
+	if [ ! -f "${SCRIPTS}/syncdir_host" ] || [ "${SCRIPTS}/syncdir/syncdir.go" -nt "${SCRIPTS}/syncdir_host" ]
+	then
+	 	`cd "${SCRIPTS}/syncdir" ; GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux`;
+	 	`cd "${SCRIPTS}/syncdir" ; go build -o ../syncdir_host`;
+	fi
+	
+	syncdir syncdir_host "-scan" "$PROJECT"
 
 	docker exec -ti $CONTAINER /scripts/build_driver.sh $PROJECT_NAME $@
 else
@@ -32,10 +35,12 @@ else
 	PROJECT_NAME=$1
 	shift
 
-	syncdir "/scripts" '-sync' "/share/$PROJECT_NAME" "/work/$PROJECT_NAME"
+	syncdir syncdir_linux '-sync' "/share/$PROJECT_NAME" "/work/$PROJECT_NAME"
 	echo ""
 
 	cd "/work/$PROJECT_NAME"
+
+	# 
 	./build.sh $@
 
 fi

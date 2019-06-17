@@ -9,7 +9,10 @@
             "command": "${workspaceFolder:build_rig}/scripts/build_driver.sh",
             "args": [
 				"builder",
-				"${workspaceFolder:test_project}"
+				"${workspaceFolder:test_project}",
+
+				// 
+				"Debug"
             ],
             "group": {
                 "kind": "build",
@@ -19,7 +22,7 @@
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot:test_project}"],
                 "pattern": {
-                    "regexp": "^/work/code/(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
                     "line": 2,
                     "column": 3,
