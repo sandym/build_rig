@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -51,10 +52,10 @@ func main() {
 		buildHeaders(flag.Args()[0], flag.Args()[1:])
 	default:
 		// take a guess
-		switch {
-		case len(flag.Args()) == 1:
+		switch len(flag.Args()) {
+		case 1:
 			updateScan(flag.Args()[0])
-		case len(flag.Args()) == 2:
+		case 2:
 			syncFolders(flag.Args()[0], flag.Args()[1])
 		default:
 			flag.PrintDefaults()
@@ -73,7 +74,8 @@ func captureLines(cmd *exec.Cmd, wd string) []string {
 }
 func gitListAllFiles(src string) []string {
 	result := captureLines(exec.Command("git", "ls-files"), src)
-	return append(result, captureLines(exec.Command("git", "ls-files", "--others", "--exclude-standard"), src)...)
+	return append(result, captureLines(exec.Command(
+		"git", "ls-files", "--others", "--exclude-standard"), src)...)
 }
 func updateScan(src string) {
 	if !isDirectory(src) {
@@ -87,6 +89,12 @@ func updateScan(src string) {
 	w := bufio.NewWriter(file)
 	defer w.Flush()
 
+	// write git revision of root folder
+	result := captureLines(exec.Command("git", "rev-parse", "HEAD"), src)
+	if len(result) > 0 && len(result[0]) > 0 {
+		fmt.Fprintf(w, "s %s .\n", result[0])
+	}
+
 	allFiles := gitListAllFiles(src)
 	for len(allFiles) > 0 {
 		n := len(allFiles)
@@ -95,41 +103,44 @@ func updateScan(src string) {
 		if len(relpath) == 0 ||
 			relpath == ".tosync" ||
 			strings.HasSuffix(relpath, ".DS_Store") ||
+			strings.HasPrefix(relpath, ".vscode") ||
 			strings.Contains(relpath, ".git") {
 			continue
 		}
 
 		srcpath := path.Join(src, relpath)
-
 		finfo, err := os.Lstat(srcpath)
 		if err != nil {
 			// probably a deleted file
 			continue
 		}
-		if finfo.Mode().IsDir() {
-			// probably a submodule, recurse
-			otherFiles := gitListAllFiles(srcpath)
-			for _, v := range otherFiles {
-				if len(v) > 0 {
-					allFiles = append(allFiles, path.Join(relpath, v))
+		switch {
+		case finfo.Mode().IsDir():
+			// probably a submodule, record git revision and recurse
+			result := captureLines(exec.Command(
+				"git", "rev-parse", "HEAD"), srcpath)
+			if len(result) > 0 && len(result[0]) > 0 {
+				fmt.Fprintf(w, "s %s %s\n", result[0], relpath)
+
+				otherFiles := gitListAllFiles(srcpath)
+				for _, v := range otherFiles {
+					if len(v) > 0 {
+						allFiles = append(allFiles, path.Join(relpath, v))
+					}
 				}
 			}
-		} else if finfo.Mode().IsRegular() || (finfo.Mode()&os.ModeSymlink) != 0 {
-			fmt.Fprintf(w, "%d %s", finfo.ModTime().Unix(), relpath)
-
-			if (finfo.Mode() & os.ModeSymlink) != 0 {
-				ln, err := os.Readlink(srcpath)
-				check(err)
-				fmt.Fprintf(w, " -> %s", ln)
-			}
-			fmt.Fprintf(w, "\n")
+		case (finfo.Mode() & os.ModeSymlink) != 0:
+			ln, err := os.Readlink(srcpath)
+			check(err)
+			fmt.Fprintf(w, "l %d %s->%s\n", finfo.ModTime().Unix(), relpath, ln)
+		case finfo.Mode().IsRegular():
+			fmt.Fprintf(w, "f %d %s\n", finfo.ModTime().Unix(), relpath)
 		}
 	}
 }
 func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
-	// read .lastsync
-	//   first line is the last sync timestamp
-	//   followed by all files that were sync
+	// read .lastsync, first line is the last sync timestamp
+	// followed by all files that were sync
 	file, err := os.Open(path.Join(dst, ".lastsync"))
 	lastSyncFiles = make(map[string]bool)
 	if err == nil {
@@ -147,14 +158,14 @@ func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
 func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
 	if foldersToPrune == nil {
 		foldersToPrune = make(map[string]bool)
-		filepath.Walk(dst, func(path string, info os.FileInfo, err error) error {
+		filepath.Walk(dst, func(p string, info os.FileInfo, err error) error {
 			if info.IsDir() {
 				for p := range foldersToPrune {
-					if strings.HasPrefix(path, p) {
+					if strings.HasPrefix(p, p) {
 						delete(foldersToPrune, p)
 					}
 				}
-				foldersToPrune[path] = true
+				foldersToPrune[p] = true
 			}
 			return nil
 		})
@@ -174,7 +185,6 @@ func syncFolders(src, dst string) {
 	if !isDirectory(src) {
 		log.Fatalf("%s is not a directory", src)
 	}
-
 	fmt.Printf("sync'ing %s to %s\n", src, dst)
 
 	lastSync, lastSyncFiles := readLastSync(dst)
@@ -186,8 +196,7 @@ func syncFolders(src, dst string) {
 	defer toSync.Close()
 	lines := bufio.NewScanner(toSync)
 
-	matchLinkRe := regexp.MustCompile("^(\\d+)\\s(.+)\\s\\->\\s(.+)$")
-	matchFileRe := regexp.MustCompile("^(\\d+)\\s(.+)$")
+	matchLinkRe := regexp.MustCompile("^(\\d+)\\s(.+)\\->(.+)$")
 
 	var latest int64
 	syncFiles := make(map[string]bool)
@@ -195,59 +204,77 @@ func syncFolders(src, dst string) {
 		line := lines.Text()
 
 		var timestamp int64
-		var relpath string
-		var ln string
+		var relpath, ln, gitRevision string
 
-		matches := matchLinkRe.FindAllStringSubmatch(line, -1)
-		if len(matches) == 1 {
-			// parse the line: "timestamp relative-path -> link"
-			timestamp, _ = strconv.ParseInt(matches[0][1], 10, 64)
-			relpath = matches[0][2]
-			ln = matches[0][3]
-		} else {
-			matches = matchFileRe.FindAllStringSubmatch(line, -1)
+		prefix := line[:2]
+		line = line[2:]
+		switch prefix {
+		case "s ":
+			// parse the line: "git-revision relative-path"
+			comps := strings.Split(line, " ")
+			if len(comps) == 2 {
+				gitRevision = comps[0]
+				relpath = comps[1]
+			}
+		case "l ":
+			// parse the line: "timestamp relative-path->link"
+			matches := matchLinkRe.FindAllStringSubmatch(line, -1)
 			if len(matches) == 1 {
-				// parse the line: "timestamp relative-path"
 				timestamp, _ = strconv.ParseInt(matches[0][1], 10, 64)
 				relpath = matches[0][2]
+				ln = matches[0][3]
+			}
+		case "f ":
+			// parse the line: "timestamp relative-path"
+			comps := strings.Split(line, " ")
+			if len(comps) == 2 {
+				timestamp, _ = strconv.ParseInt(comps[0], 10, 64)
+				relpath = comps[1]
 			}
 		}
 
-		if timestamp == 0 || len(relpath) == 0 {
+		if len(relpath) == 0 {
 			continue
 		}
 
-		// add to the list of files being sync
-		syncFiles[relpath] = true
+		if len(gitRevision) > 0 {
+			dstDir := path.Join(dst, relpath)
+			os.MkdirAll(dstDir, 0755)
+			ioutil.WriteFile(path.Join(dstDir, ".gitrevision"),
+				[]byte(gitRevision+"\n"), 0644)
+		} else {
+			// add to the list of files being sync
+			syncFiles[relpath] = true
+			// remove from list of files that were last sync
+			delete(lastSyncFiles, relpath)
 
-		// remove from list of files that were last sync
-		delete(lastSyncFiles, relpath)
+			if timestamp > lastSync {
+				srcFile := path.Join(src, relpath)
+				dstFile := path.Join(dst, relpath)
+				dstDir := path.Dir(dstFile)
+				os.MkdirAll(dstDir, 0755)
 
-		if timestamp > lastSync {
-			srcFile := path.Join(src, relpath)
-			dstFile := path.Join(dst, relpath)
-			dstDirname := path.Dir(dstFile)
-			os.MkdirAll(dstDirname, 0755)
-
-			// don't output every single file if it's a full sync
-			// makes it a bit faster
-			if lastSync > 0 {
-				fmt.Println(relpath)
-			}
-			if len(ln) > 0 {
-				// it's a symlink
-				if runtime.GOOS == "windows" {
-					// that's what git does on windows...
-					ioutil.WriteFile(path.Join(dstDirname, path.Base(srcFile)), []byte(ln), 0644)
-				} else {
-					os.Symlink(ln, path.Join(dstDirname, path.Base(srcFile)))
+				// don't output every single file if it's a full sync
+				// makes it a bit faster
+				if lastSync > 0 {
+					fmt.Println(relpath)
 				}
-			} else {
-				copyFile(srcFile, dstFile)
+				if len(ln) > 0 {
+					// it's a symlink
+					if runtime.GOOS == "windows" {
+						// that's what git does on windows...
+						ioutil.WriteFile(path.Join(dstDir, path.Base(srcFile)),
+							[]byte(ln+"\n"), 0644)
+					} else {
+						os.Symlink(ln, path.Join(dstDir, path.Base(srcFile)))
+					}
+				} else {
+					copyFile(srcFile, dstFile)
+				}
 			}
-		}
-		if timestamp > latest {
-			latest = timestamp
+			if timestamp > latest {
+				latest = timestamp
+			}
 		}
 	}
 
@@ -267,21 +294,29 @@ func syncFolders(src, dst string) {
 	defer file.Close()
 	w := bufio.NewWriter(file)
 	defer w.Flush()
+
+	// lastest sync time
 	fmt.Fprintf(w, "%d\n", latest)
+
+	// all files, sorted
+	keys := make([]string, 0, len(syncFiles))
 	for k := range syncFiles {
-		fmt.Fprintf(w, "%s\n", k)
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		fmt.Fprintln(w, k)
 	}
 }
 func cleanFolder(dst string) {
 	if !isDirectory(dst) {
 		return
 	}
-
 	fmt.Printf("cleaning %s\n", dst)
 
 	_, lastSyncFiles := readLastSync(dst)
 
-	stack := make([]string, 0, 16)
+	stack := make([]string, 0, 32)
 	stack = append(stack, dst)
 	for len(stack) > 0 {
 		n := len(stack)
@@ -382,15 +417,10 @@ func filesAreDifferent(file1, file2 string) bool {
 				return false
 			} else if err1 == io.EOF || err2 == io.EOF {
 				return true
-			} else {
-				return false
 			}
+			return false
 		}
-		if len1 != len2 {
-			return true
-		}
-
-		if !bytes.Equal(b1, b2) {
+		if len1 != len2 || !bytes.Equal(b1, b2) {
 			return true
 		}
 	}
@@ -423,7 +453,7 @@ func buildHeaders(dst string, folders []string) {
 	for _, folder := range folders {
 		fmt.Println(folder)
 
-		stack := make([]string, 0, 16)
+		stack := make([]string, 0, 32)
 		stack = append(stack, folder)
 		for len(stack) > 0 {
 			n := len(stack)
@@ -454,8 +484,6 @@ func buildHeaders(dst string, folders []string) {
 						err = os.MkdirAll(path.Join(dst, p), 0755)
 						check(err)
 						copyFile(srcpath, path.Join(dst, srcpath))
-						// } else {
-						// 	fmt.Printf("skipping %s\n", name)
 					}
 				}
 			}
@@ -463,4 +491,4 @@ func buildHeaders(dst string, folders []string) {
 	}
 }
 
-// 445
+// 494

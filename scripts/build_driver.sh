@@ -22,8 +22,9 @@ then
 
 	if [ ! -f "${SCRIPTS}/syncdir_host" ] || [ "${SCRIPTS}/syncdir/syncdir.go" -nt "${SCRIPTS}/syncdir_host" ]
 	then
-	 	`cd "${SCRIPTS}/syncdir" ; GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux`;
+		echo "building syncdir..."
 	 	`cd "${SCRIPTS}/syncdir" ; go build -o ../syncdir_host`;
+	 	`cd "${SCRIPTS}/syncdir" ; GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux`;
 	fi
 	
 	syncdir syncdir_host "-scan" "$PROJECT"
