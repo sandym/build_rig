@@ -103,7 +103,7 @@ func updateScan(src string) {
 		if len(relpath) == 0 ||
 			relpath == ".tosync" ||
 			strings.HasSuffix(relpath, ".DS_Store") ||
-			strings.HasPrefix(relpath, ".vscode") ||
+			strings.Contains(relpath, ".vscode") ||
 			strings.Contains(relpath, ".git") {
 			continue
 		}
@@ -134,7 +134,11 @@ func updateScan(src string) {
 			check(err)
 			fmt.Fprintf(w, "l %d %s->%s\n", finfo.ModTime().Unix(), relpath, ln)
 		case finfo.Mode().IsRegular():
-			fmt.Fprintf(w, "f %d %s\n", finfo.ModTime().Unix(), relpath)
+			if (finfo.Mode() & 0111) != 0 {
+				fmt.Fprintf(w, "x %d %s\n", finfo.ModTime().Unix(), relpath)
+			} else {
+				fmt.Fprintf(w, "f %d %s\n", finfo.ModTime().Unix(), relpath)
+			}
 		}
 	}
 }
@@ -205,6 +209,7 @@ func syncFolders(src, dst string) {
 
 		var timestamp int64
 		var relpath, ln, gitRevision string
+		isItExe := isNotExe
 
 		prefix := line[:2]
 		line = line[2:]
@@ -225,14 +230,17 @@ func syncFolders(src, dst string) {
 				ln = matches[0][3]
 			}
 		case "f ":
+		case "x ":
 			// parse the line: "timestamp relative-path"
 			comps := strings.Split(line, " ")
 			if len(comps) == 2 {
 				timestamp, _ = strconv.ParseInt(comps[0], 10, 64)
 				relpath = comps[1]
+				if prefix == "x " {
+					isItExe = isExe
+				}
 			}
 		}
-
 		if len(relpath) == 0 {
 			continue
 		}
@@ -269,7 +277,7 @@ func syncFolders(src, dst string) {
 						os.Symlink(ln, path.Join(dstDir, path.Base(srcFile)))
 					}
 				} else {
-					copyFile(srcFile, dstFile)
+					copyFile(srcFile, dstFile, isItExe)
 				}
 			}
 			if timestamp > latest {
@@ -361,15 +369,16 @@ func check(e error) {
 		log.Fatal(e)
 	}
 }
-func copyFile(src, dst string) {
-	sourceFileStat, err := os.Stat(src)
-	if err != nil {
-		return
-	}
-	if !sourceFileStat.Mode().IsRegular() {
-		return
-	}
 
+type isFileExe int
+
+const (
+	isNotExe isFileExe = 0
+	isExe    isFileExe = 1
+	dontKnow isFileExe = 2
+)
+
+func copyFile(src, dst string, isExe isFileExe) {
 	source, err := os.Open(src)
 	check(err)
 	defer source.Close()
@@ -380,8 +389,24 @@ func copyFile(src, dst string) {
 	_, err = io.Copy(destination, source)
 	check(err)
 	// restore execution bit
-	if (sourceFileStat.Mode() & 0111) != 0 {
-		os.Chmod(dst, sourceFileStat.Mode()&os.ModePerm|0111)
+	switch isExe {
+	case isExe:
+		sourceFileStat, err := os.Stat(src)
+		if err == nil {
+			os.Chmod(dst, sourceFileStat.Mode()&os.ModePerm|0111)
+		}
+	case dontKnow:
+		sourceFileStat, err := os.Stat(src)
+		if err != nil {
+			return
+		}
+		if !sourceFileStat.Mode().IsRegular() {
+			return
+		}
+		if (sourceFileStat.Mode() & 0111) != 0 {
+			os.Chmod(dst, sourceFileStat.Mode()&os.ModePerm|0111)
+		}
+	default:
 	}
 }
 func filesAreDifferent(file1, file2 string) bool {
@@ -440,7 +465,7 @@ func backsyncFolders(dst, src string) {
 		dstFile := path.Join(dst, f)
 		if filesAreDifferent(srcFile, dstFile) {
 			fmt.Println(f)
-			copyFile(srcFile, dstFile)
+			copyFile(srcFile, dstFile, dontKnow)
 		}
 	}
 }
@@ -483,7 +508,7 @@ func buildHeaders(dst string, folders []string) {
 						ext == ".inl" {
 						err = os.MkdirAll(path.Join(dst, p), 0755)
 						check(err)
-						copyFile(srcpath, path.Join(dst, srcpath))
+						copyFile(srcpath, path.Join(dst, srcpath), dontKnow)
 					}
 				}
 			}
@@ -491,4 +516,4 @@ func buildHeaders(dst string, folders []string) {
 	}
 }
 
-// 494
+// 519

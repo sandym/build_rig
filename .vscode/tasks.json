@@ -8,10 +8,7 @@
             "type": "shell",
             "command": "${workspaceFolder:build_rig}/scripts/build_driver.sh",
             "args": [
-				"builder",
-				"${workspaceFolder:test_project}",
-
-				// 
+				"${workspaceFolder:llvm_src}",
 				"Debug"
             ],
             "group": {
@@ -20,7 +17,7 @@
             },
             "problemMatcher": {
                 "owner": "cpp",
-                "fileLocation": ["relative", "${workspaceRoot:test_project}"],
+                "fileLocation": ["relative", "${workspaceRoot:llvm_src}"],
                 "pattern": {
                     "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -47,7 +44,7 @@
                 "exec",
                 "-ti",
 				"builder",
-				"/tmp/syncdir", "-clean", "/work/test_project"
+				"/scripts/syncdir_linux", "-clean", "/work/llvm_src"
             ],
             "group": "build",
 			"problemMatcher": [],

@@ -1,4 +1,22 @@
 
+## My solution for working on large c++ projects with docker
+---
+
+### Goals
+
+### Accessing the code
+
+### Building
+
+### Access to headers
+
+### Debugging
+
+### Extensions & customisation
+
+- running tests
+- static analyser
+
 ## syncdir.go
 
 - sync:
@@ -30,7 +48,8 @@ the build driver needs:
 |   `-- tasks.json
 `-- scripts
     |-- build_driver.sh
-    `-- syncdir.go
+    `-- syncdir
+	    `-- syncdir.go
 ```
 
 - document customisation points:
@@ -41,10 +60,23 @@ the build driver needs:
 
 
 # todo:
-	6. get syncback to work
 	7. document
 	8. extensions ?
 	9. test different distro / build system
 		- centos / ubuntu / alpine
 		- cmake / make
 		- g++4.8.5 - g++8
+
+```
+build_rig_work > cat llvm-work.code-workspace 
+{
+   "folders": [
+           {
+                   "path": "build_rig"
+           },
+           {
+                   "path": "~/work/llvm_src"
+           }
+   ]
+}
+```
