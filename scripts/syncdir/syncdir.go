@@ -230,6 +230,7 @@ func syncFolders(src, dst string) {
 				ln = matches[0][3]
 			}
 		case "f ":
+			fallthrough
 		case "x ":
 			// parse the line: "timestamp relative-path"
 			comps := strings.Split(line, " ")
