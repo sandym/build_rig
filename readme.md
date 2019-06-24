@@ -3,6 +3,8 @@
 ---
 
 ### Goals
+- source code edition on my host
+- build & debug in a container
 
 ### Accessing the code
 
@@ -37,21 +39,6 @@ the build driver needs:
 	- how to build target
 
 
-```
-.
-|-- builder
-|   `-- Dockerfile
-|-- docker-compose.yml  <-- need to know the shared folder
-|-- readme.md
-|-- .vscode
-|   |-- launch.json
-|   `-- tasks.json
-`-- scripts
-    |-- build_driver.sh
-    `-- syncdir
-	    `-- syncdir.go
-```
-
 - document customisation points:
 	- shared folder
 	- build script
@@ -68,7 +55,6 @@ the build driver needs:
 		- g++4.8.5 - g++8
 
 ```
-build_rig_work > cat llvm-work.code-workspace 
 {
    "folders": [
            {

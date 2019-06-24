@@ -53,16 +53,17 @@ func main() {
 	default:
 		// take a guess
 		switch len(flag.Args()) {
-		case 1:
+		case 1: // one argument: scan
 			updateScan(flag.Args()[0])
-		case 2:
+		case 2: // two arguments: sync
 			syncFolders(flag.Args()[0], flag.Args()[1])
 		default:
 			flag.PrintDefaults()
 		}
 	}
 }
-func captureLines(cmd *exec.Cmd, wd string) []string {
+func captureLines(wd string, name string, args ...string) []string {
+	cmd := exec.Command(name, args...)
 	cmd.Dir = wd
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
@@ -73,15 +74,15 @@ func captureLines(cmd *exec.Cmd, wd string) []string {
 	return make([]string, 0, 0)
 }
 func gitListAllFiles(src string) []string {
-	result := captureLines(exec.Command("git", "ls-files"), src)
-	return append(result, captureLines(exec.Command(
-		"git", "ls-files", "--others", "--exclude-standard"), src)...)
+	result := captureLines(src, "git", "ls-files")
+	others := captureLines(src, "git", "ls-files", "--others", "--exclude-standard")
+	return append(result, others...)
 }
 func updateScan(src string) {
 	if !isDirectory(src) {
 		log.Fatalf("%s is not a directory", src)
 	}
-	fmt.Printf("scanning %s\n", src)
+	fmt.Printf("scanning %s...\n", src)
 
 	file, err := os.Create(path.Join(src, ".tosync"))
 	check(err)
@@ -90,7 +91,7 @@ func updateScan(src string) {
 	defer w.Flush()
 
 	// write git revision of root folder
-	result := captureLines(exec.Command("git", "rev-parse", "HEAD"), src)
+	result := captureLines(src, "git", "rev-parse", "HEAD")
 	if len(result) > 0 && len(result[0]) > 0 {
 		fmt.Fprintf(w, "s %s .\n", result[0])
 	}
@@ -117,8 +118,7 @@ func updateScan(src string) {
 		switch {
 		case finfo.Mode().IsDir():
 			// probably a submodule, record git revision and recurse
-			result := captureLines(exec.Command(
-				"git", "rev-parse", "HEAD"), srcpath)
+			result := captureLines(srcpath, "git", "rev-parse", "HEAD")
 			if len(result) > 0 && len(result[0]) > 0 {
 				fmt.Fprintf(w, "s %s %s\n", result[0], relpath)
 
@@ -161,6 +161,7 @@ func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
 }
 func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
 	if foldersToPrune == nil {
+		// foldersToPrune is not defined, find ALL the leaf folders
 		foldersToPrune = make(map[string]bool)
 		filepath.Walk(dst, func(p string, info os.FileInfo, err error) error {
 			if info.IsDir() {
@@ -458,7 +459,7 @@ func backsyncFolders(dst, src string) {
 	if !isDirectory(src) {
 		log.Fatalf("%s is not a directory", src)
 	}
-	fmt.Printf("backsync'ing %s to %s\n", dst, src)
+	fmt.Printf("backsync'ing %s to %s...\n", dst, src)
 
 	_, lastSyncFiles := readLastSync(dst)
 	for f := range lastSyncFiles {
@@ -516,5 +517,3 @@ func buildHeaders(dst string, folders []string) {
 		}
 	}
 }
-
-// 519

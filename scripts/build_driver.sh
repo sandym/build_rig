@@ -44,16 +44,17 @@ else
 	cd "/work"
 	mkdir -p build
 	cd build
-
-	export LLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;libcxx;libcxxabi;libunwind;lld;llvm"
-	cmake -G Ninja \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DLLVM_ENABLE_LIBXML2=0 \
-		-DLLVM_ENABLE_PROJECTS=${LLVM_ENABLE_PROJECTS} \
-		-DCMAKE_INSTALL_PREFIX:PATH="/work/llvm" \
-		/work/llvm_src/llvm || exit -1
-	ninja || exit -1
-	ninja install
+	if [ ! -f build.ninja ]
+	then
+		LLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;libcxx;libcxxabi;libunwind;lld;llvm"
+		cmake -G Ninja \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DLLVM_ENABLE_LIBXML2=0 \
+			-DLLVM_ENABLE_PROJECTS=${LLVM_ENABLE_PROJECTS} \
+			-DCMAKE_INSTALL_PREFIX:PATH="/work/llvm" \
+			/work/llvm_src/llvm || exit -1
+	fi
+	time ( ninja  && ninja install )
 	# cd /work/llvm/bin
 	# ln -s clang++ c++
 	# ln -s clang cc
