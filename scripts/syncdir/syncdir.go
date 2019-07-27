@@ -491,12 +491,21 @@ func buildHeaders(dst string, folders []string) {
 			for _, finfo := range files {
 				name := finfo.Name()
 				srcpath := path.Join(p, name)
-				if finfo.IsDir() {
+				switch {
+				case finfo.IsDir():
 					if name == "bin" || name == "share" || name == "lib" {
 						continue
 					}
 					stack = append(stack, srcpath)
-				} else {
+				case (finfo.Mode() & os.ModeSymlink) != 0:
+					ln, err := os.Readlink(srcpath)
+					check(err)
+					err = os.MkdirAll(path.Join(dst, p), 0755)
+					check(err)
+					if !path.IsAbs(ln) {
+						os.Symlink(ln, path.Join(dst, srcpath))
+					}
+				default:
 					ext := path.Ext(name)
 					if ext == "" ||
 						ext == ".h" ||
