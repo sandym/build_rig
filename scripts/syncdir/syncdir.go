@@ -210,7 +210,7 @@ func syncFolders(src, dst string) {
 
 		var timestamp int64
 		var relpath, ln, gitRevision string
-		isItExe := isNotExe
+		isExe := fileIsNotExe
 
 		prefix := line[:2]
 		line = line[2:]
@@ -239,7 +239,7 @@ func syncFolders(src, dst string) {
 				timestamp, _ = strconv.ParseInt(comps[0], 10, 64)
 				relpath = comps[1]
 				if prefix == "x " {
-					isItExe = isExe
+					isExe = fileIsExe
 				}
 			}
 		}
@@ -279,7 +279,7 @@ func syncFolders(src, dst string) {
 						os.Symlink(ln, path.Join(dstDir, path.Base(srcFile)))
 					}
 				} else {
-					copyFile(srcFile, dstFile, isItExe)
+					copyFile(srcFile, dstFile, isExe)
 				}
 			}
 			if timestamp > latest {
@@ -335,7 +335,7 @@ func cleanFolder(dst string) {
 		files, err := ioutil.ReadDir(f)
 		check(err)
 		for _, finfo := range files {
-			if finfo.Name() == ".lastsync" {
+			if finfo.Name() == ".lastsync" || finfo.Name() == ".gitrevision" {
 				continue
 			}
 			srcpath := path.Join(f, finfo.Name())
@@ -375,9 +375,9 @@ func check(e error) {
 type isFileExe int
 
 const (
-	isNotExe isFileExe = 0
-	isExe    isFileExe = 1
-	dontKnow isFileExe = 2
+	fileIsNotExe isFileExe = 0
+	fileIsExe    isFileExe = 1
+	dontKnow     isFileExe = 2
 )
 
 func copyFile(src, dst string, isExe isFileExe) {
@@ -392,7 +392,7 @@ func copyFile(src, dst string, isExe isFileExe) {
 	check(err)
 	// restore execution bit
 	switch isExe {
-	case isExe:
+	case fileIsExe:
 		sourceFileStat, err := os.Stat(src)
 		if err == nil {
 			os.Chmod(dst, sourceFileStat.Mode()&os.ModePerm|0111)
