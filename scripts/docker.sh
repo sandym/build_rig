@@ -61,5 +61,10 @@ else
 			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
 			"/work/${PROJECT}" || exit -1
 	fi
-	time ninja
+	ninja
+
+	if [ "${ACTION}" = "test" ]
+	then
+		ctest --output-on-failure --parallel $(nproc)
+	fi
 fi

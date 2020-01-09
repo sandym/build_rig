@@ -1,10 +1,12 @@
 
-## My solution for working on large c++ projects with docker
+## My solution for working on large cross-platform cmake-based c++ projects using docker
 ---
 
 ### Goals
 - source code edition on my host
 - build & debug in a container
+- build on macos
+- build on windows
 
 ### Accessing the code
 
@@ -17,7 +19,6 @@
 ### Extensions & customisation
 
 - running tests
-- static analyser
 
 ## syncdir.go
 
@@ -27,6 +28,8 @@
 	- windows to linux
 
 ## how to link build_rig and target project ?
+
+./bin/create.sh /path/to/folder
 
 build_rig has a build driver script that does:
 	- syncdir scan
@@ -47,22 +50,3 @@ the build driver needs:
 
 
 # todo:
-	7. document
-	8. extensions ?
-	9. test different distro / build system
-		- centos / ubuntu / alpine
-		- cmake / make
-		- g++4.8.5 - g++8
-
-```
-{
-   "folders": [
-           {
-                   "path": "build_rig"
-           },
-           {
-                   "path": "~/work/llvm_src"
-           }
-   ]
-}
-```

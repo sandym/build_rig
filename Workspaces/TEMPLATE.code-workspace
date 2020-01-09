@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "BUILD_RIG"
+		},
+		{
+			"path": "PROJECT"
+		}
+	],
+	"settings": {
+		"build_rig.project": "PROJECT"
+	}
+}
