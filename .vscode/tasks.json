@@ -1,56 +1,144 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "> build",
-            "type": "shell",
-            "command": "${workspaceFolder:build_rig}/scripts/build_driver.sh",
-            "args": [
-				"${workspaceFolder:llvm_src}",
-				"Debug"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": {
-                "owner": "cpp",
-                "fileLocation": ["relative", "${workspaceRoot:llvm_src}"],
-                "pattern": {
-                    "regexp": "^/work/llvm_src/(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-                    "file": 1,
-                    "line": 2,
-                    "column": 3,
-                    "severity": 4,
-                    "message": 5
-                }
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"inputs": [
+		{
+			"id": "darwin",
+			"type": "pickString",
+			"options": [
+				"ninja",
+				"test",
+				"clean",
+				"xcode",
+				"xcode-clean"
+			],
+			"default": "ninja",
+			"description": "action"
+		},
+		{
+			"id": "linux",
+			"type": "pickString",
+			"options": [
+				"build",
+				"test",
+				"clean"
+			],
+			"default": "build",
+			"description": "action"
+		},
+		{
+			"id": "windows",
+			"type": "pickString",
+			"options": [
+				"build",
+				"test",
+				"clean",
+				"VS"
+			],
+			"default": "build",
+			"description": "action"
+		}
+	],
+	"tasks": [
+		{
+			"label": "> macos",
+			"type": "shell",
+			"group": {
+				"kind": "build",
+				"isDefault": true
 			},
+			"command": "${workspaceRoot:build_rig}/scripts/darwin.sh",
+			"args": [
+				"${input:darwin}",
+				"${config:build_rig.project}",
+			],
 			"presentation": {
-				"echo": true,
-				"reveal": "always",
-				"focus": false,
-				"panel": "shared",
-				"showReuseMessage": true,
 				"clear": true
 			}
-        },
-        {
-            "label": "> clean",
-            "type": "shell",
-            "command": "docker",
-            "args": [
-                "exec",
-                "-ti",
-				"builder",
-				"/scripts/syncdir_linux", "-clean", "/work/llvm_src"
-            ],
-            "group": "build",
-			"problemMatcher": [],
-			"options": {
-				"statusbar": "hide"
+		},
+		{
+			"label": "> centos7",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"args": [
+				"centos7_builder",
+				"${input:linux}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
 			}
-        }
-    ]
+		},
+		{
+			"label": "> centos8",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"args": [
+				"centos8_builder",
+				"${input:linux}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "> alpine",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"args": [
+				"alpine_builder",
+				"${input:linux}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "> ubuntu",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"args": [
+				"ubuntu_builder",
+				"${input:linux}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "> clearlinux",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"args": [
+				"clearlinux_builder",
+				"${input:linux}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "> windows",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceRoot:build_rig}/scripts/win.sh",
+			"args": [
+				"${input:windows}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			}
+		}
+	]
 }

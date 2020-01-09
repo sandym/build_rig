@@ -1,0 +1,89 @@
+version: '3.7'
+services:
+  centos8_builder:
+    build: ./images/centos8_builder
+    restart: always
+    container_name: centos8_builder
+    hostname: centos8_builder
+    environment:
+      PS1: '[centos8 \W]# '
+    volumes:
+      - work:/work
+      - ./scripts:/scripts:delegated
+      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+    # need this to debug
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  centos7_builder:
+    build: ./images/centos7_builder
+    restart: always
+    container_name: centos7_builder
+    hostname: centos7_builder
+    environment:
+      PS1: '[centos7 \W]# '
+    volumes:
+      - work:/work
+      - ./scripts:/scripts:delegated
+      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+    # need this to debug
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  alpine_builder:
+    build: ./images/alpine_builder
+    restart: always
+    container_name: alpine_builder
+    hostname: alpine_builder
+    environment:
+      PS1: '[alpine \W]# '
+    volumes:
+      - work:/work
+      - ./scripts:/scripts:delegated
+      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+    # need this to debug
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  ubuntu_builder:
+    build: ./images/ubuntu_builder
+    restart: always
+    container_name: ubuntu_builder
+    hostname: ubuntu_builder
+    environment:
+      PS1: '[ubuntu \W]# '
+    volumes:
+      - work:/work
+      - ./scripts:/scripts:delegated
+      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+    # need this to debug
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  clearlinux_builder:
+    build: ./images/clearlinux_builder
+    restart: always
+    container_name: clearlinux_builder
+    hostname: clearlinux_builder
+    environment:
+      PS1: '[clear \W]# '
+    volumes:
+      - work:/work
+      - ./scripts:/scripts:delegated
+      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+    # need this to debug
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+volumes:
+  work:

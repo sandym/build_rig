@@ -1,2 +1,3 @@
-.vscode/ipch
 scripts/syncdir_*
+Workspaces/*
+!Workspaces/TEMPLATE.code-Workspace
