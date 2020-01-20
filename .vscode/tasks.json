@@ -42,7 +42,7 @@
 	],
 	"tasks": [
 		{
-			"label": "> macos",
+			"label": "macos build",
 			"type": "shell",
 			"group": {
 				"kind": "build",
@@ -55,10 +55,15 @@
 			],
 			"presentation": {
 				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)macos"
+				}
 			}
 		},
 		{
-			"label": "> centos7",
+			"label": "centos7 build",
 			"type": "shell",
 			"group": "build",
 			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
@@ -69,10 +74,15 @@
 			],
 			"presentation": {
 				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)centos7"
+				}
 			}
 		},
 		{
-			"label": "> centos8",
+			"label": "centos8 build",
 			"type": "shell",
 			"group": "build",
 			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
@@ -83,10 +93,15 @@
 			],
 			"presentation": {
 				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)centos8"
+				}
 			}
 		},
 		{
-			"label": "> alpine",
+			"label": "alpine build",
 			"type": "shell",
 			"group": "build",
 			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
@@ -97,10 +112,15 @@
 			],
 			"presentation": {
 				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)alpine"
+				}
 			}
 		},
 		{
-			"label": "> ubuntu",
+			"label": "ubuntu build",
 			"type": "shell",
 			"group": "build",
 			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
@@ -111,10 +131,15 @@
 			],
 			"presentation": {
 				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)ubuntu"
+				}
 			}
 		},
 		{
-			"label": "> clearlinux",
+			"label": "clearlinux build",
 			"type": "shell",
 			"group": "build",
 			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
@@ -125,10 +150,15 @@
 			],
 			"presentation": {
 				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)clearlinux"
+				}
 			}
 		},
 		{
-			"label": "> windows",
+			"label": "windows build",
 			"type": "shell",
 			"group": "build",
 			"command": "${workspaceRoot:build_rig}/scripts/win.sh",
@@ -138,6 +168,24 @@
 			],
 			"presentation": {
 				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)windows"
+				}
+			}
+		},
+		{
+			"label": "docker-compose up",
+			"type": "shell",
+			"command": "${workspaceRoot:build_rig}/bin/up.sh",
+			"presentation": {
+				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"hide": true
+				}
 			}
 		}
 	]
