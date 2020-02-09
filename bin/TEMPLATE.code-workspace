@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "BUILD_RIG"
+			"path": "PROJECT"
 		},
 		{
-			"path": "PROJECT"
+			"path": "BUILD_RIG"
 		}
 	],
 	"settings": {

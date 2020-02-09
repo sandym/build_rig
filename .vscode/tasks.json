@@ -28,6 +28,20 @@
 			"description": "action"
 		},
 		{
+			"id": "linux+clang",
+			"type": "pickString",
+			"options": [
+				"build",
+				"test",
+				"clean",
+				"build+clang",
+				"test+clang",
+				"clean+clang"
+			],
+			"default": "build",
+			"description": "action"
+		},
+		{
 			"id": "windows",
 			"type": "pickString",
 			"options": [
@@ -145,7 +159,7 @@
 			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
 			"args": [
 				"clearlinux_builder",
-				"${input:linux}",
+				"${input:linux+clang}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {

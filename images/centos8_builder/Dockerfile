@@ -1,7 +1,7 @@
 FROM centos:8
 
-ARG CMAKE_VERSION=3.16.2
-ARG NINJA_VERSION=v1.9.0
+ARG CMAKE_VERSION=3.16.4
+ARG NINJA_VERSION=v1.10.0
 
 RUN yum -y update && \
 yum -y install \

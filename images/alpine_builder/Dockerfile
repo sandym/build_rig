@@ -1,6 +1,6 @@
 FROM alpine
 
-ARG CMAKE_VERSION=3.16.2
+ARG CMAKE_VERSION=3.16.4
 
 RUN apk add --no-cache g++ gdb git make linux-headers ninja openssl-dev
 

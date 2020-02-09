@@ -1,7 +1,7 @@
 FROM ubuntu:19.10
 
-ARG CMAKE_VERSION=3.16.2
-ARG NINJA_VERSION=v1.9.0
+ARG CMAKE_VERSION=3.16.4
+ARG NINJA_VERSION=v1.10.0
 
 RUN apt-get -y update && apt-get -y upgrade && \
 apt-get -y install curl g++ gdb git libssl-dev make time && \

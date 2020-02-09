@@ -1,7 +1,7 @@
 FROM centos:7
 
-ARG CMAKE_VERSION=3.16.2
-ARG NINJA_VERSION=v1.8.2
+ARG CMAKE_VERSION=3.16.4
+ARG NINJA_VERSION=v1.10.0
 
 RUN yum -y update && \
 yum -y install centos-release-scl && \
