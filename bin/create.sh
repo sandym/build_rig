@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# usage:
+#	./bin/create.sh {project_name}
+#
 
 ROOT=`dirname "$0"`
 ROOT=`cd "$ROOT"/.. ; pwd`
@@ -47,9 +51,9 @@ fi
 
 echo "creating workspace for ${PROJECT}"
 
-mkdir -p "${ROOT}/Workspaces"
+mkdir -p "~/Workspaces"
 TEMPLATE="${ROOT}/bin/TEMPLATE.code-workspace"
-WORKSPACE="${ROOT}/Workspaces/${PROJECT_NAME}.code-workspace"
+WORKSPACE="~/Workspaces/${PROJECT_NAME}.code-workspace"
 
 if [ -f "${WORKSPACE}" ]
 then
