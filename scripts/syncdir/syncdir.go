@@ -17,7 +17,6 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"sort"
 	"strconv"
@@ -103,13 +102,14 @@ func updateScan(srcFullPath string) {
 
 		for _, finfo := range entries {
 			if finfo.Name() == ".git" {
-				// record git revision and recurse
+				// record git revision
 				result := gitRevision(currentPath)
 				if len(result) > 0 {
 					relpath, err := filepath.Rel(srcFullPath, currentPath)
 					check(err)
 					fmt.Fprintf(w, "s %s %s\n", result, relpath)
 				}
+				continue
 			}
 			if finfo.Name() == ".tosync" ||
 				finfo.Name() == ".vscode" ||
@@ -143,18 +143,21 @@ func updateScan(srcFullPath string) {
 func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
 	// read .lastsync, first line is the last sync timestamp
 	// followed by all files that were sync
-	file, err := os.Open(path.Join(dst, ".lastsync"))
 	lastSyncFiles = make(map[string]bool)
-	if err == nil {
-		defer file.Close()
-		lines := bufio.NewScanner(file)
-		if lines.Scan() {
-			lastSync, _ = strconv.ParseInt(lines.Text(), 10, 64)
-			for lines.Scan() {
-				lastSyncFiles[lines.Text()] = true
-			}
-		}
+	file, err := os.Open(path.Join(dst, ".lastsync"))
+	if err != nil {
+		return lastSync, lastSyncFiles
 	}
+	defer file.Close()
+	lines := bufio.NewScanner(file)
+	if !lines.Scan() {
+		return lastSync, lastSyncFiles
+	}
+	lastSync, _ = strconv.ParseInt(lines.Text(), 10, 64)
+	for lines.Scan() {
+		lastSyncFiles[lines.Text()] = true
+	}
+
 	return lastSync, lastSyncFiles
 }
 func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
@@ -184,6 +187,25 @@ func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
 		}
 	}
 }
+func splitAtFirstSpace(v string) []string {
+	idx := strings.IndexRune(v, ' ')
+	if idx < 1 {
+		return []string{}
+	}
+	return []string{v[:idx], v[idx+1:]}
+}
+func splitLink(v string) []string {
+	idx1 := strings.IndexRune(v, ' ')
+	if idx1 < 1 {
+		return []string{}
+	}
+	idx2 := strings.Index(v, "->")
+	if idx2 < (idx1 + 2) {
+		return []string{}
+	}
+
+	return []string{v[:idx1], v[idx1+1 : idx2], v[idx2+2:]}
+}
 func syncFolders(src, dst string) {
 	if !isDirectory(src) {
 		log.Fatalf("%s is not a directory", src)
@@ -199,8 +221,6 @@ func syncFolders(src, dst string) {
 	defer toSync.Close()
 	lines := bufio.NewScanner(toSync)
 
-	matchLinkRe := regexp.MustCompile("^(\\d+)\\s(.+)\\->(.+)$")
-
 	var latest int64
 	syncFiles := make(map[string]bool)
 	for lines.Scan() {
@@ -213,32 +233,30 @@ func syncFolders(src, dst string) {
 		prefix := line[:2]
 		line = line[2:]
 		switch prefix {
-		case "f ":
-			fallthrough
 		case "x ":
+			isExe = fileIsExe
+			fallthrough
+		case "f ":
 			// parse the line: "timestamp relative-path"
-			comps := strings.Split(line, " ")
+			comps := splitAtFirstSpace(line)
 			if len(comps) == 2 {
 				timestamp, _ = strconv.ParseInt(comps[0], 10, 64)
 				relpath = comps[1]
-				if prefix == "x " {
-					isExe = fileIsExe
-				}
 			}
 		case "s ":
 			// parse the line: "git-revision relative-path"
-			comps := strings.Split(line, " ")
+			comps := splitAtFirstSpace(line)
 			if len(comps) == 2 {
 				gitRevision = comps[0]
 				relpath = comps[1]
 			}
 		case "l ":
 			// parse the line: "timestamp relative-path->link"
-			matches := matchLinkRe.FindAllStringSubmatch(line, -1)
-			if len(matches) == 1 {
-				timestamp, _ = strconv.ParseInt(matches[0][1], 10, 64)
-				relpath = matches[0][2]
-				ln = matches[0][3]
+			matches := splitLink(line)
+			if len(matches) == 3 {
+				timestamp, _ = strconv.ParseInt(matches[0], 10, 64)
+				relpath = matches[1]
+				ln = matches[2]
 			}
 		}
 		if len(relpath) == 0 {
@@ -418,7 +436,7 @@ func buildHeaders(dst string, folders []string) {
 	for _, folder := range folders {
 		fmt.Println(folder)
 
-		stack := make([]string, 0, 32)
+		stack := make([]string, 0, 64)
 		stack = append(stack, folder)
 		for len(stack) > 0 {
 			n := len(stack)
