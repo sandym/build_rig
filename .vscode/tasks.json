@@ -7,13 +7,13 @@
 			"id": "darwin",
 			"type": "pickString",
 			"options": [
-				"ninja",
+				"build",
 				"test",
 				"clean",
 				"xcode",
 				"xcode-clean"
 			],
-			"default": "ninja",
+			"default": "build",
 			"description": "action"
 		},
 		{
@@ -186,19 +186,6 @@
 			"options": {
 				"statusbar": {
 					"label": "$(chevron-right)windows"
-				}
-			}
-		},
-		{
-			"label": "docker-compose up",
-			"type": "shell",
-			"command": "${workspaceRoot:build_rig}/bin/up.sh",
-			"presentation": {
-				"clear": true
-			},
-			"options": {
-				"statusbar": {
-					"hide": true
 				}
 			}
 		}

@@ -1,7 +1,6 @@
 // - scan: -scan {path}...
 // - sync: -sync {src} {dst}...
 // - clean: -clean {path}...
-// - backsync: -backsync {dst} {src}
 // - headers: -headers {dst} {paths}...
 
 package main
@@ -29,7 +28,6 @@ func main() {
 	scanPtr := flag.Bool("scan", false, "-scan {path}...")
 	syncPtr := flag.Bool("sync", false, "-sync {src} {dst}...")
 	cleanPtr := flag.Bool("clean", false, "-clean {dst}")
-	backsyncPtr := flag.Bool("backsync", false, "-backsync {dst} {src}")
 	headersPtr := flag.Bool("headers", false, "-headers {dst} {paths}...")
 	flag.Parse()
 
@@ -46,8 +44,6 @@ func main() {
 		for _, path := range flag.Args() {
 			cleanFolder(path)
 		}
-	case *backsyncPtr && len(flag.Args()) == 2:
-		backsyncFolders(flag.Args()[0], flag.Args()[1])
 	case *headersPtr && len(flag.Args()) >= 2:
 		buildHeaders(flag.Args()[0], flag.Args()[1:])
 	default:
@@ -62,84 +58,86 @@ func main() {
 		}
 	}
 }
-func captureLines(wd string, name string, args ...string) []string {
-	cmd := exec.Command(name, args...)
+func gitRevision(wd string) string {
+	cmd := exec.Command("git", "rev-parse", "HEAD")
 	cmd.Dir = wd
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	err := cmd.Run()
 	if err == nil {
-		return strings.Split(string(stdout.Bytes()), "\n")
+		lines := strings.Split(string(stdout.Bytes()), "\n")
+		if len(lines) > 0 {
+			return lines[0]
+		}
 	}
-	return make([]string, 0, 0)
+	return ""
 }
-func gitListAllFiles(src string) []string {
-	result := captureLines(src, "git", "ls-files")
-	others := captureLines(src, "git", "ls-files", "--others", "--exclude-standard")
-	return append(result, others...)
-}
-func updateScan(src string) {
-	if !isDirectory(src) {
-		log.Fatalf("%s is not a directory", src)
+func updateScan(srcFullPath string) {
+	if !isDirectory(srcFullPath) {
+		log.Fatalf("%s is not a directory", srcFullPath)
 	}
-	fmt.Printf("scanning %s...\n", src)
+	fmt.Printf("scanning %s...\n", srcFullPath)
 
-	file, err := os.Create(path.Join(src, ".tosync"))
+	file, err := os.Create(path.Join(srcFullPath, ".tosync"))
 	check(err)
 	defer file.Close()
 	w := bufio.NewWriter(file)
 	defer w.Flush()
 
-	// write git revision of root folder
-	result := captureLines(src, "git", "rev-parse", "HEAD")
-	if len(result) > 0 && len(result[0]) > 0 {
-		fmt.Fprintf(w, "s %s .\n", result[0])
-	}
+	stack := make([]string, 0, 64)
+	stack = append(stack, srcFullPath)
+	for len(stack) > 0 {
+		n := len(stack)
+		currentPath := stack[n-1]
+		stack = stack[:n-1]
 
-	allFiles := gitListAllFiles(src)
-	for len(allFiles) > 0 {
-		n := len(allFiles)
-		relpath := allFiles[n-1]
-		allFiles = allFiles[:n-1]
-		if len(relpath) == 0 ||
-			relpath == ".tosync" ||
-			strings.HasSuffix(relpath, ".DS_Store") ||
-			strings.Contains(relpath, ".vscode") ||
-			strings.Contains(relpath, ".git") {
-			continue
-		}
-
-		srcpath := path.Join(src, relpath)
-		finfo, err := os.Lstat(srcpath)
+		dirp, err := os.Open(currentPath)
 		if err != nil {
-			// probably a deleted file
 			continue
 		}
-		switch {
-		case finfo.Mode().IsDir():
-			// probably a submodule, record git revision and recurse
-			result := captureLines(srcpath, "git", "rev-parse", "HEAD")
-			if len(result) > 0 && len(result[0]) > 0 {
-				fmt.Fprintf(w, "s %s %s\n", result[0], relpath)
+		entries, err := dirp.Readdir(-1)
+		if err != nil {
+			dirp.Close()
+			continue
+		}
 
-				otherFiles := gitListAllFiles(srcpath)
-				for _, v := range otherFiles {
-					if len(v) > 0 {
-						allFiles = append(allFiles, path.Join(relpath, v))
-					}
+		for _, finfo := range entries {
+			if finfo.Name() == ".git" {
+				// record git revision and recurse
+				result := gitRevision(currentPath)
+				if len(result) > 0 {
+					relpath, err := filepath.Rel(srcFullPath, currentPath)
+					check(err)
+					fmt.Fprintf(w, "s %s %s\n", result, relpath)
 				}
 			}
-		case (finfo.Mode() & os.ModeSymlink) != 0:
-			ln, err := os.Readlink(srcpath)
-			check(err)
-			fmt.Fprintf(w, "l %d %s->%s\n", finfo.ModTime().Unix(), relpath, ln)
-		case finfo.Mode().IsRegular():
-			if (finfo.Mode() & 0111) != 0 {
-				fmt.Fprintf(w, "x %d %s\n", finfo.ModTime().Unix(), relpath)
-			} else {
-				fmt.Fprintf(w, "f %d %s\n", finfo.ModTime().Unix(), relpath)
+			if finfo.Name() == ".tosync" ||
+				finfo.Name() == ".vscode" ||
+				strings.HasPrefix(finfo.Name(), ".git") {
+				continue
+			}
+			fullPath := path.Join(currentPath, finfo.Name())
+
+			switch {
+			case finfo.Mode().IsRegular():
+				relpath, err := filepath.Rel(srcFullPath, fullPath)
+				check(err)
+				if (finfo.Mode() & 0111) != 0 {
+					fmt.Fprintf(w, "x %d %s\n", finfo.ModTime().Unix(), relpath)
+				} else {
+					fmt.Fprintf(w, "f %d %s\n", finfo.ModTime().Unix(), relpath)
+				}
+			case finfo.Mode().IsDir():
+				stack = append(stack, fullPath)
+			case (finfo.Mode() & os.ModeSymlink) != 0:
+				ln, err := os.Readlink(fullPath)
+				check(err)
+				relpath, err := filepath.Rel(srcFullPath, fullPath)
+				check(err)
+				fmt.Fprintf(w, "l %d %s->%s\n", finfo.ModTime().Unix(), relpath, ln)
 			}
 		}
+		dirp.Close()
 	}
 }
 func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {
@@ -215,6 +213,18 @@ func syncFolders(src, dst string) {
 		prefix := line[:2]
 		line = line[2:]
 		switch prefix {
+		case "f ":
+			fallthrough
+		case "x ":
+			// parse the line: "timestamp relative-path"
+			comps := strings.Split(line, " ")
+			if len(comps) == 2 {
+				timestamp, _ = strconv.ParseInt(comps[0], 10, 64)
+				relpath = comps[1]
+				if prefix == "x " {
+					isExe = fileIsExe
+				}
+			}
 		case "s ":
 			// parse the line: "git-revision relative-path"
 			comps := strings.Split(line, " ")
@@ -229,18 +239,6 @@ func syncFolders(src, dst string) {
 				timestamp, _ = strconv.ParseInt(matches[0][1], 10, 64)
 				relpath = matches[0][2]
 				ln = matches[0][3]
-			}
-		case "f ":
-			fallthrough
-		case "x ":
-			// parse the line: "timestamp relative-path"
-			comps := strings.Split(line, " ")
-			if len(comps) == 2 {
-				timestamp, _ = strconv.ParseInt(comps[0], 10, 64)
-				relpath = comps[1]
-				if prefix == "x " {
-					isExe = fileIsExe
-				}
 			}
 		}
 		if len(relpath) == 0 {
@@ -326,7 +324,7 @@ func cleanFolder(dst string) {
 
 	_, lastSyncFiles := readLastSync(dst)
 
-	stack := make([]string, 0, 32)
+	stack := make([]string, 0, 64)
 	stack = append(stack, dst)
 	for len(stack) > 0 {
 		n := len(stack)
@@ -409,66 +407,6 @@ func copyFile(src, dst string, isExe isFileExe) {
 			os.Chmod(dst, sourceFileStat.Mode()&os.ModePerm|0111)
 		}
 	default:
-	}
-}
-func filesAreDifferent(file1, file2 string) bool {
-	f1, err := os.Open(file1)
-	if err != nil {
-		return false
-	}
-	f2, err := os.Open(file2)
-	if err != nil {
-		return false
-	}
-	f1Info, err := f1.Stat()
-	if err != nil {
-		return false
-	}
-	f2Info, err := f2.Stat()
-	if err != nil {
-		return false
-	}
-	if f1Info.Size() != f2Info.Size() {
-		return true
-	}
-
-	const chunkSize = 64 * 1024
-	b1 := make([]byte, chunkSize)
-	b2 := make([]byte, chunkSize)
-	for {
-		len1, err1 := f1.Read(b1)
-		len2, err2 := f2.Read(b2)
-
-		if err1 != nil || err2 != nil {
-			if err1 == io.EOF && err2 == io.EOF {
-				return false
-			} else if err1 == io.EOF || err2 == io.EOF {
-				return true
-			}
-			return false
-		}
-		if len1 != len2 || !bytes.Equal(b1, b2) {
-			return true
-		}
-	}
-}
-func backsyncFolders(dst, src string) {
-	if !isDirectory(dst) {
-		log.Fatalf("%s is not a directory", dst)
-	}
-	if !isDirectory(src) {
-		log.Fatalf("%s is not a directory", src)
-	}
-	fmt.Printf("backsync'ing %s to %s...\n", dst, src)
-
-	_, lastSyncFiles := readLastSync(dst)
-	for f := range lastSyncFiles {
-		srcFile := path.Join(src, f)
-		dstFile := path.Join(dst, f)
-		if filesAreDifferent(srcFile, dstFile) {
-			fmt.Println(f)
-			copyFile(srcFile, dstFile, dontKnow)
-		}
 	}
 }
 func buildHeaders(dst string, folders []string) {
