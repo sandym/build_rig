@@ -20,35 +20,24 @@
 			"id": "linux",
 			"type": "pickString",
 			"options": [
+				"build-gcc-debug",
+				"test-gcc-debug",
+				"clean-gcc-debug",
+				"build-gcc-release",
+				"build-clang-debug",
+				"test-clang-debug",
+				"clean-clang-debug"
+			],
+			"default": "build",
+			"description": "action"
+		},
+		{
+			"id": "msvc",
+			"type": "pickString",
+			"options": [
 				"build",
 				"test",
 				"clean"
-			],
-			"default": "build",
-			"description": "action"
-		},
-		{
-			"id": "linux+clang",
-			"type": "pickString",
-			"options": [
-				"build",
-				"test",
-				"clean",
-				"build+clang",
-				"test+clang",
-				"clean+clang"
-			],
-			"default": "build",
-			"description": "action"
-		},
-		{
-			"id": "windows",
-			"type": "pickString",
-			"options": [
-				"build",
-				"test",
-				"clean",
-				"VS"
 			],
 			"default": "build",
 			"description": "action"
@@ -159,7 +148,7 @@
 			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
 			"args": [
 				"clearlinux_builder",
-				"${input:linux+clang}",
+				"${input:linux}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -172,12 +161,13 @@
 			}
 		},
 		{
-			"label": "windows build",
+			"label": "msvc build",
 			"type": "shell",
 			"group": "build",
-			"command": "${workspaceRoot:build_rig}/scripts/win.sh",
+			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
 			"args": [
-				"${input:windows}",
+				"msvc_builder",
+				"${input:msvc}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -185,7 +175,7 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(chevron-right)windows"
+					"label": "$(chevron-right)msvc"
 				}
 			}
 		}
