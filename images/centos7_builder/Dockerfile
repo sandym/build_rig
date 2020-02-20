@@ -10,7 +10,8 @@ devtoolset-8-gcc-c++ \
 devtoolset-8-gdb \
 devtoolset-8-make \
 git \
-openssl-devel && \
+openssl-devel \
+which && \
 yum clean all && rm -rf /var/cache/yum
 
 RUN cd /tmp && \

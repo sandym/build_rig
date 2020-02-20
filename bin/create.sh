@@ -8,7 +8,7 @@ ROOT=`dirname "$0"`
 ROOT=`cd "$ROOT"/.. ; pwd`
 PROJECT_NAME=$1
 
-if [[ "$PROJECT_NAME" == *\/* ]] || [[ "$string" == *\\* ]]
+if [[ "$PROJECT_NAME" == *\/* ]] || [[ "$PROJECT_NAME" == *\\* ]]
 then
 	echo "project name cannot be a path."
 	exit -1
@@ -51,9 +51,10 @@ fi
 
 echo "creating workspace for ${PROJECT}"
 
-mkdir -p "~/Workspaces"
 TEMPLATE="${ROOT}/bin/TEMPLATE.code-workspace"
-WORKSPACE="~/Workspaces/${PROJECT_NAME}.code-workspace"
+mkdir -p ~/Workspaces
+WORKSPACE=`cd ~/Workspaces ; pwd`
+WORKSPACE=${WORKSPACE}/${PROJECT_NAME}.code-workspace
 
 if [ -f "${WORKSPACE}" ]
 then

@@ -78,6 +78,7 @@ syncdir()
 if [ ! -f "/.dockerenv" ]
 then
 	# in host
+	source "${SCRIPTS}/../.env"
 
 	# build syndir of needed
 	if [ ! -f "${SCRIPTS}/syncdir_host" ] || [ "${SCRIPTS}/syncdir/syncdir.go" -nt "${SCRIPTS}/syncdir_host" ]
@@ -91,7 +92,21 @@ then
 	syncdir syncdir_host "-scan" .
 
 	PROJECT=`basename "${PROJECT}"`
-	time docker exec -ti ${CONTAINER} /scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
+	docker inspect ${CONTAINER} > /dev/null 2>&1
+	if [ $? = 0 ]
+	then
+		# container is already running, just exec
+		time docker exec -ti ${CONTAINER} \
+			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
+	else
+		# container is not running, run and --rm
+		time docker run --rm -ti \
+			--mount type=bind,source="${SCRIPTS}",target=/scripts \
+			--mount type=bind,source="${BUILDER_SHARED_FOLDER}",target=/share \
+  			--mount source=build_rig_work,target=/work \
+			build_rig_${CONTAINER} \
+			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
+	fi
 
 	echo ""
 	CONTAINER=${CONTAINER%_builder}
