@@ -164,14 +164,14 @@ func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
 	if foldersToPrune == nil {
 		// foldersToPrune is not defined, find ALL the leaf folders
 		foldersToPrune = make(map[string]bool)
-		filepath.Walk(dst, func(p string, info os.FileInfo, err error) error {
+		filepath.Walk(dst, func(current string, info os.FileInfo, err error) error {
 			if info.IsDir() {
 				for p := range foldersToPrune {
-					if strings.HasPrefix(p, p) {
+					if strings.HasPrefix(current, p) {
 						delete(foldersToPrune, p)
 					}
 				}
-				foldersToPrune[p] = true
+				foldersToPrune[current] = true
 			}
 			return nil
 		})
@@ -182,7 +182,7 @@ func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
 				break
 			}
 			fmt.Printf("deleting %s\n", p)
-			os.Remove(p)
+			os.RemoveAll(p)
 			p = path.Dir(p)
 		}
 	}
@@ -375,8 +375,11 @@ func isFolderEmpty(p string) bool {
 		return false
 	}
 	defer f.Close()
-	_, err = f.Readdir(1)
-	return err == io.EOF
+	entries, _ := f.Readdir(1)
+	if len(entries) == 1 {
+		return entries[0].Name() == ".gitrevision"
+	}
+	return len(entries) == 0
 }
 func isDirectory(path string) bool {
 	fileInfo, err := os.Stat(path)

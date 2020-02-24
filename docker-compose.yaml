@@ -9,8 +9,8 @@ services:
       PS1: '[centos8 \W]# '
     volumes:
       - work:/work
-      - ./scripts:/scripts:delegated
-      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+      - ./scripts:/scripts
+      - ${BUILDER_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -26,8 +26,8 @@ services:
       PS1: '[centos7 \W]# '
     volumes:
       - work:/work
-      - ./scripts:/scripts:delegated
-      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+      - ./scripts:/scripts
+      - ${BUILDER_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -43,8 +43,8 @@ services:
       PS1: '[alpine \W]# '
     volumes:
       - work:/work
-      - ./scripts:/scripts:delegated
-      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+      - ./scripts:/scripts
+      - ${BUILDER_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -60,8 +60,8 @@ services:
       PS1: '[ubuntu \W]# '
     volumes:
       - work:/work
-      - ./scripts:/scripts:delegated
-      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+      - ./scripts:/scripts
+      - ${BUILDER_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -77,8 +77,8 @@ services:
       PS1: '[clear \W]# '
     volumes:
       - work:/work
-      - ./scripts:/scripts:delegated
-      - ${BUILDER_SHARED_FOLDER}:/share:delegated
+      - ./scripts:/scripts
+      - ${BUILDER_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE

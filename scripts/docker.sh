@@ -8,8 +8,6 @@
 #		type:    debug, release, asan, tsan
 #
 
-SCRIPTS=`dirname "$0"`
-SCRIPTS=`cd "${SCRIPTS}" ; pwd`
 CONTAINER=$1
 TRIPLET=$2
 PROJECT=$3
@@ -17,7 +15,18 @@ PROJECT=$3
 usage()
 {
 	echo "usage:"
-	exit 1
+	echo "  ./docker.sh container triplet project"
+	echo ""
+	echo "     container: name of a container to run the build"
+	echo "     triplet:   action-toolset-type"
+	echo "                where:"
+	echo "                   action:  build, test, clean"
+	echo "                   toolset: gcc, clang"
+	echo "                   type:    debug, release, asan, tsan"
+	echo "     project:   path to project to build, should have a"
+	echo "                CMakeLists.txt"
+	echo ""
+	exit 0
 }
 
 ACTION=build
@@ -68,16 +77,12 @@ case ${TRIPLET} in
 		;;
 esac
 
-syncdir()
-{
-	SYNCDIR=$1
-	shift
-	"${SCRIPTS}/${SYNCDIR}" $@
-}
-
 if [ ! -f "/.dockerenv" ]
 then
 	# in host
+	SCRIPTS=`dirname "$0"`
+	SCRIPTS=`cd "${SCRIPTS}" ; pwd`
+
 	source "${SCRIPTS}/../.env"
 
 	# build syndir of needed
@@ -88,8 +93,7 @@ then
 	 	`cd "${SCRIPTS}/syncdir" ; GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux`;
 	fi
 
-	cd "${PROJECT}"
-	syncdir syncdir_host "-scan" .
+	"${SCRIPTS}/syncdir_host" -scan "${PROJECT}"
 
 	PROJECT=`basename "${PROJECT}"`
 	docker inspect ${CONTAINER} > /dev/null 2>&1
@@ -129,7 +133,7 @@ else
 		then
 			cd "${BIN_DIR}"
 
-			syncdir syncdir_linux '-clean' "/work/${PROJECT}"
+			/script/syncdir_linux -clean "/work/${PROJECT}"
 			if [ -f build.ninja ]
 			then
 				ninja clean
@@ -141,7 +145,7 @@ else
 		exit 0
 	fi
 
-	syncdir syncdir_linux '-sync' "/share/${PROJECT}" "/work/${PROJECT}"
+	/script/syncdir_linux -sync "/share/${PROJECT}" "/work/${PROJECT}"
 	echo ""
 
 	echo "PATH = ${PATH}"
