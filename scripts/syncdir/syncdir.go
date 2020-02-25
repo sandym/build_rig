@@ -178,7 +178,7 @@ func pruneEmptyFolders(dst string, foldersToPrune map[string]bool) {
 	}
 	for p := range foldersToPrune {
 		for p != dst {
-			if !isFolderEmpty(p) {
+			if !folderShouldBeRemoved(p) {
 				break
 			}
 			fmt.Printf("deleting %s\n", p)
@@ -369,13 +369,13 @@ func cleanFolder(dst string) {
 	}
 	pruneEmptyFolders(dst, nil)
 }
-func isFolderEmpty(p string) bool {
+func folderShouldBeRemoved(p string) bool {
 	f, err := os.Open(p)
 	if err != nil {
 		return false
 	}
 	defer f.Close()
-	entries, _ := f.Readdir(1)
+	entries, _ := f.Readdir(2)
 	if len(entries) == 1 {
 		return entries[0].Name() == ".gitrevision"
 	}
