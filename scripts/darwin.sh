@@ -4,12 +4,13 @@ set -e
 
 PROJECT_PATH="$2"
 PROJECT_NAME=`basename "${PROJECT_PATH}"`
+BUILD_DIR="~/darwin_build/${PROJECT_NAME}"
 
 if [ "$1" = "xcode" ]
 then
 
-	mkdir -p ~/darwin_build/"${PROJECT_NAME}"/xcode
-	cd ~/darwin_build/"${PROJECT_NAME}"/xcode
+	mkdir -p "${BUILD_DIR}/xcode"
+	cd "${BUILD_DIR}/xcode"
 	cmake -G Xcode ${PROJECT_PATH}
 	open *.xcodeproj
 	exit 0
@@ -19,7 +20,7 @@ fi
 if [ "$1" = "xcode-clean" ]
 then
 
-	rm -rf ~/darwin_build/"${PROJECT_NAME}"/xcode
+	rm -rf "${BUILD_DIR}/xcode"
 	exit 0
 
 fi
@@ -27,22 +28,24 @@ fi
 if [ "$1" = "clean" ]
 then
 
-	if [ -f ~/darwin_build/"${PROJECT_NAME}"/debug/build.ninja ]
+	if [ -f "${BUILD_DIR}/debug/build.ninja" ]
 	then
-		cd ~/darwin_build/"${PROJECT_NAME}"/debug
+		cd "${BUILD_DIR}/debug"
 		ninja clean
 	else
-		rm -rf ~/darwin_build/"${PROJECT_NAME}"/debug
+		rm -rf "${BUILD_DIR}/debug"
 	fi
 	exit 0
 
 fi
 
-mkdir -p ~/darwin_build/"${PROJECT_NAME}"/debug
-cd ~/darwin_build/"${PROJECT_NAME}"/debug
+mkdir -p "${BUILD_DIR}/debug"
+cd "${BUILD_DIR}/debug"
 if [ ! -f build.ninja ]
 then
-	cmake -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=on ${PROJECT_PATH}
+	cmake -G Ninja \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DCMAKE_EXPORT_COMPILE_COMMANDS=on ${PROJECT_PATH}
 fi
 
 time ninja

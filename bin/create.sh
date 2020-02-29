@@ -62,5 +62,10 @@ then
 	exit -1;
 fi
 
+which cygpath.exe > /dev/null
+if [ $? = 0 ]
+then
+	ROOT=`cygpath.exe -m "${ROOT}"`
+fi
 echo "workspace file : ${WORKSPACE}"
 perl -p -e "s|PROJECT|$PROJECT_FOLDER|;s|BUILD_RIG|${ROOT}|" "${TEMPLATE}" > "${WORKSPACE}"

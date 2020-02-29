@@ -10,8 +10,8 @@
 				"build",
 				"test",
 				"clean",
-				"Xcode",
-				"Xcode-clean"
+				"xcode",
+				"xcode-clean"
 			],
 			"default": "build",
 			"description": "action"
@@ -23,8 +23,8 @@
 				"build",
 				"test",
 				"clean",
-				"VS",
-				"VS-clean"
+				"vs",
+				"vs-clean"
 			],
 			"default": "build",
 			"description": "action"
@@ -93,7 +93,7 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"command": "${workspaceRoot:build_rig}/scripts/vs.bat",
+			"command": "${workspaceRoot:build_rig}/scripts/windows.bat",
 			"args": [
 				"${input:vs}",
 				"${config:build_rig.project}",
@@ -111,6 +111,9 @@
 					"statusbar": {
 						"label": "$(chevron-right)VS",
 						"hide": false
+					},
+					"shell": {
+						"executable": "powershell.exe"
 					}
 				}
 			}
@@ -225,7 +228,15 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(chevron-right)msvc"
+					"hide": true
+				}
+			},
+			"osx": {
+				"options": {
+					"statusbar": {
+						"label": "$(chevron-right)msvc",
+						"hide": true
+					}
 				}
 			}
 		}
