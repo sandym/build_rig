@@ -6,9 +6,9 @@
 
 ROOT=`dirname "$0"`
 ROOT=`cd "$ROOT"/.. ; pwd`
-PROJECT_NAME=$1
+PROJECT=$1
 
-if [[ "$PROJECT_NAME" == *\/* ]] || [[ "$PROJECT_NAME" == *\\* ]]
+if [[ "$PROJECT" == *\/* ]] || [[ "$PROJECT" == *\\* ]]
 then
 	echo "project name cannot be a path."
 	exit -1
@@ -16,13 +16,13 @@ fi
 
 . ${ROOT}/.env
 
-PROJECT="${WORKSPACE_SHARED_FOLDER}/${PROJECT_NAME}"
-if [ ! -d "${PROJECT}" ]
+PROJECT_FOLDER="${WORKSPACE_SHARED_FOLDER}/${PROJECT}"
+if [ ! -d "${PROJECT_FOLDER}" ]
 then
-	echo "${PROJECT} does not exist. Creating default project."
-	mkdir "${PROJECT}"
+	echo "${PROJECT_FOLDER} does not exist. Creating default project."
+	mkdir "${PROJECT_FOLDER}"
 
-cat << EOF > "${PROJECT}/main.cpp"
+cat << EOF > "${PROJECT_FOLDER}/main.cpp"
 #include <iostream>
 
 int main( int argc, char **argv )
@@ -30,31 +30,31 @@ int main( int argc, char **argv )
 }
 EOF
 
-cat << 'EOF' > "${PROJECT}/CMakeLists.txt"
+cat << 'EOF' > "${PROJECT_FOLDER}/CMakeLists.txt"
 cmake_minimum_required(VERSION 3.16)
-project(PROJECT_NAME)
+project(PROJECT)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-enable_testing()
+# enable_testing()
 
-add_executable(PROJECT_NAME)
-target_sources(PROJECT_NAME PRIVATE
+add_executable(PROJECT)
+target_sources(PROJECT PRIVATE
 	main.cpp
 )
 EOF
 
-perl -pi -e "s|PROJECT_NAME|$PROJECT_NAME|" "${PROJECT}/CMakeLists.txt"
+perl -pi -e "s|PROJECT|$PROJECT|" "${PROJECT_FOLDER}/CMakeLists.txt"
 
 
 fi
 
-echo "creating workspace for ${PROJECT}"
+echo "creating workspace for ${PROJECT_FOLDER}"
 
 TEMPLATE="${ROOT}/bin/TEMPLATE.code-workspace"
 mkdir -p ~/Workspaces
 WORKSPACE=`cd ~/Workspaces ; pwd`
-WORKSPACE=${WORKSPACE}/${PROJECT_NAME}.code-workspace
+WORKSPACE=${WORKSPACE}/${PROJECT}.code-workspace
 
 if [ -f "${WORKSPACE}" ]
 then
@@ -63,4 +63,4 @@ then
 fi
 
 echo "workspace file : ${WORKSPACE}"
-perl -p -e "s|PROJECT|$PROJECT|;s|BUILD_RIG|${ROOT}|" "${TEMPLATE}" > "${WORKSPACE}"
+perl -p -e "s|PROJECT|$PROJECT_FOLDER|;s|BUILD_RIG|${ROOT}|" "${TEMPLATE}" > "${WORKSPACE}"

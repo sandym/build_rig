@@ -18,7 +18,6 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -341,13 +340,8 @@ func syncFolders(src, dst string) {
 	// lastest sync time
 	fmt.Fprintf(w, "%d\n", latest)
 
-	// all files, sorted
-	keys := make([]string, 0, len(syncFiles))
+	// all files
 	for k := range syncFiles {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, k := range keys {
 		fmt.Fprintln(w, k)
 	}
 }

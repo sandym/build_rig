@@ -82,18 +82,22 @@ then
 	# in host
 	SCRIPTS=`dirname "$0"`
 	SCRIPTS=`cd "${SCRIPTS}" ; pwd`
+	cd "${SCRIPTS}"
 
-	source "${SCRIPTS}/../.env"
+	source "../.env"
 
 	# build syndir of needed
-	if [ ! -f "${SCRIPTS}/syncdir_host" ] || [ "${SCRIPTS}/syncdir/syncdir.go" -nt "${SCRIPTS}/syncdir_host" ]
+	if [ ! -f "syncdir_host" ] ||
+		[ "syncdir/syncdir.go" -nt "syncdir_host" ]
 	then
 		echo "building syncdir..."
-	 	`cd "${SCRIPTS}/syncdir" ; go build -o ../syncdir_host`;
-	 	`cd "${SCRIPTS}/syncdir" ; GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux`;
+		cd "syncdir"
+	 	`go build -o ../syncdir_host`;
+	 	`GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux`;
+		cd "${SCRIPTS}"
 	fi
 
-	"${SCRIPTS}/syncdir_host" -scan "${PROJECT}"
+	"./syncdir_host" -scan "${PROJECT}"
 
 	PROJECT=`basename "${PROJECT}"`
 	docker inspect ${CONTAINER} > /dev/null 2>&1
@@ -145,7 +149,7 @@ else
 		exit 0
 	fi
 
-	/script/syncdir_linux -sync "/share/${PROJECT}" "/work/${PROJECT}"
+	/scripts/syncdir_linux -sync "/share/${PROJECT}" "/work/${PROJECT}"
 	echo ""
 
 	echo "PATH = ${PATH}"
