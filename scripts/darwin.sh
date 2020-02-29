@@ -4,7 +4,7 @@ set -e
 
 PROJECT_PATH="$2"
 PROJECT_NAME=`basename "${PROJECT_PATH}"`
-BUILD_DIR="~/darwin_build/${PROJECT_NAME}"
+BUILD_DIR=~/darwin_build/"${PROJECT_NAME}"
 
 if [ "$1" = "xcode" ]
 then
