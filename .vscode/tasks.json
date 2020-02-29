@@ -10,8 +10,21 @@
 				"build",
 				"test",
 				"clean",
-				"xcode",
-				"xcode-clean"
+				"Xcode",
+				"Xcode-clean"
+			],
+			"default": "build",
+			"description": "action"
+		},
+		{
+			"id": "vs",
+			"type": "pickString",
+			"options": [
+				"build",
+				"test",
+				"clean",
+				"VS",
+				"VS-clean"
 			],
 			"default": "build",
 			"description": "action"
@@ -61,7 +74,44 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(chevron-right)macos"
+					"hide": true
+				}
+			},
+			"osx": {
+				"options": {
+					"statusbar": {
+						"label": "$(chevron-right)macos",
+						"hide": false
+					}
+				}
+			}
+		},
+		{
+			"label": "windows build",
+			"type": "shell",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"command": "${workspaceRoot:build_rig}/scripts/vs.bat",
+			"args": [
+				"${input:vs}",
+				"${config:build_rig.project}",
+			],
+			"presentation": {
+				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"hide": true
+				}
+			},
+			"windows": {
+				"options": {
+					"statusbar": {
+						"label": "$(chevron-right)VS",
+						"hide": false
+					}
 				}
 			}
 		},

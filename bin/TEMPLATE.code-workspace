@@ -9,5 +9,12 @@
 	],
 	"settings": {
 		"build_rig.project": "PROJECT"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"twxs.cmake",
+			"actboy168.tasks"
+		]
 	}
 }

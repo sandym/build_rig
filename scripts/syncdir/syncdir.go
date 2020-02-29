@@ -71,6 +71,64 @@ func gitRevision(wd string) string {
 	}
 	return ""
 }
+func scanFolder(srcFullPath, currentPath string, output chan string, counter chan int) {
+	defer func() {
+		counter <- -1
+	}()
+
+	dirp, err := os.Open(currentPath)
+	if err != nil {
+		return
+	}
+	entries, err := dirp.Readdir(-1)
+	dirp.Close()
+	if err != nil {
+		return
+	}
+
+	for _, finfo := range entries {
+		if finfo.Name() == ".git" {
+			// record git revision
+			result := gitRevision(currentPath)
+			if len(result) > 0 {
+				relpath, err := filepath.Rel(srcFullPath, currentPath)
+				if err == nil {
+					output <- fmt.Sprintf("s %s %s\n", result, relpath)
+				}
+			}
+			continue
+		}
+		if finfo.Name() == ".tosync" ||
+			finfo.Name() == ".vscode" ||
+			strings.HasPrefix(finfo.Name(), ".git") {
+			continue
+		}
+		fullPath := path.Join(currentPath, finfo.Name())
+
+		switch {
+		case finfo.Mode().IsRegular():
+			relpath, err := filepath.Rel(srcFullPath, fullPath)
+			if err == nil {
+				if (finfo.Mode() & 0111) != 0 {
+					output <- fmt.Sprintf("x %d %s\n", finfo.ModTime().Unix(), relpath)
+				} else {
+					output <- fmt.Sprintf("f %d %s\n", finfo.ModTime().Unix(), relpath)
+				}
+			}
+		case finfo.Mode().IsDir():
+			counter <- 1
+			go scanFolder(srcFullPath, fullPath, output, counter)
+		case (finfo.Mode() & os.ModeSymlink) != 0:
+			ln, err := os.Readlink(fullPath)
+			if err == nil {
+				relpath, err := filepath.Rel(srcFullPath, fullPath)
+				if err == nil {
+					output <- fmt.Sprintf("l %d %s->%s\n", finfo.ModTime().Unix(), relpath, ln)
+				}
+			}
+		}
+	}
+}
 func updateScan(srcFullPath string) {
 	if !isDirectory(srcFullPath) {
 		log.Fatalf("%s is not a directory", srcFullPath)
@@ -83,61 +141,20 @@ func updateScan(srcFullPath string) {
 	w := bufio.NewWriter(file)
 	defer w.Flush()
 
-	stack := make([]string, 0, 64)
-	stack = append(stack, srcFullPath)
-	for len(stack) > 0 {
-		n := len(stack)
-		currentPath := stack[n-1]
-		stack = stack[:n-1]
-
-		dirp, err := os.Open(currentPath)
-		if err != nil {
-			continue
-		}
-		entries, err := dirp.Readdir(-1)
-		if err != nil {
-			dirp.Close()
-			continue
-		}
-
-		for _, finfo := range entries {
-			if finfo.Name() == ".git" {
-				// record git revision
-				result := gitRevision(currentPath)
-				if len(result) > 0 {
-					relpath, err := filepath.Rel(srcFullPath, currentPath)
-					check(err)
-					fmt.Fprintf(w, "s %s %s\n", result, relpath)
-				}
-				continue
-			}
-			if finfo.Name() == ".tosync" ||
-				finfo.Name() == ".vscode" ||
-				strings.HasPrefix(finfo.Name(), ".git") {
-				continue
-			}
-			fullPath := path.Join(currentPath, finfo.Name())
-
-			switch {
-			case finfo.Mode().IsRegular():
-				relpath, err := filepath.Rel(srcFullPath, fullPath)
-				check(err)
-				if (finfo.Mode() & 0111) != 0 {
-					fmt.Fprintf(w, "x %d %s\n", finfo.ModTime().Unix(), relpath)
-				} else {
-					fmt.Fprintf(w, "f %d %s\n", finfo.ModTime().Unix(), relpath)
-				}
-			case finfo.Mode().IsDir():
-				stack = append(stack, fullPath)
-			case (finfo.Mode() & os.ModeSymlink) != 0:
-				ln, err := os.Readlink(fullPath)
-				check(err)
-				relpath, err := filepath.Rel(srcFullPath, fullPath)
-				check(err)
-				fmt.Fprintf(w, "l %d %s->%s\n", finfo.ModTime().Unix(), relpath, ln)
+	counter := make(chan int, 100)
+	output := make(chan string, 1000)
+	scanInProgress := 1
+	go scanFolder(srcFullPath, srcFullPath, output, counter)
+	for {
+		select {
+		case s := <-output:
+			w.WriteString(s)
+		case c := <-counter:
+			scanInProgress += c
+			if scanInProgress == 0 {
+				return
 			}
 		}
-		dirp.Close()
 	}
 }
 func readLastSync(dst string) (lastSync int64, lastSyncFiles map[string]bool) {

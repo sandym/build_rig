@@ -106,7 +106,7 @@ then
 		# container is not running, run and --rm
 		time docker run --rm -ti \
 			--mount type=bind,source="${SCRIPTS}",target=/scripts \
-			--mount type=bind,source="${BUILDER_SHARED_FOLDER}",target=/share \
+			--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
   			--mount source=build_rig_work,target=/work \
 			build_rig_${CONTAINER} \
 			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}

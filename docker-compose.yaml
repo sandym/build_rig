@@ -10,7 +10,7 @@ services:
     volumes:
       - work:/work
       - ./scripts:/scripts
-      - ${BUILDER_SHARED_FOLDER}:/share
+      - ${WORKSPACE_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -27,7 +27,7 @@ services:
     volumes:
       - work:/work
       - ./scripts:/scripts
-      - ${BUILDER_SHARED_FOLDER}:/share
+      - ${WORKSPACE_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -44,7 +44,7 @@ services:
     volumes:
       - work:/work
       - ./scripts:/scripts
-      - ${BUILDER_SHARED_FOLDER}:/share
+      - ${WORKSPACE_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -61,7 +61,7 @@ services:
     volumes:
       - work:/work
       - ./scripts:/scripts
-      - ${BUILDER_SHARED_FOLDER}:/share
+      - ${WORKSPACE_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE
@@ -78,7 +78,7 @@ services:
     volumes:
       - work:/work
       - ./scripts:/scripts
-      - ${BUILDER_SHARED_FOLDER}:/share
+      - ${WORKSPACE_SHARED_FOLDER}:/share
     # need this to debug
     cap_add:
       - SYS_PTRACE

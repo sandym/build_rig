@@ -16,7 +16,7 @@ fi
 
 . ${ROOT}/.env
 
-PROJECT="${BUILDER_SHARED_FOLDER}/${PROJECT_NAME}"
+PROJECT="${WORKSPACE_SHARED_FOLDER}/${PROJECT_NAME}"
 if [ ! -d "${PROJECT}" ]
 then
 	echo "${PROJECT} does not exist. Creating default project."
