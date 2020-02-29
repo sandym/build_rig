@@ -107,6 +107,13 @@ then
 		time docker exec -ti ${CONTAINER} \
 			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
 	else
+		# fix for path on windows
+		which cygpath.exe > /dev/null
+		if [ $? = 0 ]
+		then
+			SCRIPTS=`cygpath.exe -m "${SCRIPTS}"`
+			export MSYS_NO_PATHCONV=1
+		fi
 		# container is not running, run and --rm
 		time docker run --rm -ti \
 			--mount type=bind,source="${SCRIPTS}",target=/scripts \

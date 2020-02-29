@@ -30,22 +30,19 @@ int main( int argc, char **argv )
 }
 EOF
 
-cat << 'EOF' > "${PROJECT_FOLDER}/CMakeLists.txt"
+cat <<EOF > "${PROJECT_FOLDER}/CMakeLists.txt"
 cmake_minimum_required(VERSION 3.16)
-project(PROJECT)
+project(${PROJECT})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # enable_testing()
 
-add_executable(PROJECT)
-target_sources(PROJECT PRIVATE
+add_executable(${PROJECT})
+target_sources(${PROJECT} PRIVATE
 	main.cpp
 )
 EOF
-
-perl -pi -e "s|PROJECT|$PROJECT|" "${PROJECT_FOLDER}/CMakeLists.txt"
-
 
 fi
 

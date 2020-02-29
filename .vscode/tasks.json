@@ -60,11 +60,8 @@
 		{
 			"label": "macos build",
 			"type": "shell",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"command": "${workspaceRoot:build_rig}/scripts/darwin.sh",
+			"group": "build",
+			"command": "scripts/darwin.sh",
 			"args": [
 				"${input:darwin}",
 				"${config:build_rig.project}",
@@ -78,6 +75,10 @@
 				}
 			},
 			"osx": {
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
 				"options": {
 					"statusbar": {
 						"label": "$(chevron-right)macos",
@@ -89,11 +90,8 @@
 		{
 			"label": "windows build",
 			"type": "shell",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"command": "${workspaceRoot:build_rig}/scripts/windows.bat",
+			"group": "build",
+			"command": "scripts/windows.sh",
 			"args": [
 				"${input:vs}",
 				"${config:build_rig.project}",
@@ -107,13 +105,14 @@
 				}
 			},
 			"windows": {
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
 				"options": {
 					"statusbar": {
 						"label": "$(chevron-right)VS",
 						"hide": false
-					},
-					"shell": {
-						"executable": "powershell.exe"
 					}
 				}
 			}
@@ -122,7 +121,7 @@
 			"label": "centos7 build",
 			"type": "shell",
 			"group": "build",
-			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"command": "scripts/docker.sh",
 			"args": [
 				"centos7_builder",
 				"${input:linux}",
@@ -141,7 +140,7 @@
 			"label": "centos8 build",
 			"type": "shell",
 			"group": "build",
-			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"command": "scripts/docker.sh",
 			"args": [
 				"centos8_builder",
 				"${input:linux}",
@@ -160,7 +159,7 @@
 			"label": "alpine build",
 			"type": "shell",
 			"group": "build",
-			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"command": "scripts/docker.sh",
 			"args": [
 				"alpine_builder",
 				"${input:linux}",
@@ -179,7 +178,7 @@
 			"label": "ubuntu build",
 			"type": "shell",
 			"group": "build",
-			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"command": "scripts/docker.sh",
 			"args": [
 				"ubuntu_builder",
 				"${input:linux}",
@@ -198,7 +197,7 @@
 			"label": "clearlinux build",
 			"type": "shell",
 			"group": "build",
-			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"command": "scripts/docker.sh",
 			"args": [
 				"clearlinux_builder",
 				"${input:linux}",
@@ -217,7 +216,7 @@
 			"label": "msvc build",
 			"type": "shell",
 			"group": "build",
-			"command": "${workspaceRoot:build_rig}/scripts/docker.sh",
+			"command": "scripts/docker.sh",
 			"args": [
 				"msvc_builder",
 				"${input:msvc}",
