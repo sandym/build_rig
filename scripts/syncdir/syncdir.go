@@ -97,11 +97,14 @@ func scanFolder(srcFullPath, currentPath string, output chan string, counter cha
 			}
 			continue
 		}
+
+		// skip those
 		if finfo.Name() == ".tosync" ||
 			finfo.Name() == ".vscode" ||
 			strings.HasPrefix(finfo.Name(), ".git") {
 			continue
 		}
+
 		fullPath := path.Join(currentPath, finfo.Name())
 
 		switch {
@@ -140,18 +143,22 @@ func updateScan(srcFullPath string) {
 	w := bufio.NewWriter(file)
 	defer w.Flush()
 
-	counter := make(chan int, 100)
-	output := make(chan string, 1000)
+	counter := make(chan int)
+	output := make(chan string)
 	scanInProgress := 1
 	go scanFolder(srcFullPath, srcFullPath, output, counter)
 	for {
 		select {
-		case s := <-output:
-			w.WriteString(s)
+		case s, more := <-output:
+			if more {
+				w.WriteString(s)
+			} else {
+				return
+			}
 		case c := <-counter:
 			scanInProgress += c
 			if scanInProgress == 0 {
-				return
+				close(output)
 			}
 		}
 	}
