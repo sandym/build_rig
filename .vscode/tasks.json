@@ -48,9 +48,9 @@
 			"id": "msvc",
 			"type": "pickString",
 			"options": [
-				"build",
-				"test",
-				"clean"
+				"build-msvc-debug",
+				"test-msvc-debug",
+				"clean-msvc-debug"
 			],
 			"default": "build",
 			"description": "action"
@@ -234,7 +234,7 @@
 				"options": {
 					"statusbar": {
 						"label": "$(chevron-right)msvc",
-						"hide": true
+						"hide": false
 					}
 				}
 			}

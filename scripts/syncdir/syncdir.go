@@ -101,6 +101,7 @@ func scanFolder(srcFullPath, currentPath string, output chan string, counter cha
 		// skip those
 		if finfo.Name() == ".tosync" ||
 			finfo.Name() == ".vscode" ||
+			finfo.Name() == "node_modules" ||
 			strings.HasPrefix(finfo.Name(), ".git") {
 			continue
 		}

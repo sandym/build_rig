@@ -1,7 +1,8 @@
 version: '3.7'
 services:
   centos8_builder:
-    build: ./images/centos8_builder
+    build: ./images/centos8
+    image: centos8_builder
     restart: always
     container_name: centos8_builder
     hostname: centos8_builder
@@ -18,7 +19,8 @@ services:
       - seccomp:unconfined
 
   centos7_builder:
-    build: ./images/centos7_builder
+    build: ./images/centos7
+    image: centos7_builder
     restart: always
     container_name: centos7_builder
     hostname: centos7_builder
@@ -35,7 +37,8 @@ services:
       - seccomp:unconfined
 
   alpine_builder:
-    build: ./images/alpine_builder
+    build: ./images/alpine
+    image: alpine_builder
     restart: always
     container_name: alpine_builder
     hostname: alpine_builder
@@ -52,7 +55,8 @@ services:
       - seccomp:unconfined
 
   ubuntu_builder:
-    build: ./images/ubuntu_builder
+    build: ./images/ubuntu
+    image: ubuntu_builder
     restart: always
     container_name: ubuntu_builder
     hostname: ubuntu_builder
@@ -69,7 +73,8 @@ services:
       - seccomp:unconfined
 
   clearlinux_builder:
-    build: ./images/clearlinux_builder
+    build: ./images/clearlinux
+    image: clearlinux_builder
     restart: always
     container_name: clearlinux_builder
     hostname: clearlinux_builder
@@ -85,5 +90,18 @@ services:
     security_opt:
       - seccomp:unconfined
 
+#   msvc_builder:
+#     image: msvc_builder
+#     restart: always
+#     container_name: msvc_builder
+#     hostname: msvc_builder
+#     environment:
+#       PS1: '[win \W]#'
+#     volumes:
+#       - work:/work
+#       - ./scripts:/scripts
+#       - ${WORKSPACE_SHARED_FOLDER}:/share
+
 volumes:
   work:
+    name: build_rig_work

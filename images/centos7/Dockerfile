@@ -1,8 +1,5 @@
 FROM centos:7
 
-ARG CMAKE_VERSION=3.16.4
-ARG NINJA_VERSION=v1.10.0
-
 RUN yum -y update && \
 yum -y install centos-release-scl && \
 yum -y install \
@@ -14,6 +11,8 @@ openssl-devel \
 which && \
 yum clean all && rm -rf /var/cache/yum
 
+ARG CMAKE_VERSION=3.16.5
+
 RUN cd /tmp && \
 . /opt/rh/devtoolset-8/enable && \
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
@@ -24,6 +23,7 @@ make -j$(nproc) && \
 make install  && \
 rm -rf /tmp/cmake-*
 
+ARG NINJA_VERSION=v1.10.0
 
 RUN cd /usr/local/bin && \
 curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSION}/ninja-linux.zip && \

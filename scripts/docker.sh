@@ -21,7 +21,7 @@ usage()
 	echo "     triplet:   action-toolset-type"
 	echo "                where:"
 	echo "                   action:  build, test, clean"
-	echo "                   toolset: gcc, clang"
+	echo "                   toolset: gcc, clang, msvc"
 	echo "                   type:    debug, release, asan, tsan"
 	echo "     project:   path to project to build, should have a"
 	echo "                CMakeLists.txt"
@@ -52,6 +52,9 @@ case ${TRIPLET} in
 		;;
 	*-clang-*)
 		TOOLSET=clang
+		;;
+	*-msvc-*)
+		TOOLSET=msvc
 		;;
 	*)
 		usage
@@ -100,7 +103,7 @@ then
 	"./syncdir_host" -scan "${PROJECT}"
 
 	PROJECT=`basename "${PROJECT}"`
-	docker inspect ${CONTAINER} > /dev/null 2>&1
+	docker ps | grep ${CONTAINER} > /dev/null 2>&1
 	if [ $? = 0 ]
 	then
 		# container is already running, just exec
@@ -114,26 +117,41 @@ then
 			SCRIPTS=`cygpath.exe -m "${SCRIPTS}"`
 			export MSYS_NO_PATHCONV=1
 		fi
+
+		WORK=/work
+		if [ "${TOOLSET}" = "msvc" ]
+		then
+			echo "***** change WORK *****"
+			exit 1
+		fi
+
 		# container is not running, run and --rm
 		time docker run --rm -ti \
 			--mount type=bind,source="${SCRIPTS}",target=/scripts \
 			--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
-  			--mount source=build_rig_work,target=/work \
-			build_rig_${CONTAINER} \
+  			--mount source=build_rig_work,target=${WORK} \
+			${CONTAINER} \
 			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
 	fi
 
 	echo ""
-	CONTAINER=${CONTAINER%_builder}
 	echo "done: ${CONTAINER} ${TRIPLET}"
 
 else
 	# in container
+	if [ "${TOOLSET}" = "msvc" ]
+	then
 
-	BIN_DIR=/work/${CONTAINER%_builder}_build/${PROJECT}-${TOOLSET}-${TYPE}
+		exit 0
+	fi
 
-	# for c++17 on centos 7
-	if [ -f /opt/rh/devtoolset-8/enable ]
+	BIN_DIR=/work/${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
+
+	# for modern c++ on centos
+	if [ -f /opt/rh/devtoolset-9/enable ]
+	then
+		. /opt/rh/devtoolset-9/enable
+	elif [ -f /opt/rh/devtoolset-8/enable ]
 	then
 		. /opt/rh/devtoolset-8/enable
 	fi
