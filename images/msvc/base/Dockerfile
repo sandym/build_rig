@@ -29,27 +29,29 @@ apt-get autoclean && \
 apt-get clean && \
 apt-get autoremove --purge && \
 rm -rf /var/apt/cache/* && \
-rm -rf /tmp/* && \
-mkdir -p /home/wine && \
-useradd --system -d /home/wine --shell /bin/bash --uid 1000 --gid root wine && \
-chown -R wine /home/wine
+rm -rf /tmp/*
 
-USER wine
+#  && \
+# mkdir -p /home/wine && \
+# useradd --system -d /home/wine --shell /bin/bash --uid 1000 --gid root wine && \
+# chown -R wine /home/wine
 
-WORKDIR /home/wine
+# USER wine
 
-RUN mkdir -p /home/wine/.cache/wine && \
+WORKDIR /root
+
+RUN mkdir -p /root/.cache/wine && \
 curl -L https://dl.winehq.org/wine/wine-mono/${WINE_MONO_VERSION}/wine-mono-${WINE_MONO_VERSION}.msi \
-	-o /home/wine/.cache/wine/wine-mono-${WINE_MONO_VERSION}.msi && \
+	-o /root/.cache/wine/wine-mono-${WINE_MONO_VERSION}.msi && \
 curl -L https://dl.winehq.org/wine/wine-gecko/${WINE_GECKO_VERSION}/wine-gecko-${WINE_GECKO_VERSION}-x86.msi \
-	-o /home/wine/.cache/wine/wine-gecko-${WINE_GECKO_VERSION}-x86.msi && \
+	-o /root/.cache/wine/wine-gecko-${WINE_GECKO_VERSION}-x86.msi && \
 curl -L https://dl.winehq.org/wine/wine-gecko/${WINE_GECKO_VERSION}/wine-gecko-${WINE_GECKO_VERSION}-x86_64.msi \
-	-o /home/wine/.cache/wine/wine-gecko-${WINE_GECKO_VERSION}-x86_64.msi && \
+	-o /root/.cache/wine/wine-gecko-${WINE_GECKO_VERSION}-x86_64.msi && \
 wine wineboot --init && \
 while pgrep wineserver > /dev/null; do sleep 1; done && \
 winetricks --unattended dotnet45 ; \
 winetricks --unattended win10 && \
-rm -rf /home/wine/.cache
+rm -rf /root/.cache
 
 ENTRYPOINT [ "/bin/bash", "-c", "wine64 cmd" ]
 

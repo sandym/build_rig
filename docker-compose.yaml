@@ -97,8 +97,9 @@ services:
 #     hostname: msvc_builder
 #     environment:
 #       PS1: '[win \W]#'
+#     entrypoint: [sleep, infinity]
 #     volumes:
-#       - work:/work
+#       - work:/root/.wine/drive_c/w
 #       - ./scripts:/scripts
 #       - ${WORKSPACE_SHARED_FOLDER}:/share
 

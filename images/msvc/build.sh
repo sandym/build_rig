@@ -10,6 +10,7 @@ npm install http-server -g
 cd pkgs
 http-server &
 HTTP_SERVER_PID=$!
+sleep 2
 cd ..
 
 cd msvc

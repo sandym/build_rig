@@ -27,6 +27,7 @@ cat << EOF > "${PROJECT_FOLDER}/main.cpp"
 
 int main( int argc, char **argv )
 {
+	std::cout << "hello world" << std::endl;
 }
 EOF
 
@@ -42,6 +43,10 @@ add_executable(${PROJECT})
 target_sources(${PROJECT} PRIVATE
 	main.cpp
 )
+EOF
+
+cat <<EOF > "${PROJECT_FOLDER}/.gitignore"
+.tosync
 EOF
 
 fi

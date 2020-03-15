@@ -103,6 +103,7 @@ then
 	"./syncdir_host" -scan "${PROJECT}"
 
 	PROJECT=`basename "${PROJECT}"`
+	export MSYS_NO_PATHCONV=1
 	docker ps | grep ${CONTAINER} > /dev/null 2>&1
 	if [ $? = 0 ]
 	then
@@ -115,14 +116,13 @@ then
 		if [ $? = 0 ]
 		then
 			SCRIPTS=`cygpath.exe -m "${SCRIPTS}"`
-			export MSYS_NO_PATHCONV=1
 		fi
 
 		WORK=/work
 		if [ "${TOOLSET}" = "msvc" ]
 		then
-			echo "***** change WORK *****"
-			exit 1
+			WORK=/root/.wine/drive_c/w
+			# @todo: entrypoint
 		fi
 
 		# container is not running, run and --rm
@@ -137,13 +137,9 @@ then
 	echo ""
 	echo "done: ${CONTAINER} ${TRIPLET}"
 
-else
-	# in container
-	if [ "${TOOLSET}" = "msvc" ]
-	then
-
-		exit 0
-	fi
+elif [ "${TOOLSET}" != "msvc" ]
+then
+	# in container, for a linux build
 
 	BIN_DIR=/work/${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
 
@@ -227,4 +223,63 @@ else
 	then
 		ctest --output-on-failure --parallel $(nproc)
 	fi
+
+else
+	# in container, for a msvc-wine build
+
+	WORK=/root/.wine/drive_c/w
+	BIN_DIR=${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
+
+	if [ "${ACTION}" = "clean" ]
+	then
+		if [ -d "${BIN_DIR}" ]
+		then
+			cd "${BIN_DIR}"
+
+			/script/syncdir_linux -clean "${WORK}/${PROJECT}"
+			rm -rf * .ninja*
+		fi
+
+		exit 0
+	fi
+
+	/scripts/syncdir_linux -sync "/share/${PROJECT}" "${WORK}/${PROJECT}"
+	echo ""
+
+	mkdir -p "${WORK}/${BIN_DIR}"
+
+	BUILD_TYPE=Debug
+	if [ "${TYPE}" = "release" ]
+	then
+		BUILD_TYPE=RelWithDebInfo
+	fi
+
+	echo "@echo off\r" > "${WORK}/${BIN_DIR}/build.bat"
+	echo "c:\\x64.bat\r" >> "${WORK}/${BIN_DIR}/build.bat"
+	echo "echo \"msvc version %VSCMD_VER%\"\r" >> "${WORK}/${BIN_DIR}/build.bat"
+	echo "echo \"building in C:/w/%3\"\r" >> "${WORK}/${BIN_DIR}/build.bat"
+	echo ""
+
+
+	wine64 "${WORK}/${BIN_DIR}/build.bat" ${ACTION} ${BUILD_TYPE} "${BIN_DIR}"
+
+	exit 0
+	
+	cd "${BIN_DIR}"
+
+	if [ ! -f build.ninja ]
+	then
+
+		cmake -G Ninja \
+			-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
+			"/work/${PROJECT}" || exit -1
+	fi
+	ninja
+
+	if [ "${ACTION}" = "test" ]
+	then
+		ctest --output-on-failure --parallel $(nproc)
+	fi
+
 fi
