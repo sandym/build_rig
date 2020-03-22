@@ -39,7 +39,19 @@
 				"build-gcc-release",
 				"build-clang-debug",
 				"test-clang-debug",
-				"clean-clang-debug"
+				"clean-clang-debug",
+
+				"build-gcc8-debug",
+				"test-gcc8-debug",
+				"clean-gcc8-debug",
+				"build-gcc9-debug",
+				"test-gcc9-debug",
+				"clean-gcc9-debug",
+
+				// centos 7 still has this one
+				"build-gcc4-debug",
+				"test-gcc4-debug",
+				"clean-gcc4-debug"
 			],
 			"default": "build",
 			"description": "action"
@@ -234,7 +246,7 @@
 				"options": {
 					"statusbar": {
 						"label": "$(chevron-right)msvc",
-						"hide": false
+						"hide": true
 					}
 				}
 			}

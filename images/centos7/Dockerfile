@@ -4,17 +4,22 @@ RUN yum -y update && \
 yum -y install centos-release-scl && \
 yum -y install \
 devtoolset-8-gcc-c++ \
-devtoolset-8-gdb \
-devtoolset-8-make \
+devtoolset-9-gcc-c++ \
+devtoolset-9-gdb \
+devtoolset-9-make \
+gcc-c++ \
 git \
 openssl-devel \
 which && \
-yum clean all && rm -rf /var/cache/yum
+yum clean all && rm -rf /var/cache/yum && \
+cd /usr/local/bin && \
+ln -s /opt/rh/devtoolset-9/root/usr/bin/make && \
+ln -s /opt/rh/devtoolset-9/root/usr/bin/gdb
 
-ARG CMAKE_VERSION=3.16.5
+ARG CMAKE_VERSION=3.17.0
 
 RUN cd /tmp && \
-. /opt/rh/devtoolset-8/enable && \
+. /opt/rh/devtoolset-9/enable && \
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
 tar -zxf cmake-${CMAKE_VERSION}.tar.gz && \
 cd cmake-${CMAKE_VERSION} && \

@@ -1,12 +1,15 @@
 #!/bin/sh
 #
-# triplet: action-toolset-type
+# container: container name
+#
+# triplet:  action-toolset-type
 #
 #	where:
-#		action:	 build, test, clean
-#		toolset: gcc, clang
+#		action: build, test, clean
+#		toolset: gcc4, gcc8, gcc9, clang, msvc
 #		type:    debug, release, asan, tsan
 #
+# project:
 
 CONTAINER=$1
 TRIPLET=$2
@@ -21,7 +24,7 @@ usage()
 	echo "     triplet:   action-toolset-type"
 	echo "                where:"
 	echo "                   action:  build, test, clean"
-	echo "                   toolset: gcc, clang, msvc"
+	echo "                   toolset: gcc4, gcc8, gcc9, clang, msvc"
 	echo "                   type:    debug, release, asan, tsan"
 	echo "     project:   path to project to build, should have a"
 	echo "                CMakeLists.txt"
@@ -29,8 +32,9 @@ usage()
 	exit 0
 }
 
+TRIPLET2=${TRIPLET}
 ACTION=build
-case ${TRIPLET} in
+case ${TRIPLET2} in
 	*build-*)
 		ACTION=build
 		;;
@@ -44,25 +48,9 @@ case ${TRIPLET} in
 		usage
 		;;
 esac
-
-TOOLSET=gcc
-case ${TRIPLET} in
-	*-gcc-*)
-		TOOLSET=gcc
-		;;
-	*-clang-*)
-		TOOLSET=clang
-		;;
-	*-msvc-*)
-		TOOLSET=msvc
-		;;
-	*)
-		usage
-		;;
-esac
-
+TRIPLET2=${TRIPLET2#${ACTION}-}
 TYPE=debug
-case ${TRIPLET} in
+case ${TRIPLET2} in
 	*-debug*)
 		TYPE=debug
 		;;
@@ -79,6 +67,7 @@ case ${TRIPLET} in
 		usage
 		;;
 esac
+TOOLSET=${TRIPLET2%-${TYPE}}
 
 if [ ! -f "/.dockerenv" ]
 then
@@ -141,16 +130,41 @@ elif [ "${TOOLSET}" != "msvc" ]
 then
 	# in container, for a linux build
 
-	BIN_DIR=/work/${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
+	# adjust TOOLSET
+	if [ "${TOOLSET}" = "gcc" ]
+	then
+		case ${CONTAINER} in
+			centos7_builder)
+				TOOLSET=gcc9
+				;;
+			centos8_builder)
+				TOOLSET=gcc9
+				;;
+			alpine_builder)
+				TOOLSET=gcc9
+				;;
+			clearlinux_builder)
+				TOOLSET=gcc9
+				;;
+			ubuntu_builder)
+				TOOLSET=gcc8
+				;;
+			*)
+				;;
+		esac
+	fi
 
 	# for modern c++ on centos
-	if [ -f /opt/rh/devtoolset-9/enable ]
+	if [ ${TOOLSET} = "gcc9" ] && [ -f /opt/rh/devtoolset-9/enable ]
 	then
 		. /opt/rh/devtoolset-9/enable
-	elif [ -f /opt/rh/devtoolset-8/enable ]
+	fi
+	if [ ${TOOLSET} = "gcc8" ] && [ -f /opt/rh/devtoolset-8/enable ]
 	then
 		. /opt/rh/devtoolset-8/enable
 	fi
+
+	BIN_DIR=/work/${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
 
 	if [ "${ACTION}" = "clean" ]
 	then

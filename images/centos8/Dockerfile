@@ -4,13 +4,19 @@ RUN yum -y update && \
 yum -y install \
 curl \
 gcc-c++ \
-gdb \
+gcc-toolset-9-gcc-c++ \
+gcc-toolset-9-gdb \
+gcc-toolset-9-gcc-gdb-plugin \
+gcc-toolset-9-make \
 git \
-make \
-openssl-devel && \
-yum clean all && rm -rf /var/cache/yum
+openssl-devel \
+which && \
+yum clean all && rm -rf /var/cache/yum && \
+cd /usr/local/bin && \
+ln -s /opt/rh/gcc-toolset-9/root/usr/bin/make && \
+ln -s /opt/rh/gcc-toolset-9/root/usr/bin/gdb
 
-ARG CMAKE_VERSION=3.16.5
+ARG CMAKE_VERSION=3.17.0
 
 RUN cd /tmp && \
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
