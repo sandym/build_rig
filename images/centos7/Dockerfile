@@ -16,7 +16,7 @@ cd /usr/local/bin && \
 ln -s /opt/rh/devtoolset-9/root/usr/bin/make && \
 ln -s /opt/rh/devtoolset-9/root/usr/bin/gdb
 
-ARG CMAKE_VERSION=3.17.0
+ARG CMAKE_VERSION=3.17.2
 
 RUN cd /tmp && \
 . /opt/rh/devtoolset-9/enable && \

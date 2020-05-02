@@ -6,7 +6,7 @@
 #
 #	where:
 #		action: build, test, clean
-#		toolset: gcc4, gcc8, gcc9, clang, msvc
+#		toolset: default, gcc8, gcc9, clang
 #		type:    debug, release, asan, tsan
 #
 # project:
@@ -21,53 +21,71 @@ usage()
 	echo "  ./docker.sh container triplet project"
 	echo ""
 	echo "     container: name of a container to run the build"
-	echo "     triplet:   action-toolset-type"
+	echo "     triplet:   action-type-toolset"
 	echo "                where:"
 	echo "                   action:  build, test, clean"
-	echo "                   toolset: gcc4, gcc8, gcc9, clang, msvc"
 	echo "                   type:    debug, release, asan, tsan"
+	echo "                   toolset: default, gcc8, gcc9, clang"
 	echo "     project:   path to project to build, should have a"
 	echo "                CMakeLists.txt"
 	echo ""
 	exit 0
 }
 
-TRIPLET2=${TRIPLET}
 ACTION=build
-case ${TRIPLET2} in
-	*build-*)
+case ${TRIPLET} in
+	build-*)
 		ACTION=build
 		;;
-	*test-*)
+	test-*)
 		ACTION=test
 		;;
-	*clean-*)
+	run-*)
+		ACTION=run
+		;;
+	clean-*)
 		ACTION=clean
 		;;
 	*)
 		usage
 		;;
 esac
-TRIPLET2=${TRIPLET2#${ACTION}-}
 TYPE=debug
-case ${TRIPLET2} in
-	*-debug*)
+case ${TRIPLET} in
+	*-debug-*)
 		TYPE=debug
 		;;
-	*-release*)
+	*-release-*)
 		TYPE=release
 		;;
-	*-asan*)
+	*-asan-*)
 		TYPE=asan
 		;;
-	*-tsan*)
+	*-tsan-*)
 		TYPE=tsan
 		;;
 	*)
 		usage
 		;;
 esac
-TOOLSET=${TRIPLET2%-${TYPE}}
+TOOLSET=default
+case ${TRIPLET} in
+	*-default)
+		TOOLSET=default
+		;;
+	*-gcc8)
+		TOOLSET=gcc8
+		;;
+	*-gcc9)
+		TOOLSET=gcc9
+		;;
+	*-clang)
+		TOOLSET=clang
+		;;
+	*)
+		usage
+		;;
+esac
 
 if [ ! -f "/.dockerenv" ]
 then
@@ -107,18 +125,11 @@ then
 			SCRIPTS=`cygpath.exe -m "${SCRIPTS}"`
 		fi
 
-		WORK=/work
-		if [ "${TOOLSET}" = "msvc" ]
-		then
-			WORK=/root/.wine/drive_c/w
-			# @todo: entrypoint
-		fi
-
 		# container is not running, run and --rm
 		time docker run --rm -ti \
 			--mount type=bind,source="${SCRIPTS}",target=/scripts \
 			--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
-  			--mount source=build_rig_work,target=${WORK} \
+  			--mount source=build_rig_work,target=/work \
 			${CONTAINER} \
 			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
 	fi
@@ -126,43 +137,79 @@ then
 	echo ""
 	echo "done: ${CONTAINER} ${TRIPLET}"
 
-elif [ "${TOOLSET}" != "msvc" ]
-then
+else
 	# in container, for a linux build
 
 	# adjust TOOLSET
-	if [ "${TOOLSET}" = "gcc" ]
-	then
-		case ${CONTAINER} in
-			centos7_builder)
-				TOOLSET=gcc9
-				;;
-			centos8_builder)
-				TOOLSET=gcc9
-				;;
-			alpine_builder)
-				TOOLSET=gcc9
-				;;
-			clearlinux_builder)
-				TOOLSET=gcc9
-				;;
-			ubuntu_builder)
-				TOOLSET=gcc8
-				;;
-			*)
-				;;
-		esac
-	fi
-
-	# for modern c++ on centos
-	if [ ${TOOLSET} = "gcc9" ] && [ -f /opt/rh/devtoolset-9/enable ]
-	then
-		. /opt/rh/devtoolset-9/enable
-	fi
-	if [ ${TOOLSET} = "gcc8" ] && [ -f /opt/rh/devtoolset-8/enable ]
-	then
-		. /opt/rh/devtoolset-8/enable
-	fi
+	case ${CONTAINER} in
+		centos7_builder)
+			case "${TOOLSET}" in
+				gcc8)
+					. /opt/rh/devtoolset-8/enable
+					;;
+				gcc9)
+					. /opt/rh/devtoolset-9/enable
+					;;
+				default)
+					TOOLSET=gcc4
+					;;
+				*)
+					exit -1
+					;;
+			esac
+			;;
+		centos8_builder)
+			case "${TOOLSET}" in
+				gcc9)
+					. /opt/rh/gcc-toolset-9/enable
+					;;
+				default|gcc8)
+					TOOLSET=gcc8
+					;;
+				*)
+					exit -1
+					;;
+			esac
+			;;
+		alpine_builder)
+			case "${TOOLSET}" in
+				default|gcc9)
+					TOOLSET=gcc9
+					;;
+				clang)
+					TOOLSET=clang
+					;;
+				*)
+					exit -1
+					;;
+			esac
+			;;
+		clearlinux_builder)
+			case "${TOOLSET}" in
+				default|gcc9)
+					TOOLSET=gcc9
+					;;
+				clang)
+					TOOLSET=clang
+					;;
+				*)
+					exit -1
+					;;
+			esac
+			;;
+		ubuntu_builder)
+			case "${TOOLSET}" in
+				default|gcc9)
+					TOOLSET=gcc9
+					;;
+				*)
+					exit -1
+					;;
+			esac
+			;;
+		*)
+			;;
+	esac
 
 	BIN_DIR=/work/${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
 
@@ -238,62 +285,9 @@ then
 		ctest --output-on-failure --parallel $(nproc)
 	fi
 
-else
-	# in container, for a msvc-wine build
-
-	WORK=/root/.wine/drive_c/w
-	BIN_DIR=${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
-
-	if [ "${ACTION}" = "clean" ]
+	if [ "${ACTION}" = "run" ] && [ -f "/work/${PROJECT}/run.sh" ]
 	then
-		if [ -d "${BIN_DIR}" ]
-		then
-			cd "${BIN_DIR}"
-
-			/script/syncdir_linux -clean "${WORK}/${PROJECT}"
-			rm -rf * .ninja*
-		fi
-
-		exit 0
-	fi
-
-	/scripts/syncdir_linux -sync "/share/${PROJECT}" "${WORK}/${PROJECT}"
-	echo ""
-
-	mkdir -p "${WORK}/${BIN_DIR}"
-
-	BUILD_TYPE=Debug
-	if [ "${TYPE}" = "release" ]
-	then
-		BUILD_TYPE=RelWithDebInfo
-	fi
-
-	echo "@echo off\r" > "${WORK}/${BIN_DIR}/build.bat"
-	echo "c:\\x64.bat\r" >> "${WORK}/${BIN_DIR}/build.bat"
-	echo "echo \"msvc version %VSCMD_VER%\"\r" >> "${WORK}/${BIN_DIR}/build.bat"
-	echo "echo \"building in C:/w/%3\"\r" >> "${WORK}/${BIN_DIR}/build.bat"
-	echo ""
-
-
-	wine64 "${WORK}/${BIN_DIR}/build.bat" ${ACTION} ${BUILD_TYPE} "${BIN_DIR}"
-
-	exit 0
-	
-	cd "${BIN_DIR}"
-
-	if [ ! -f build.ninja ]
-	then
-
-		cmake -G Ninja \
-			-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
-			"/work/${PROJECT}" || exit -1
-	fi
-	ninja
-
-	if [ "${ACTION}" = "test" ]
-	then
-		ctest --output-on-failure --parallel $(nproc)
+		"/work/${PROJECT}/run.sh"
 	fi
 
 fi

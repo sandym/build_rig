@@ -7,13 +7,18 @@
 			"id": "darwin",
 			"type": "pickString",
 			"options": [
-				"build",
-				"test",
-				"clean",
+				"build-debug",
+				"test-debug",
+				"run-debug",
+				"clean-debug",
+				"build-release",
+				"test-release",
+				"run-release",
+				"clean-release",
 				"xcode",
 				"xcode-clean"
 			],
-			"default": "build",
+			"default": "build-debug",
 			"description": "action"
 		},
 		{
@@ -33,27 +38,28 @@
 			"id": "linux",
 			"type": "pickString",
 			"options": [
-				"build-gcc-debug",
-				"test-gcc-debug",
-				"clean-gcc-debug",
-				"build-gcc-release",
-				"build-clang-debug",
-				"test-clang-debug",
-				"clean-clang-debug",
-
-				"build-gcc8-debug",
-				"test-gcc8-debug",
-				"clean-gcc8-debug",
-				"build-gcc9-debug",
-				"test-gcc9-debug",
-				"clean-gcc9-debug",
-
-				// centos 7 still has this one
-				"build-gcc4-debug",
-				"test-gcc4-debug",
-				"clean-gcc4-debug"
+				"build-debug",
+				"test-debug",
+				"run-debug",
+				"clean-debug",
+				"build-release",
+				"test-release",
+				"run-release",
+				"clean-release"
 			],
-			"default": "build",
+			"default": "build-debug",
+			"description": "action"
+		},
+		{
+			"id": "linux-compiler",
+			"type": "pickString",
+			"options": [
+				"default",
+				"gcc8",
+				"gcc9",
+				"clang"
+			],
+			"default": "build-debug",
 			"description": "action"
 		},
 		{
@@ -64,7 +70,7 @@
 				"test-msvc-debug",
 				"clean-msvc-debug"
 			],
-			"default": "build",
+			"default": "build-msvc-debug",
 			"description": "action"
 		}
 	],
@@ -85,6 +91,10 @@
 				"statusbar": {
 					"hide": true
 				}
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": "autoDetect"
 			},
 			"osx": {
 				"group": {
@@ -116,6 +126,7 @@
 					"hide": true
 				}
 			},
+			"problemMatcher": "$msCompile",
 			"windows": {
 				"group": {
 					"kind": "build",
@@ -136,11 +147,28 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"centos7_builder",
-				"${input:linux}",
+				"${input:linux}-${input:linux-compiler}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
 				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/../."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
 			},
 			"options": {
 				"statusbar": {
@@ -155,11 +183,28 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"centos8_builder",
-				"${input:linux}",
+				"${input:linux}-${input:linux-compiler}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
 				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/../."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
 			},
 			"options": {
 				"statusbar": {
@@ -174,11 +219,28 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"alpine_builder",
-				"${input:linux}",
+				"${input:linux}-${input:linux-compiler}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
 				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/../."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
 			},
 			"options": {
 				"statusbar": {
@@ -193,11 +255,28 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"ubuntu_builder",
-				"${input:linux}",
+				"${input:linux}-${input:linux-compiler}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
 				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/../."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
 			},
 			"options": {
 				"statusbar": {
@@ -212,11 +291,28 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"clearlinux_builder",
-				"${input:linux}",
+				"${input:linux}-${input:linux-compiler}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
 				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/../."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
 			},
 			"options": {
 				"statusbar": {
@@ -242,6 +338,7 @@
 					"hide": true
 				}
 			},
+			"problemMatcher": "$msCompile",
 			"osx": {
 				"options": {
 					"statusbar": {
@@ -251,5 +348,18 @@
 				}
 			}
 		}
+		// ,
+		// {
+		// 	"label": "watch",
+		// 	"type": "shell",
+		// 	"command": "gulp",
+		// 	"options": {
+		// 		"cwd": "${workspaceFolder:build_rig}/tasks"
+		// 	},
+		// 	"runOptions": {
+		// 		"runOn": "folderOpen"
+		// 	},
+		// 	"problemMatcher": []
+		// }
 	]
 }

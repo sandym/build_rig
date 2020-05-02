@@ -1,10 +1,12 @@
-FROM ubuntu:19.10
+FROM ubuntu:20.04
 
 ENV WINEARCH=win64 \
 WINEDEBUG=-all,err \ 
 DISPLAY=:0.0 \
 WINE_MONO_VERSION=4.9.4 \
 WINE_GECKO_VERSION=2.47.1
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN export DEBIAN_FRONTEND="noninteractive" && \
 apt-get update && \

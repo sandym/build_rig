@@ -16,7 +16,7 @@ cd /usr/local/bin && \
 ln -s /opt/rh/gcc-toolset-9/root/usr/bin/make && \
 ln -s /opt/rh/gcc-toolset-9/root/usr/bin/gdb
 
-ARG CMAKE_VERSION=3.17.0
+ARG CMAKE_VERSION=3.17.2
 
 RUN cd /tmp && \
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
