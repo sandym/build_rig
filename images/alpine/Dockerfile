@@ -1,8 +1,8 @@
 FROM alpine
 
-RUN apk add --no-cache g++ gdb git make linux-headers ninja openssl-dev
+RUN apk add --no-cache clang g++ gdb git make linux-headers ninja openssl-dev
 
-ARG CMAKE_VERSION=3.17.2
+ARG CMAKE_VERSION=3.17.3
 
 RUN cd /tmp && \
 wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \

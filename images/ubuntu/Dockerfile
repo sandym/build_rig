@@ -3,14 +3,14 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && apt-get -y upgrade && \
-apt-get -y install curl g++ gdb git libssl-dev make time && \
+apt-get -y install curl clang g++ gdb git libssl-dev make time && \
 apt-get autoclean && \
 apt-get clean && \
 apt-get autoremove --purge && \
 rm -rf /var/apt/cache/* && \
 rm -rf /tmp/*
 
-ARG CMAKE_VERSION=3.17.2
+ARG CMAKE_VERSION=3.17.3
 
 RUN cd /tmp && \
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \

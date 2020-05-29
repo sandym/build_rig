@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 ENV WINEARCH=win64 \
 WINEDEBUG=-all,err \ 
 DISPLAY=:0.0 \
-WINE_MONO_VERSION=4.9.4 \
+WINE_MONO_VERSION=5.0.0 \
 WINE_GECKO_VERSION=2.47.1
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -21,7 +21,7 @@ dpkg --add-architecture i386 && \
 curl -L https://dl.winehq.org/wine-builds/winehq.key -o /etc/apt/winehq.key && \
 apt-key add /etc/apt/winehq.key && \
 apt-get update && \
-apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ eoan main' && \
+apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main' && \
 apt update && \
 apt-get upgrade -y && \
 apt install -y winehq-stable && \
