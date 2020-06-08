@@ -28,4 +28,4 @@ curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSIO
 cmake -E tar zxf ninja-linux.zip && \
 rm ninja-linux.zip
 
-CMD ["sleep","infinity"]
+# CMD ["sleep","infinity"]

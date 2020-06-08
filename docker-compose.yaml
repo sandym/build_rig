@@ -3,7 +3,6 @@ services:
   centos8_builder:
     build: ./images/centos8
     image: centos8_builder
-    restart: always
     container_name: centos8_builder
     hostname: centos8_builder
     init: true
@@ -22,7 +21,6 @@ services:
   centos7_builder:
     build: ./images/centos7
     image: centos7_builder
-    restart: always
     container_name: centos7_builder
     hostname: centos7_builder
     init: true
@@ -41,7 +39,6 @@ services:
   alpine_builder:
     build: ./images/alpine
     image: alpine_builder
-    restart: always
     container_name: alpine_builder
     hostname: alpine_builder
     init: true
@@ -60,7 +57,6 @@ services:
   ubuntu_builder:
     build: ./images/ubuntu
     image: ubuntu_builder
-    restart: always
     container_name: ubuntu_builder
     hostname: ubuntu_builder
     init: true
@@ -79,7 +75,6 @@ services:
   clearlinux_builder:
     build: ./images/clearlinux
     image: clearlinux_builder
-    restart: always
     container_name: clearlinux_builder
     hostname: clearlinux_builder
     init: true
@@ -97,7 +92,6 @@ services:
 
 #   msvc_builder:
 #     image: msvc_builder
-#     restart: always
 #     container_name: msvc_builder
 #     hostname: msvc_builder
 #     init: true

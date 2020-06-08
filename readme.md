@@ -1,33 +1,27 @@
 
-## My solution for working on large cross-platform cmake-based c++ projects using docker
+## Solution for working on large cross-platform cmake-based c++ projects using docker
 ---
 
+### The problem
+
+
+
 ### Goals
-- source code edition on my host
-- build & debug in a container
-- build on macos
-- build on windows
+- a single source code tree
+- source code edition on the host with vscode
+- build & debug in different linux containers
+- build & debug natively on host (macos or windows)
 
-### Accessing the code
+### Setup
 
-### Building
+### Usage
 
-### Access to headers
 
-### Debugging
-
-### Extensions & customisation
-
-- running tests
-
-## syncdir.go
+## how it works
 
 - sync:
-	- mac to linux
-	- mac to windows
-	- windows to linux
+	- host to container
 
-## how to link build_rig and target project ?
 
 ./bin/create.sh /path/to/folder
 
@@ -44,9 +38,8 @@ the build driver needs:
 
 - document customisation points:
 	- shared folder
-	- build script
-	- sync point(s)
-	- debugging
 
 
 # todo:
+- some c++ tools
+- msvc wine

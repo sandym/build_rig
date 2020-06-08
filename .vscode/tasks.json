@@ -27,39 +27,95 @@
 			"options": [
 				"build",
 				"test",
-				"clean",
 				"vs",
-				"vs-clean"
+				"clean"
 			],
 			"default": "build",
 			"description": "action"
 		},
 		{
-			"id": "linux",
+			"id": "centos7",
 			"type": "pickString",
 			"options": [
-				"build-debug",
-				"test-debug",
-				"run-debug",
-				"clean-debug",
-				"build-release",
-				"test-release",
-				"run-release",
-				"clean-release"
+				"build-gcc8-debug",
+				"test-gcc8-debug",
+				"run-gcc8-debug",
+				"clean-gcc8-debug",
+				"build-gcc8-release",
+				"build-gcc9-debug",
+				"test-gcc9-debug",
+				"run-gcc9-debug",
+				"build-gcc9-release"
 			],
-			"default": "build-debug",
+			"default": "build-gcc8-debug",
 			"description": "action"
 		},
 		{
-			"id": "linux-compiler",
+			"id": "centos8",
 			"type": "pickString",
 			"options": [
-				"default",
-				"gcc8",
-				"gcc9",
-				"clang"
+				"build-gcc8-debug",
+				"test-gcc8-debug",
+				"run-gcc8-debug",
+				"build-gcc8-release",
+				"build-gcc9-debug",
+				"test-gcc9-debug",
+				"run-gcc9-debug",
+				"build-gcc9-release",
+				"clean"
 			],
-			"default": "build-debug",
+			"default": "build-gcc8-debug",
+			"description": "action"
+		},
+		{
+			"id": "alpine",
+			"type": "pickString",
+			"options": [
+				"build-gcc9-debug",
+				"test-gcc9-debug",
+				"run-gcc9-debug",
+				"build-gcc9-release",
+				"build-clang-debug",
+				"test-clang-debug",
+				"run-clang-debug",
+				"build-clang-release",
+				"clean"
+			],
+			"default": "build-gcc9-debug",
+			"description": "action"
+		},
+		{
+			"id": "ubuntu",
+			"type": "pickString",
+			"options": [
+				"build-gcc9-debug",
+				"test-gcc9-debug",
+				"run-gcc9-debug",
+				"build-gcc9-release",
+				"build-clang-debug",
+				"test-clang-debug",
+				"run-clang-debug",
+				"build-clang-release",
+				"clean"
+			],
+			"default": "build-gcc9-debug",
+			"description": "action"
+		},
+		{
+			"id": "clearlinux",
+			"type": "pickString",
+			"options": [
+				"build-gcc10-debug",
+				"test-gcc10-debug",
+				"run-gcc10-debug",
+				"build-gcc10-release",
+				"build-clang-debug",
+				"test-clang-debug",
+				"run-clang-debug",
+				"build-clang-release",
+				"clean"
+			],
+			"default": "build-gcc10-debug",
 			"description": "action"
 		},
 		{
@@ -147,7 +203,7 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"centos7_builder",
-				"${input:linux}-${input:linux-compiler}",
+				"${input:centos7}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -183,7 +239,7 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"centos8_builder",
-				"${input:linux}-${input:linux-compiler}",
+				"${input:centos8}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -219,7 +275,7 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"alpine_builder",
-				"${input:linux}-${input:linux-compiler}",
+				"${input:alpine}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -255,7 +311,7 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"ubuntu_builder",
-				"${input:linux}-${input:linux-compiler}",
+				"${input:ubuntu}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -291,7 +347,7 @@
 			"command": "scripts/docker.sh",
 			"args": [
 				"clearlinux_builder",
-				"${input:linux}-${input:linux-compiler}",
+				"${input:clearlinux}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {

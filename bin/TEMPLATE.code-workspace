@@ -8,7 +8,9 @@
 		}
 	],
 	"settings": {
-		"build_rig.project": "PROJECT"
+		"build_rig.project": "PROJECT",
+		"C_Cpp.default.cStandard": "c11",
+		"C_Cpp.default.cppStandard": "c++17"
 	},
 	"extensions": {
 		"recommendations": [

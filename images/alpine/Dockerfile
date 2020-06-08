@@ -13,4 +13,4 @@ make -j$(nproc) && \
 make install  && \
 rm -rf /tmp/cmake-*
 
-CMD ["sleep","infinity"]
+# CMD ["sleep","infinity"]

@@ -57,4 +57,4 @@ rm ninja-linux.zip
 
 # ENV PATH=$PATH:/opt/llvm/bin
 
-CMD ["sleep","infinity"]
+# CMD ["sleep","infinity"]

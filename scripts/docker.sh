@@ -9,7 +9,6 @@
 #		toolset: default, gcc8, gcc9, clang
 #		type:    debug, release, asan, tsan
 #
-# project:
 
 CONTAINER=$1
 TRIPLET=$2
@@ -52,16 +51,16 @@ case ${TRIPLET} in
 esac
 TYPE=debug
 case ${TRIPLET} in
-	*-debug-*)
+	*-debug)
 		TYPE=debug
 		;;
-	*-release-*)
+	*-release)
 		TYPE=release
 		;;
-	*-asan-*)
+	*-asan)
 		TYPE=asan
 		;;
-	*-tsan-*)
+	*-tsan)
 		TYPE=tsan
 		;;
 	*)
@@ -70,22 +69,92 @@ case ${TRIPLET} in
 esac
 TOOLSET=default
 case ${TRIPLET} in
-	*-default)
-		TOOLSET=default
-		;;
-	*-gcc8)
+	*-gcc8-*)
 		TOOLSET=gcc8
 		;;
-	*-gcc9)
+	*-gcc9-*)
 		TOOLSET=gcc9
 		;;
-	*-clang)
+	*-gcc10-*)
+		TOOLSET=gcc10
+		;;
+	*-clang-*)
 		TOOLSET=clang
 		;;
 	*)
 		usage
 		;;
 esac
+
+centos7_toolset()
+{
+	case "${TOOLSET}" in
+		gcc4)
+			;;
+		gcc8)
+			. /opt/rh/devtoolset-8/enable
+			;;
+		gcc9)
+			. /opt/rh/devtoolset-9/enable
+			;;
+		*)
+			exit -1
+			;;
+	esac
+}
+
+centos8_toolset()
+{
+	case "${TOOLSET}" in
+		gcc8)
+			;;
+		gcc9)
+			. /opt/rh/gcc-toolset-9/enable 
+			;;
+		*)
+			exit -1
+			;;
+	esac
+}
+
+alpine_toolset()
+{
+	case "${TOOLSET}" in
+		gcc9)
+			;;
+		clang)
+			;;
+		*)
+			exit -1
+			;;
+	esac
+}
+
+ubuntu_toolset()
+{
+	case "${TOOLSET}" in
+		gcc9)
+			;;
+		clang)
+			;;
+		*)
+			exit -1
+			;;
+	esac
+}
+
+clearlinux_toolset()
+{
+	case "${TOOLSET}" in
+		gcc10)
+			;;
+		clang)
+			;;
+		*)
+			exit -1
+			;;
+	esac
+}
 
 if [ ! -f "/.dockerenv" ]
 then
@@ -109,30 +178,12 @@ then
 
 	"./syncdir_host" -scan "${PROJECT}"
 
+	cd "${SCRIPTS}/.."
+
 	PROJECT=`basename "${PROJECT}"`
 	export MSYS_NO_PATHCONV=1
-	docker ps | grep ${CONTAINER} > /dev/null 2>&1
-	if [ $? = 0 ]
-	then
-		# container is already running, just exec
-		time docker exec -ti ${CONTAINER} \
+	time docker-compose run --rm ${CONTAINER} \
 			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
-	else
-		# fix for path on windows
-		which cygpath.exe > /dev/null
-		if [ $? = 0 ]
-		then
-			SCRIPTS=`cygpath.exe -m "${SCRIPTS}"`
-		fi
-
-		# container is not running, run and --rm
-		time docker run --rm -ti \
-			--mount type=bind,source="${SCRIPTS}",target=/scripts \
-			--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
-  			--mount source=build_rig_work,target=/work \
-			${CONTAINER} \
-			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
-	fi
 
 	echo ""
 	echo "done: ${CONTAINER} ${TRIPLET}"
@@ -143,69 +194,19 @@ else
 	# adjust TOOLSET
 	case ${CONTAINER} in
 		centos7_builder)
-			case "${TOOLSET}" in
-				gcc8)
-					. /opt/rh/devtoolset-8/enable
-					;;
-				gcc9)
-					. /opt/rh/devtoolset-9/enable
-					;;
-				default)
-					TOOLSET=gcc4
-					;;
-				*)
-					exit -1
-					;;
-			esac
+			centos7_toolset
 			;;
 		centos8_builder)
-			case "${TOOLSET}" in
-				gcc9)
-					. /opt/rh/gcc-toolset-9/enable
-					;;
-				default|gcc8)
-					TOOLSET=gcc8
-					;;
-				*)
-					exit -1
-					;;
-			esac
+			centos8_toolset
 			;;
 		alpine_builder)
-			case "${TOOLSET}" in
-				default|gcc9)
-					TOOLSET=gcc9
-					;;
-				clang)
-					TOOLSET=clang
-					;;
-				*)
-					exit -1
-					;;
-			esac
+			alpine_toolset
 			;;
 		clearlinux_builder)
-			case "${TOOLSET}" in
-				default|gcc9)
-					TOOLSET=gcc9
-					;;
-				clang)
-					TOOLSET=clang
-					;;
-				*)
-					exit -1
-					;;
-			esac
+			clearlinux_toolset
 			;;
 		ubuntu_builder)
-			case "${TOOLSET}" in
-				default|gcc9)
-					TOOLSET=gcc9
-					;;
-				*)
-					exit -1
-					;;
-			esac
+			ubuntu_toolset
 			;;
 		*)
 			;;
@@ -289,5 +290,4 @@ else
 	then
 		"/work/${PROJECT}/run.sh"
 	fi
-
 fi
