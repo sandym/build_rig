@@ -92,6 +92,7 @@ func scanFolder(srcFullPath, currentPath string, output chan string, counter cha
 			if len(result) > 0 {
 				relpath, err := filepath.Rel(srcFullPath, currentPath)
 				if err == nil {
+					relpath = strings.ReplaceAll(relpath, "\\", "/")
 					output <- fmt.Sprintf("s %s %s\n", result, relpath)
 				}
 			}
@@ -112,6 +113,7 @@ func scanFolder(srcFullPath, currentPath string, output chan string, counter cha
 		case finfo.Mode().IsRegular():
 			relpath, err := filepath.Rel(srcFullPath, fullPath)
 			if err == nil {
+				relpath = strings.ReplaceAll(relpath, "\\", "/")
 				if (finfo.Mode() & 0111) != 0 {
 					output <- fmt.Sprintf("x %d %s\n", finfo.ModTime().Unix(), relpath)
 				} else {
@@ -126,6 +128,7 @@ func scanFolder(srcFullPath, currentPath string, output chan string, counter cha
 			if err == nil {
 				relpath, err := filepath.Rel(srcFullPath, fullPath)
 				if err == nil {
+					relpath = strings.ReplaceAll(relpath, "\\", "/")
 					output <- fmt.Sprintf("l %d %s->%s\n", finfo.ModTime().Unix(), relpath, ln)
 				}
 			}
