@@ -90,19 +90,6 @@ services:
     security_opt:
       - seccomp:unconfined
 
-#   msvc_builder:
-#     image: msvc_builder
-#     container_name: msvc_builder
-#     hostname: msvc_builder
-#     init: true
-#     environment:
-#       PS1: '[win \W]#'
-#     entrypoint: [sleep, infinity]
-#     volumes:
-#       - work:/root/.wine/drive_c/w
-#       - ./scripts:/scripts
-#       - ${WORKSPACE_SHARED_FOLDER}:/share
-
 volumes:
   work:
     name: build_rig_work
