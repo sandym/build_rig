@@ -13,6 +13,7 @@
 CONTAINER=$1
 TRIPLET=$2
 PROJECT=$3
+PROJECT_NAME=`basename "${PROJECT}"`
 
 usage()
 {
@@ -180,7 +181,6 @@ then
 
 	cd "${SCRIPTS}/.."
 
-	PROJECT=`basename "${PROJECT}"`
 	export MSYS_NO_PATHCONV=1
 	time docker-compose run --rm ${CONTAINER} \
 			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
@@ -212,7 +212,7 @@ else
 			;;
 	esac
 
-	BIN_DIR=/work/${CONTAINER%_builder}/${PROJECT}-${TOOLSET}-${TYPE}
+	BIN_DIR=/work/${PROJECT_NAME}/${CONTAINER%_builder}/${TOOLSET}-${TYPE}
 
 	if [ "${ACTION}" = "clean" ]
 	then
@@ -220,7 +220,7 @@ else
 		then
 			cd "${BIN_DIR}"
 
-			/script/syncdir_linux -clean "/work/${PROJECT}"
+			/script/syncdir_linux -clean "/work/${PROJECT_NAME}/src"
 			if [ -f build.ninja ]
 			then
 				ninja clean
@@ -232,7 +232,7 @@ else
 		exit 0
 	fi
 
-	/scripts/syncdir_linux -sync "/share/${PROJECT}" "/work/${PROJECT}"
+	/scripts/syncdir_linux -sync "/share/${PROJECT_NAME}" "/work/${PROJECT_NAME}/src"
 	echo ""
 
 	echo "PATH = ${PATH}"
@@ -244,6 +244,7 @@ else
 	else
 		g++ --version || exit 1
 	fi
+	ld --version
 
 	mkdir -p "${BIN_DIR}"
 	cd "${BIN_DIR}"
@@ -277,7 +278,7 @@ else
 		cmake -G Ninja \
 			-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
-			"/work/${PROJECT}" || exit -1
+			"/work/${PROJECT_NAME}/src" || exit -1
 	fi
 	ninja
 
@@ -286,8 +287,8 @@ else
 		ctest --output-on-failure --parallel $(nproc)
 	fi
 
-	if [ "${ACTION}" = "run" ] && [ -f "/work/${PROJECT}/run.sh" ]
+	if [ "${ACTION}" = "run" ] && [ -f "/work/${PROJECT_NAME}/src/run.sh" ]
 	then
-		"/work/${PROJECT}/run.sh"
+		"/work/${PROJECT_NAME}/src/run.sh"
 	fi
 fi

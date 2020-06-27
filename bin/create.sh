@@ -6,9 +6,9 @@
 
 ROOT=`dirname "$0"`
 ROOT=`cd "$ROOT"/.. ; pwd`
-PROJECT=$1
+NAME=$1
 
-if [[ "$PROJECT" == *\/* ]] || [[ "$PROJECT" == *\\* ]]
+if [[ "$NAME" == *\/* ]] || [[ "$NAME" == *\\* ]]
 then
 	echo "project name cannot be a path."
 	exit -1
@@ -16,13 +16,13 @@ fi
 
 . ${ROOT}/.env
 
-PROJECT_FOLDER="${WORKSPACE_SHARED_FOLDER}/${PROJECT}"
-if [ ! -d "${PROJECT_FOLDER}" ]
+PROJECT_PATH="${WORKSPACE_SHARED_FOLDER}/${NAME}"
+if [ ! -d "${PROJECT_PATH}" ]
 then
-	echo "${PROJECT_FOLDER} does not exist. Creating default project."
-	mkdir "${PROJECT_FOLDER}"
+	echo "${PROJECT_PATH} does not exist. Creating default project."
+	mkdir "${PROJECT_PATH}"
 
-cat << EOF > "${PROJECT_FOLDER}/main.cpp"
+cat << EOF > "${PROJECT_PATH}/main.cpp"
 #include <iostream>
 
 int main( int argc, char **argv )
@@ -31,32 +31,32 @@ int main( int argc, char **argv )
 }
 EOF
 
-cat <<EOF > "${PROJECT_FOLDER}/CMakeLists.txt"
+cat <<EOF > "${PROJECT_PATH}/CMakeLists.txt"
 cmake_minimum_required(VERSION 3.16)
-project(${PROJECT})
+project(${NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # enable_testing()
 
-add_executable(${PROJECT})
-target_sources(${PROJECT} PRIVATE
+add_executable(${NAME})
+target_sources(${NAME} PRIVATE
 	main.cpp
 )
 EOF
 
-cat <<EOF > "${PROJECT_FOLDER}/.gitignore"
+cat <<EOF > "${PROJECT_PATH}/.gitignore"
 .tosync
 EOF
 
 fi
 
-echo "creating workspace for ${PROJECT_FOLDER}"
+echo "creating workspace for ${PROJECT_PATH}"
 
 TEMPLATE="${ROOT}/bin/TEMPLATE.code-workspace"
 mkdir -p ~/Workspaces
 WORKSPACE=`cd ~/Workspaces ; pwd`
-WORKSPACE=${WORKSPACE}/${PROJECT}.code-workspace
+WORKSPACE=${WORKSPACE}/${NAME}.code-workspace
 
 if [ -f "${WORKSPACE}" ]
 then
@@ -70,4 +70,4 @@ then
 	ROOT=`cygpath.exe -m "${ROOT}"`
 fi
 echo "workspace file : ${WORKSPACE}"
-perl -p -e "s|PROJECT|$PROJECT_FOLDER|;s|BUILD_RIG|${ROOT}|" "${TEMPLATE}" > "${WORKSPACE}"
+perl -p -e "s|PROJECT_PATH|$PROJECT_PATH|;s|BUILD_RIG|${ROOT}|" "${TEMPLATE}" > "${WORKSPACE}"

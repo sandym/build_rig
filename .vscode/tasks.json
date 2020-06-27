@@ -213,11 +213,11 @@
 				"base": "$gcc",
 				"fileLocation": [
 					"relative",
-					"${config:build_rig.project}/../."
+					"${config:build_rig.project}/."
 				],
 				"pattern":[
 					{
-						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
 						"file": 1,
 						"line": 2,
 						"column": 3,
@@ -249,11 +249,11 @@
 				"base": "$gcc",
 				"fileLocation": [
 					"relative",
-					"${config:build_rig.project}/../."
+					"${config:build_rig.project}/."
 				],
 				"pattern":[
 					{
-						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
 						"file": 1,
 						"line": 2,
 						"column": 3,
@@ -285,11 +285,11 @@
 				"base": "$gcc",
 				"fileLocation": [
 					"relative",
-					"${config:build_rig.project}/../."
+					"${config:build_rig.project}/."
 				],
 				"pattern":[
 					{
-						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
 						"file": 1,
 						"line": 2,
 						"column": 3,
@@ -321,11 +321,11 @@
 				"base": "$gcc",
 				"fileLocation": [
 					"relative",
-					"${config:build_rig.project}/../."
+					"${config:build_rig.project}/."
 				],
 				"pattern":[
 					{
-						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
 						"file": 1,
 						"line": 2,
 						"column": 3,
@@ -357,11 +357,11 @@
 				"base": "$gcc",
 				"fileLocation": [
 					"relative",
-					"${config:build_rig.project}/../."
+					"${config:build_rig.project}/."
 				],
 				"pattern":[
 					{
-						"regexp": "^/work/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
 						"file": 1,
 						"line": 2,
 						"column": 3,

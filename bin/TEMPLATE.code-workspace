@@ -1,14 +1,14 @@
 {
 	"folders": [
 		{
-			"path": "PROJECT"
+			"path": "PROJECT_PATH"
 		},
 		{
 			"path": "BUILD_RIG"
 		}
 	],
 	"settings": {
-		"build_rig.project": "PROJECT",
+		"build_rig.project": "PROJECT_PATH",
 		"C_Cpp.default.cStandard": "c11",
 		"C_Cpp.default.cppStandard": "c++17"
 	},
