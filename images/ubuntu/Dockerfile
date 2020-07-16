@@ -10,7 +10,7 @@ apt-get autoremove --purge && \
 rm -rf /var/apt/cache/* && \
 rm -rf /tmp/*
 
-ARG CMAKE_VERSION=3.17.3
+ARG CMAKE_VERSION=3.18.0
 
 RUN cd /tmp && \
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
@@ -27,5 +27,3 @@ RUN cd /usr/local/bin && \
 curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSION}/ninja-linux.zip && \
 cmake -E tar zxf ninja-linux.zip && \
 rm ninja-linux.zip
-
-# CMD ["sleep","infinity"]
