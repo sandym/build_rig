@@ -70,6 +70,21 @@ func gitRevision(wd string) string {
 	}
 	return ""
 }
+func isExecutable(fullpath string, finfo os.FileInfo) bool {
+	if runtime.GOOS == "windows" {
+		// cannot find how to get the mingw x file permission on windows,
+		// just fake it...
+		ext := path.Ext(fullpath)
+		if ext == ".sh" {
+			return true
+		}
+		name := path.Base(fullpath)
+		if name == "configure" {
+			return true
+		}
+	}
+	return (finfo.Mode() & 0111) != 0
+}
 func scanFolder(srcFullPath, currentPath string, output chan string, counter chan int) {
 	defer func() {
 		counter <- -1
@@ -114,7 +129,7 @@ func scanFolder(srcFullPath, currentPath string, output chan string, counter cha
 			relpath, err := filepath.Rel(srcFullPath, fullPath)
 			if err == nil {
 				relpath = strings.ReplaceAll(relpath, "\\", "/")
-				if (finfo.Mode() & 0111) != 0 {
+				if isExecutable(fullPath, finfo) {
 					output <- fmt.Sprintf("x %d %s\n", finfo.ModTime().Unix(), relpath)
 				} else {
 					output <- fmt.Sprintf("f %d %s\n", finfo.ModTime().Unix(), relpath)
