@@ -9,11 +9,9 @@
 			"options": [
 				"build-debug",
 				"test-debug",
-				"run-debug",
 				"clean-debug",
 				"build-release",
 				"test-release",
-				"run-release",
 				"clean-release",
 				"xcode",
 				"xcode-clean"
@@ -34,37 +32,17 @@
 			"description": "action"
 		},
 		{
-			"id": "centos7",
-			"type": "pickString",
-			"options": [
-				"build-gcc8-debug",
-				"test-gcc8-debug",
-				"run-gcc8-debug",
-				"clean-gcc8-debug",
-				"build-gcc8-release",
-				"build-gcc9-debug",
-				"test-gcc9-debug",
-				"run-gcc9-debug",
-				"build-gcc9-release"
-			],
-			"default": "build-gcc8-debug",
-			"description": "action"
-		},
-		{
 			"id": "centos8",
 			"type": "pickString",
 			"options": [
-				"build-gcc8-debug",
-				"test-gcc8-debug",
-				"run-gcc8-debug",
-				"build-gcc8-release",
 				"build-gcc9-debug",
 				"test-gcc9-debug",
-				"run-gcc9-debug",
+				"clean-gcc9-debug",
 				"build-gcc9-release",
-				"clean"
+				"test-gcc9-release",
+				"clean-gcc9-release"
 			],
-			"default": "build-gcc8-debug",
+			"default": "build-gcc9-debug",
 			"description": "action"
 		},
 		{
@@ -73,13 +51,13 @@
 			"options": [
 				"build-gcc9-debug",
 				"test-gcc9-debug",
-				"run-gcc9-debug",
+				"clean-gcc9-debug",
 				"build-gcc9-release",
+				"test-gcc9-release",
+				"clean-gcc9-release",
 				"build-clang-debug",
 				"test-clang-debug",
-				"run-clang-debug",
-				"build-clang-release",
-				"clean"
+				"build-clang-release"
 			],
 			"default": "build-gcc9-debug",
 			"description": "action"
@@ -88,32 +66,13 @@
 			"id": "ubuntu",
 			"type": "pickString",
 			"options": [
-				"build-gcc9-debug",
-				"test-gcc9-debug",
-				"run-gcc9-debug",
-				"build-gcc9-release",
-				"build-clang-debug",
-				"test-clang-debug",
-				"run-clang-debug",
-				"build-clang-release",
-				"clean"
-			],
-			"default": "build-gcc9-debug",
-			"description": "action"
-		},
-		{
-			"id": "clearlinux",
-			"type": "pickString",
-			"options": [
 				"build-gcc10-debug",
 				"test-gcc10-debug",
-				"run-gcc10-debug",
-				"build-gcc10-release",
+				"clean-gcc10-debug",
 				"build-clang-debug",
 				"test-clang-debug",
-				"run-clang-debug",
-				"build-clang-release",
-				"clean"
+				"clean-clang-debug",
+				"build-clang-release"
 			],
 			"default": "build-gcc10-debug",
 			"description": "action"
@@ -138,7 +97,7 @@
 			"command": "scripts/darwin.sh",
 			"args": [
 				"${input:darwin}",
-				"${config:build_rig.project}",
+				"${config:build_rig.project}"
 			],
 			"presentation": {
 				"clear": true
@@ -172,7 +131,7 @@
 			"command": "scripts/windows.sh",
 			"args": [
 				"${input:vs}",
-				"${config:build_rig.project}",
+				"${config:build_rig.project}"
 			],
 			"presentation": {
 				"clear": true
@@ -193,42 +152,6 @@
 						"label": "$(chevron-right)VS",
 						"hide": false
 					}
-				}
-			}
-		},
-		{
-			"label": "centos7 build",
-			"type": "shell",
-			"group": "build",
-			"command": "scripts/docker.sh",
-			"args": [
-				"centos7_builder",
-				"${input:centos7}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"problemMatcher": {
-				"base": "$gcc",
-				"fileLocation": [
-					"relative",
-					"${config:build_rig.project}/."
-				],
-				"pattern":[
-					{
-						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
-						"file": 1,
-						"line": 2,
-						"column": 3,
-						"severity": 4,
-						"message": 5
-					}
-				]
-			},
-			"options": {
-				"statusbar": {
-					"label": "$(chevron-right)centos7"
 				}
 			}
 		},
@@ -341,42 +264,6 @@
 			}
 		},
 		{
-			"label": "clearlinux build",
-			"type": "shell",
-			"group": "build",
-			"command": "scripts/docker.sh",
-			"args": [
-				"clearlinux_builder",
-				"${input:clearlinux}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"problemMatcher": {
-				"base": "$gcc",
-				"fileLocation": [
-					"relative",
-					"${config:build_rig.project}/."
-				],
-				"pattern":[
-					{
-						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
-						"file": 1,
-						"line": 2,
-						"column": 3,
-						"severity": 4,
-						"message": 5
-					}
-				]
-			},
-			"options": {
-				"statusbar": {
-					"label": "$(chevron-right)clearlinux"
-				}
-			}
-		},
-		{
 			"label": "msvc build",
 			"type": "shell",
 			"group": "build",
@@ -404,18 +291,5 @@
 				}
 			}
 		}
-		// ,
-		// {
-		// 	"label": "watch",
-		// 	"type": "shell",
-		// 	"command": "gulp",
-		// 	"options": {
-		// 		"cwd": "${workspaceFolder:build_rig}/tasks"
-		// 	},
-		// 	"runOptions": {
-		// 		"runOn": "folderOpen"
-		// 	},
-		// 	"problemMatcher": []
-		// }
 	]
 }

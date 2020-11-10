@@ -6,9 +6,9 @@
 
 ROOT=`dirname "$0"`
 ROOT=`cd "$ROOT"/.. ; pwd`
-NAME=$1
+PROJECT_NAME=$1
 
-if [[ "$NAME" == *\/* ]] || [[ "$NAME" == *\\* ]]
+if [[ "${PROJECT_NAME}" == *\/* ]] || [[ "${PROJECT_NAME}" == *\\* ]]
 then
 	echo "project name cannot be a path."
 	exit -1
@@ -16,7 +16,7 @@ fi
 
 . ${ROOT}/.env
 
-PROJECT_PATH="${WORKSPACE_SHARED_FOLDER}/${NAME}"
+PROJECT_PATH="${WORKSPACE_SHARED_FOLDER}/${PROJECT_NAME}"
 if [ ! -d "${PROJECT_PATH}" ]
 then
 	echo "${PROJECT_PATH} does not exist. Creating default project."
@@ -33,14 +33,14 @@ EOF
 
 cat <<EOF > "${PROJECT_PATH}/CMakeLists.txt"
 cmake_minimum_required(VERSION 3.16)
-project(${NAME})
+project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # enable_testing()
 
-add_executable(${NAME})
-target_sources(${NAME} PRIVATE
+add_executable(${PROJECT_NAME})
+target_sources(${PROJECT_NAME} PRIVATE
 	main.cpp
 )
 EOF
@@ -56,7 +56,7 @@ echo "creating workspace for ${PROJECT_PATH}"
 TEMPLATE="${ROOT}/bin/TEMPLATE.code-workspace"
 mkdir -p ~/Workspaces
 WORKSPACE=`cd ~/Workspaces ; pwd`
-WORKSPACE=${WORKSPACE}/${NAME}.code-workspace
+WORKSPACE=${WORKSPACE}/${PROJECT_NAME}.code-workspace
 
 if [ -f "${WORKSPACE}" ]
 then
@@ -70,4 +70,4 @@ then
 	ROOT=`cygpath.exe -m "${ROOT}"`
 fi
 echo "workspace file : ${WORKSPACE}"
-perl -p -e "s|PROJECT_PATH|$PROJECT_PATH|;s|BUILD_RIG|${ROOT}|" "${TEMPLATE}" > "${WORKSPACE}"
+perl -p -e "s|PROJECT_PATH|$PROJECT_PATH|;s|BUILD_RIG|${ROOT}|;s|PROJECT_NAME|${PROJECT_NAME}|" "${TEMPLATE}" > "${WORKSPACE}"

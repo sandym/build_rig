@@ -33,9 +33,6 @@ case $1 in
     test-*)
 	 	ACTION=test
 		;;
-    run-*)
-	 	ACTION=run
-		;;
     *)
 		;;
 esac
@@ -83,9 +80,4 @@ fi
 
 echo ""
 echo "done macos ${ACTION}"
-
-if [ "${ACTION}" = "run" ] && [ -f "${PROJECT_PATH}/run.sh" ]
-then
-	"${PROJECT_PATH}/run.sh"
-fi
 

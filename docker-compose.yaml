@@ -18,24 +18,6 @@ services:
     security_opt:
       - seccomp:unconfined
 
-  centos7_builder:
-    build: ./images/centos7
-    image: centos7_builder
-    container_name: centos7_builder
-    hostname: centos7_builder
-    init: true
-    environment:
-      PS1: '[\e[35mcentos7\e[m \W]# '
-    volumes:
-      - work:/work
-      - ./scripts:/scripts
-      - ${WORKSPACE_SHARED_FOLDER}:/share
-    # need this to debug
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-
   alpine_builder:
     build: ./images/alpine
     image: alpine_builder
@@ -62,24 +44,6 @@ services:
     init: true
     environment:
       PS1: '[\e[35mubuntu\e[m \W]# '
-    volumes:
-      - work:/work
-      - ./scripts:/scripts
-      - ${WORKSPACE_SHARED_FOLDER}:/share
-    # need this to debug
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-
-  clearlinux_builder:
-    build: ./images/clearlinux
-    image: clearlinux_builder
-    container_name: clearlinux_builder
-    hostname: clearlinux_builder
-    init: true
-    environment:
-      PS1: '[\e[35mclear\e[m \W]# '
     volumes:
       - work:/work
       - ./scripts:/scripts

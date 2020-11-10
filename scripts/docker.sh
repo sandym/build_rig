@@ -6,7 +6,7 @@
 #
 #	where:
 #		action: build, test, clean
-#		toolset: default, gcc8, gcc9, clang
+#		toolset: default, gcc9, gcc10, clang
 #		type:    debug, release, asan, tsan
 #
 
@@ -25,7 +25,7 @@ usage()
 	echo "                where:"
 	echo "                   action:  build, test, clean"
 	echo "                   type:    debug, release, asan, tsan"
-	echo "                   toolset: default, gcc8, gcc9, clang"
+	echo "                   toolset: default, gcc9, clang"
 	echo "     project:   path to project to build, should have a"
 	echo "                CMakeLists.txt"
 	echo ""
@@ -39,9 +39,6 @@ case ${TRIPLET} in
 		;;
 	test-*)
 		ACTION=test
-		;;
-	run-*)
-		ACTION=run
 		;;
 	clean-*)
 		ACTION=clean
@@ -70,9 +67,6 @@ case ${TRIPLET} in
 esac
 TOOLSET=default
 case ${TRIPLET} in
-	*-gcc8-*)
-		TOOLSET=gcc8
-		;;
 	*-gcc9-*)
 		TOOLSET=gcc9
 		;;
@@ -86,37 +80,6 @@ case ${TRIPLET} in
 		usage
 		;;
 esac
-
-centos7_toolset()
-{
-	case "${TOOLSET}" in
-		gcc4)
-			;;
-		gcc8)
-			. /opt/rh/devtoolset-8/enable
-			;;
-		gcc9)
-			. /opt/rh/devtoolset-9/enable
-			;;
-		*)
-			exit -1
-			;;
-	esac
-}
-
-centos8_toolset()
-{
-	case "${TOOLSET}" in
-		gcc8)
-			;;
-		gcc9)
-			. /opt/rh/gcc-toolset-9/enable 
-			;;
-		*)
-			exit -1
-			;;
-	esac
-}
 
 alpine_toolset()
 {
@@ -132,19 +95,6 @@ alpine_toolset()
 }
 
 ubuntu_toolset()
-{
-	case "${TOOLSET}" in
-		gcc9)
-			;;
-		clang)
-			;;
-		*)
-			exit -1
-			;;
-	esac
-}
-
-clearlinux_toolset()
 {
 	case "${TOOLSET}" in
 		gcc10)
@@ -193,17 +143,11 @@ else
 
 	# adjust TOOLSET
 	case ${CONTAINER} in
-		centos7_builder)
-			centos7_toolset
-			;;
 		centos8_builder)
-			centos8_toolset
+			. /opt/rh/gcc-toolset-9/enable 
 			;;
 		alpine_builder)
 			alpine_toolset
-			;;
-		clearlinux_builder)
-			clearlinux_toolset
 			;;
 		ubuntu_builder)
 			ubuntu_toolset
@@ -285,10 +229,5 @@ else
 	if [ "${ACTION}" = "test" ]
 	then
 		ctest --output-on-failure --parallel $(nproc)
-	fi
-
-	if [ "${ACTION}" = "run" ] && [ -f "/work/${PROJECT_NAME}/src/run.sh" ]
-	then
-		"/work/${PROJECT_NAME}/src/run.sh"
 	fi
 fi
