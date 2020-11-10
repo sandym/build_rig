@@ -24,6 +24,20 @@
 	],
 	"configurations": [
 		{
+			"name": "Launch macos",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/debug/${config:build_rig.project_name}",
+			"args": [],
+			"environment": [],
+
+			"externalConsole": false,
+			"cwd": "${workspaceFolder}",
+			"stopAtEntry": true,
+			"MIMode": "lldb"
+		},
+		{
 			"name": "Launch centos8",
 			"type": "cppdbg",
 			"request": "launch",
@@ -112,7 +126,7 @@
 				"debuggerPath": "/usr/local/bin/gdb"
 			},
 			"setupCommands": [
-				{ "text": "set print thread-events off", "ignoreFailures": false },
+				{ "text": "set print thread-events off", "ignoreFailures": true },
 				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
 			],
 			"sourceFileMap":{
