@@ -46,6 +46,23 @@
 			"description": "action"
 		},
 		{
+			"id": "centos7",
+			"type": "pickString",
+			"options": [
+				"build-gcc9-debug",
+				"test-gcc9-debug",
+				"clean-gcc9-debug",
+				"build-gcc9-release",
+				"test-gcc9-release",
+				"clean-gcc9-release",
+				"build-gcc8-debug",
+				"test-gcc8-debug",
+				"clean-gcc8-debug"
+			],
+			"default": "build-gcc9-debug",
+			"description": "action"
+		},
+		{
 			"id": "alpine",
 			"type": "pickString",
 			"options": [
@@ -188,6 +205,42 @@
 			"options": {
 				"statusbar": {
 					"label": "$(chevron-right)centos8"
+				}
+			}
+		},
+		{
+			"label": "centos7 build",
+			"type": "shell",
+			"group": "build",
+			"command": "scripts/docker.sh",
+			"args": [
+				"centos7_builder",
+				"${input:centos7}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)centos7"
 				}
 			}
 		},

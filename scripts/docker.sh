@@ -67,6 +67,9 @@ case ${TRIPLET} in
 esac
 TOOLSET=default
 case ${TRIPLET} in
+	*-gcc8-*)
+		TOOLSET=gcc8
+		;;
 	*-gcc9-*)
 		TOOLSET=gcc9
 		;;
@@ -80,6 +83,35 @@ case ${TRIPLET} in
 		usage
 		;;
 esac
+
+centos7_toolset()
+{
+	case "${TOOLSET}" in
+		gcc8)
+			. /opt/rh/devtoolset-8/enable
+			;;
+		gcc9)
+			. /opt/rh/devtoolset-9/enable
+			;;
+		*)
+			exit -1
+			;;
+	esac
+}
+
+centos8_toolset()
+{
+	case "${TOOLSET}" in
+		gcc8)
+			;;
+		gcc9)
+			. /opt/rh/gcc-toolset-9/enable
+			;;
+		*)
+			exit -1
+			;;
+	esac
+}
 
 alpine_toolset()
 {
@@ -144,7 +176,10 @@ else
 	# adjust TOOLSET
 	case ${CONTAINER} in
 		centos8_builder)
-			. /opt/rh/gcc-toolset-9/enable 
+			centos8_toolset
+			;;
+		centos7_builder)
+			centos7_toolset
 			;;
 		alpine_builder)
 			alpine_toolset
