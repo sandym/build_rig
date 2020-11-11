@@ -38,7 +38,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/debug/${config:build_rig.project_name}",
+			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/debug/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 
@@ -52,7 +52,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/centos8/gcc9-debug/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/centos8/gcc9-debug/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
@@ -84,7 +84,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/centos7/${input:centos7}/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/centos7/${input:centos7}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
@@ -116,7 +116,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/alpine/${input:alpine}/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/alpine/${input:alpine}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
@@ -148,7 +148,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/ubuntu/${input:ubuntu}/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/ubuntu/${input:ubuntu}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			

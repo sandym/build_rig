@@ -14,6 +14,12 @@ then
 	exit -1
 fi
 
+if [[ "${PROJECT_NAME}" == "" ]]
+then
+	echo "need a project name."
+	exit -1
+fi
+
 . ${ROOT}/.env
 
 PROJECT_PATH="${WORKSPACE_SHARED_FOLDER}/${PROJECT_NAME}"
