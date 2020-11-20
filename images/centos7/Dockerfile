@@ -16,7 +16,7 @@ ln -s /opt/rh/devtoolset-9/root/usr/bin/gdb && \
 ln -s /opt/rh/devtoolset-9/root/usr/bin/gcore && \
 ln -s /opt/rh/devtoolset-9/root/usr/bin/gstack
 
-ARG CMAKE_VERSION=3.18.4
+ARG CMAKE_VERSION=3.19.0
 
 RUN cd /tmp && \
 . /opt/rh/devtoolset-9/enable && \
@@ -28,7 +28,7 @@ make -j$(nproc) && \
 make install  && \
 rm -rf /tmp/cmake-*
 
-ARG NINJA_VERSION=v1.10.0
+ARG NINJA_VERSION=v1.10.1
 
 RUN cd /usr/local/bin && \
 curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSION}/ninja-linux.zip && \

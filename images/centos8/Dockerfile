@@ -13,7 +13,7 @@ cd /usr/local/bin && \
 ln -s /opt/rh/gcc-toolset-9/root/usr/bin/make && \
 ln -s /opt/rh/gcc-toolset-9/root/usr/bin/gdb
 
-ARG CMAKE_VERSION=3.18.4
+ARG CMAKE_VERSION=3.19.0
 
 RUN cd /tmp && \
 . /opt/rh/gcc-toolset-9/enable && \

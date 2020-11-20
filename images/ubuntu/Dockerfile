@@ -10,7 +10,7 @@ apt-get autoremove --purge && \
 rm -rf /var/apt/cache/* && \
 rm -rf /tmp/*
 
-ARG CMAKE_VERSION=3.18.4
+ARG CMAKE_VERSION=3.19.0
 
 RUN cd /tmp && \
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
