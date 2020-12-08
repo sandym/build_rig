@@ -10,18 +10,14 @@ apt-get autoremove --purge && \
 rm -rf /var/apt/cache/* && \
 rm -rf /tmp/*
 
-ARG CMAKE_VERSION=3.19.0
+ARG CMAKE_VERSION
 
 RUN cd /tmp && \
-curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
-tar -zxf cmake-${CMAKE_VERSION}.tar.gz && \
-cd cmake-${CMAKE_VERSION} && \
-./bootstrap && \
-make -j$(nproc) && \
-make install  && \
+curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh && \
+sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr/local && \
 rm -rf /tmp/cmake-*
 
-ARG NINJA_VERSION=v1.10.1
+ARG NINJA_VERSION
 
 RUN cd /usr/local/bin && \
 curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSION}/ninja-linux.zip && \

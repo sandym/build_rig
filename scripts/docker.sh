@@ -7,13 +7,13 @@
 #	where:
 #		action: build, test, clean
 #		toolset: default, gcc9, gcc10, clang
-#		type:    debug, release, asan, tsan
+#		type:    debug, release, asan, tsan, ubsan
 #
 
 CONTAINER=$1
 TRIPLET=$2
 PROJECT=$3
-PROJECT_NAME=`basename "${PROJECT}"`
+PROJECT_NAME=$(basename "${PROJECT}")
 
 usage()
 {
@@ -59,6 +59,9 @@ case ${TRIPLET} in
 		TYPE=asan
 		;;
 	*-tsan)
+		TYPE=tsan
+		;;
+	*-ubsan)
 		TYPE=tsan
 		;;
 	*)
@@ -139,23 +142,60 @@ ubuntu_toolset()
 	esac
 }
 
+do_cmake()
+{
+	if [ ! -f build.ninja ]
+	then
+		BUILD_TYPE=Debug
+		if [ "${TOOLSET}" = "clang" ]
+		then
+			export CC=clang
+			export CXX=clang++
+		fi
+		case ${TYPE} in
+			release)
+				BUILD_TYPE=RelWithDebInfo
+				;;
+			asan)
+				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=address"
+				export CFLAGS="-fno-omit-frame-pointer -fsanitize=address"
+				export LDFLAGS="-fsanitize=address"
+				;;
+			tsan)
+				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=thread"
+				export CFLAGS="-fno-omit-frame-pointer -fsanitize=thread"
+				export LDFLAGS="-fsanitize=thread"
+				;;
+			ubsan)
+				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined"
+				export CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined"
+				export LDFLAGS="-fsanitize=undefined"
+				;;
+		esac
+
+		cmake -G Ninja \
+			-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
+			"/work/${PROJECT_NAME}/src" || exit -1
+	fi
+}
+
 if [ ! -f "/.dockerenv" ]
 then
 	# in host
-	SCRIPTS=`dirname "$0"`
-	SCRIPTS=`cd "${SCRIPTS}" ; pwd`
+	SCRIPTS=$(dirname "$0")
+	SCRIPTS=$(cd "${SCRIPTS}" ; pwd)
 	cd "${SCRIPTS}"
 
 	source "../.env"
 
 	# build syndir of needed
-	if [ ! -f "syncdir_host" ] ||
-		[ "syncdir/syncdir.go" -nt "syncdir_host" ]
+	if [ ! -f "syncdir_host" ] || [ "syncdir/syncdir.go" -nt "syncdir_host" ]
 	then
 		echo "building syncdir..."
 		cd "syncdir"
-	 	`go build -o ../syncdir_host`;
-	 	`GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux`;
+	 	$(go build -o ../syncdir_host)
+	 	$(GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux)
 		cd "${SCRIPTS}"
 	fi
 
@@ -217,52 +257,27 @@ else
 	echo "PATH = ${PATH}"
 	echo "building in ${BIN_DIR}"
 	echo ""
-	if [ "${TOOLSET}" = "clang" ]
-	then
-		clang++ --version || exit 1
-	else
-		g++ --version || exit 1
-	fi
+	case ${TOOLSET} in
+		clang)
+			clang++ --version || exit 1
+			;;
+		*)
+			g++ --version || exit 1
+			;;
+	esac
 	ld --version
 
 	mkdir -p "${BIN_DIR}"
 	cd "${BIN_DIR}"
 
-	if [ ! -f build.ninja ]
-	then
-		BUILD_TYPE=Debug
-		if [ "${TOOLSET}" = "clang" ]
-		then
-			export CC=clang
-			export CXX=clang++
-		fi
-		case ${TYPE} in
-			release)
-				BUILD_TYPE=RelWithDebInfo
-				;;
-			asan)
-				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=address"
-				export CFLAGS="-fno-omit-frame-pointer -fsanitize=address"
-				export LDFLAGS="-fsanitize=address -pthread"
-				;;
-			tsan)
-				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=thread"
-				export CFLAGS="-fno-omit-frame-pointer -fsanitize=thread"
-				export LDFLAGS="-fsanitize=thread"
-				;;
-			*)
-				;;
-		esac
-
-		cmake -G Ninja \
-			-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
-			"/work/${PROJECT_NAME}/src" || exit -1
-	fi
-	ninja
-
-	if [ "${ACTION}" = "test" ]
-	then
-		ctest --output-on-failure --parallel $(nproc)
-	fi
+	do_cmake
+	case ${ACTION} in
+		build)
+			ninja
+			;;
+		test)
+			ninja
+			ctest --output-on-failure --parallel $(nproc)
+			;;
+	esac
 fi

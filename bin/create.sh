@@ -25,8 +25,9 @@ fi
 PROJECT_PATH="${WORKSPACE_SHARED_FOLDER}/${PROJECT_NAME}"
 if [ ! -d "${PROJECT_PATH}" ]
 then
-	echo "${PROJECT_PATH} does not exist. Creating default project."
-	mkdir "${PROJECT_PATH}"
+
+echo "${PROJECT_PATH} does not exist. Creating default project."
+mkdir "${PROJECT_PATH}"
 
 cat << EOF > "${PROJECT_PATH}/main.cpp"
 #include <iostream>
@@ -76,4 +77,8 @@ then
 	ROOT=`cygpath.exe -m "${ROOT}"`
 fi
 echo "workspace file : ${WORKSPACE}"
-perl -p -e "s|PROJECT_PATH|$PROJECT_PATH|;s|BUILD_RIG|${ROOT}|;s|PROJECT_NAME|${PROJECT_NAME}|" "${TEMPLATE}" > "${WORKSPACE}"
+
+export PROJECT_PATH=${PROJECT_PATH}
+export BUILD_RIG=${ROOT}
+export PROJECT_NAME=${PROJECT_NAME}
+envsubst < "${TEMPLATE}" > "${WORKSPACE}"

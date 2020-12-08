@@ -6,27 +6,22 @@ PROJECT_PATH="$2"
 PROJECT_NAME=`basename "${PROJECT_PATH}"`
 BUILD_DIR=~/darwin_build/"${PROJECT_NAME}"
 
-if [ "${1}" = "xcode" ]
-then
-
-	mkdir -p "${BUILD_DIR}/xcode"
-	cd "${BUILD_DIR}/xcode"
-	cmake -G Xcode ${PROJECT_PATH}
-	open *.xcodeproj
-	exit 0
-
-fi
-
-if [ "${1}" = "xcode-clean" ]
-then
-
-	rm -rf "${BUILD_DIR}/xcode"
-	exit 0
-
-fi
+case ${1} in
+	xcode)
+		mkdir -p "${BUILD_DIR}/xcode"
+		cd "${BUILD_DIR}/xcode"
+		cmake -G Xcode ${PROJECT_PATH}
+		open *.xcodeproj
+		exit 0
+		;;
+	xcode-clean)
+		rm -rf "${BUILD_DIR}/xcode"
+		exit 0
+		;;
+esac
 
 ACTION=build
-case $1 in
+case ${1} in
     clean-*)
 	 	ACTION=clean
 		;;
@@ -80,4 +75,3 @@ fi
 
 echo ""
 echo "done macos ${ACTION}"
-

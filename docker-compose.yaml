@@ -1,7 +1,11 @@
 version: '3.8'
 services:
   centos7_builder:
-    build: ./images/centos7
+    build:
+      context: ./images/centos7
+      args:
+        CMAKE_VERSION: ${CMAKE_VERSION}
+        NINJA_VERSION: ${NINJA_VERSION}
     image: centos7_builder
     container_name: centos7_builder
     hostname: centos7_builder
@@ -19,7 +23,11 @@ services:
       - seccomp:unconfined
 
   centos8_builder:
-    build: ./images/centos8
+    build:
+      context: ./images/centos8
+      args:
+        CMAKE_VERSION: ${CMAKE_VERSION}
+        NINJA_VERSION: ${NINJA_VERSION}
     image: centos8_builder
     container_name: centos8_builder
     hostname: centos8_builder
@@ -37,7 +45,11 @@ services:
       - seccomp:unconfined
 
   alpine_builder:
-    build: ./images/alpine
+    build:
+      context: ./images/alpine
+      args:
+        CMAKE_VERSION: ${CMAKE_VERSION}
+        NINJA_VERSION: ${NINJA_VERSION}
     image: alpine_builder
     container_name: alpine_builder
     hostname: alpine_builder
@@ -55,7 +67,11 @@ services:
       - seccomp:unconfined
 
   ubuntu_builder:
-    build: ./images/ubuntu
+    build:
+      context: ./images/ubuntu
+      args:
+        CMAKE_VERSION: ${CMAKE_VERSION}
+        NINJA_VERSION: ${NINJA_VERSION}
     image: ubuntu_builder
     container_name: ubuntu_builder
     hostname: ubuntu_builder
