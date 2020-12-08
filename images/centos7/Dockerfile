@@ -4,10 +4,9 @@ RUN yum -y update && \
 yum -y install centos-release-scl && \
 yum -y install \
 devtoolset-8-gcc-c++ \
-devtoolset-9-gcc-c++ \
-devtoolset-9-gdb \
-devtoolset-9-make \
+devtoolset-9 \
 openssl-devel \
+time \
 which && \
 yum clean all && rm -rf /var/cache/yum && \
 cd /usr/local/bin && \

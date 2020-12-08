@@ -3,10 +3,9 @@ FROM centos:8
 RUN yum -y update && \
 yum -y install \
 curl \
-gcc-toolset-9-gcc-c++ \
-gcc-toolset-9-gdb \
-gcc-toolset-9-make \
+gcc-toolset-9 \
 openssl-devel \
+time \
 which && \
 yum clean all && rm -rf /var/cache/yum && \
 cd /usr/local/bin && \

@@ -204,7 +204,7 @@ then
 	cd "${SCRIPTS}/.."
 
 	export MSYS_NO_PATHCONV=1
-	time docker-compose run --rm ${CONTAINER} \
+	docker-compose run --rm ${CONTAINER} \
 			/scripts/docker.sh ${CONTAINER} ${TRIPLET} ${PROJECT}
 
 	echo ""
@@ -273,11 +273,11 @@ else
 	do_cmake
 	case ${ACTION} in
 		build)
-			ninja
+			/usr/bin/time -p ninja
 			;;
 		test)
-			ninja
-			ctest --output-on-failure --parallel $(nproc)
+			/usr/bin/time -p ninja
+			/usr/bin/time -p ctest --output-on-failure --parallel $(nproc)
 			;;
 	esac
 fi
