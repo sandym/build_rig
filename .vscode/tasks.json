@@ -7,14 +7,14 @@
 			"id": "darwin",
 			"type": "pickString",
 			"options": [
-				"build-debug",
-				"test-debug",
-				"clean-debug",
-				"build-release",
-				"test-release",
-				"clean-release",
-				"xcode",
-				"xcode-clean"
+				"build-clang-debug",
+				"test-clang-debug",
+				"clean-clang-debug",
+				"build-clang-release",
+				"test-clang-release",
+				"clean-clang-release",
+				"build-xcode-all",
+				"clean-xcode-all"
 			],
 			"default": "build-debug",
 			"description": "action"
@@ -74,8 +74,9 @@
 			"label": "macos build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/darwin.sh",
+			"command": "scripts/driver.sh",
 			"args": [
+				"darwin",
 				"${input:darwin}",
 				"${config:build_rig.project}"
 			],
