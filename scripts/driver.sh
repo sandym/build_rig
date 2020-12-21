@@ -25,67 +25,16 @@ usage()
 	echo "                where:"
 	echo "                   action:  build, test, clean"
 	echo "                   type:    debug, release, asan, tsan"
-	echo "                   toolset: default, gcc9, clang"
+	echo "                   toolset: gcc8, gcc9, clang"
 	echo "     project:   path to project to build, should have a"
 	echo "                CMakeLists.txt"
 	echo ""
 	exit 0
 }
 
-ACTION=build
-case ${TRIPLET} in
-	build-*)
-		ACTION=build
-		;;
-	test-*)
-		ACTION=test
-		;;
-	clean-*)
-		ACTION=clean
-		;;
-	*)
-		usage
-		;;
-esac
-TYPE=debug
-case ${TRIPLET} in
-	*-debug)
-		TYPE=debug
-		;;
-	*-release)
-		TYPE=release
-		;;
-	*-asan)
-		TYPE=asan
-		;;
-	*-tsan)
-		TYPE=tsan
-		;;
-	*-ubsan)
-		TYPE=tsan
-		;;
-	*)
-		usage
-		;;
-esac
-TOOLSET=default
-case ${TRIPLET} in
-	*-gcc8-*)
-		TOOLSET=gcc8
-		;;
-	*-gcc9-*)
-		TOOLSET=gcc9
-		;;
-	*-gcc10-*)
-		TOOLSET=gcc10
-		;;
-	*-clang-*)
-		TOOLSET=clang
-		;;
-	*)
-		usage
-		;;
-esac
+ACTION=$(echo "${TRIPLET}" | cut -d "-" -f 1)
+TOOLSET=$(echo "${TRIPLET}" | cut -d "-" -f 2)
+TYPE=$(echo "${TRIPLET}" | cut -d "-" -f 3)
 
 centos7_toolset()
 {
@@ -97,20 +46,7 @@ centos7_toolset()
 			. /opt/rh/devtoolset-9/enable
 			;;
 		*)
-			exit -1
-			;;
-	esac
-}
-
-centos8_toolset()
-{
-	case "${TOOLSET}" in
-		gcc8)
-			;;
-		gcc9)
-			. /opt/rh/gcc-toolset-9/enable
-			;;
-		*)
+			echo "unsupported toolset for centos7: ${TOOLSET}"
 			exit -1
 			;;
 	esac
@@ -124,6 +60,7 @@ alpine_toolset()
 		clang)
 			;;
 		*)
+			echo "unsupported toolset for alpine: ${TOOLSET}"
 			exit -1
 			;;
 	esac
@@ -137,6 +74,7 @@ ubuntu_toolset()
 		clang)
 			;;
 		*)
+			echo "unsupported toolset for ubuntu: ${TOOLSET}"
 			exit -1
 			;;
 	esac
@@ -171,6 +109,12 @@ do_cmake()
 				export CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined"
 				export LDFLAGS="-fsanitize=undefined"
 				;;
+			debug)
+				;;
+			*)
+				echo "unsupported type: ${TYPE}"
+				usage
+				;;
 		esac
 
 		cmake -G Ninja \
@@ -190,13 +134,11 @@ then
 	source "../.env"
 
 	# build syndir of needed
-	if [ ! -f "syncdir_host" ] || [ "syncdir/syncdir.go" -nt "syncdir_host" ]
+	if [ ! -f "syncdir_host" ] || [ "syncdir.go" -nt "syncdir_host" ]
 	then
 		echo "building syncdir..."
-		cd "syncdir"
-	 	$(go build -o ../syncdir_host)
-	 	$(GOOS=linux GOARCH=amd64 go build -o ../syncdir_linux)
-		cd "${SCRIPTS}"
+	 	$(go build -o syncdir_host)
+	 	$(GOOS=linux GOARCH=amd64 go build -o syncdir_linux)
 	fi
 
 	"./syncdir_host" -scan "${PROJECT}"
@@ -215,9 +157,6 @@ else
 
 	# adjust TOOLSET
 	case ${CONTAINER} in
-		centos8_builder)
-			centos8_toolset
-			;;
 		centos7_builder)
 			centos7_toolset
 			;;
@@ -278,6 +217,10 @@ else
 		test)
 			/usr/bin/time -p ninja
 			/usr/bin/time -p ctest --output-on-failure --parallel $(nproc)
+			;;
+		*)
+			echo "unsupported action: ${action}"
+			usage
 			;;
 	esac
 fi

@@ -20,32 +20,6 @@
 			"description": "action"
 		},
 		{
-			"id": "vs",
-			"type": "pickString",
-			"options": [
-				"build",
-				"test",
-				"vs",
-				"clean"
-			],
-			"default": "build",
-			"description": "action"
-		},
-		{
-			"id": "centos8",
-			"type": "pickString",
-			"options": [
-				"build-gcc9-debug",
-				"test-gcc9-debug",
-				"clean-gcc9-debug",
-				"build-gcc9-release",
-				"test-gcc9-release",
-				"clean-gcc9-release"
-			],
-			"default": "build-gcc9-debug",
-			"description": "action"
-		},
-		{
 			"id": "centos7",
 			"type": "pickString",
 			"options": [
@@ -93,17 +67,6 @@
 			],
 			"default": "build-gcc10-debug",
 			"description": "action"
-		},
-		{
-			"id": "msvc",
-			"type": "pickString",
-			"options": [
-				"build-msvc-debug",
-				"test-msvc-debug",
-				"clean-msvc-debug"
-			],
-			"default": "build-msvc-debug",
-			"description": "action"
 		}
 	],
 	"tasks": [
@@ -142,77 +105,10 @@
 			}
 		},
 		{
-			"label": "windows build",
-			"type": "shell",
-			"group": "build",
-			"command": "scripts/windows.sh",
-			"args": [
-				"${input:vs}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"options": {
-				"statusbar": {
-					"hide": true
-				}
-			},
-			"problemMatcher": "$msCompile",
-			"windows": {
-				"group": {
-					"kind": "build",
-					"isDefault": true
-				},
-				"options": {
-					"statusbar": {
-						"label": "$(chevron-right)VS",
-						"hide": false
-					}
-				}
-			}
-		},
-		{
-			"label": "centos8 build",
-			"type": "shell",
-			"group": "build",
-			"command": "scripts/docker.sh",
-			"args": [
-				"centos8_builder",
-				"${input:centos8}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"problemMatcher": {
-				"base": "$gcc",
-				"fileLocation": [
-					"relative",
-					"${config:build_rig.project}/."
-				],
-				"pattern":[
-					{
-						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
-						"file": 1,
-						"line": 2,
-						"column": 3,
-						"severity": 4,
-						"message": 5
-					}
-				]
-			},
-			"options": {
-				"statusbar": {
-					"label": "$(chevron-right)centos8"
-				}
-			}
-		},
-		{
 			"label": "centos7 build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/docker.sh",
+			"command": "scripts/driver.sh",
 			"args": [
 				"centos7_builder",
 				"${input:centos7}",
@@ -248,7 +144,7 @@
 			"label": "alpine build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/docker.sh",
+			"command": "scripts/driver.sh",
 			"args": [
 				"alpine_builder",
 				"${input:alpine}",
@@ -284,7 +180,7 @@
 			"label": "ubuntu build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/docker.sh",
+			"command": "scripts/driver.sh",
 			"args": [
 				"ubuntu_builder",
 				"${input:ubuntu}",
@@ -313,34 +209,6 @@
 			"options": {
 				"statusbar": {
 					"label": "$(chevron-right)ubuntu"
-				}
-			}
-		},
-		{
-			"label": "msvc build",
-			"type": "shell",
-			"group": "build",
-			"command": "scripts/docker.sh",
-			"args": [
-				"msvc_builder",
-				"${input:msvc}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"options": {
-				"statusbar": {
-					"hide": true
-				}
-			},
-			"problemMatcher": "$msCompile",
-			"osx": {
-				"options": {
-					"statusbar": {
-						"label": "$(chevron-right)msvc",
-						"hide": true
-					}
 				}
 			}
 		}

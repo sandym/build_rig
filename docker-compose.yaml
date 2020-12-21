@@ -22,28 +22,6 @@ services:
     security_opt:
       - seccomp:unconfined
 
-  centos8_builder:
-    build:
-      context: ./images/centos8
-      args:
-        CMAKE_VERSION: ${CMAKE_VERSION}
-        NINJA_VERSION: ${NINJA_VERSION}
-    image: centos8_builder
-    container_name: centos8_builder
-    hostname: centos8_builder
-    init: true
-    environment:
-      PS1: '[\e[35mcentos8\e[m \W]# '
-    volumes:
-      - work:/work
-      - ./scripts:/scripts
-      - ${WORKSPACE_SHARED_FOLDER}:/share
-    # need this to debug
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-
   alpine_builder:
     build:
       context: ./images/alpine
