@@ -137,7 +137,6 @@ run_build()
 			g++ --version || exit 1
 			;;
 	esac
-	ld --version
 
 	mkdir -p "${BIN_DIR}"
 	cd "${BIN_DIR}"
@@ -230,7 +229,7 @@ then
 
 	export MSYS_NO_PATHCONV=1
 	docker-compose run --rm ${PLATFORM} \
-			/scripts/docker.sh ${PLATFORM} ${TRIPLET} ${PROJECT}
+			/scripts/driver.sh ${PLATFORM} ${TRIPLET} ${PROJECT}
 
 	echo ""
 	echo "done: ${PLATFORM} ${TRIPLET}"
