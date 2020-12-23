@@ -66,6 +66,28 @@ services:
     security_opt:
       - seccomp:unconfined
 
+  ubuntu_lts_builder:
+    build:
+      context: ./images/ubuntu_lts
+      args:
+        CMAKE_VERSION: ${CMAKE_VERSION}
+        NINJA_VERSION: ${NINJA_VERSION}
+    image: ubuntu_lts_builder
+    container_name: ubuntu_lts_builder
+    hostname: ubuntu_lts_builder
+    init: true
+    environment:
+      PS1: '[\e[35mubuntu_lts\e[m \W]# '
+    volumes:
+      - work:/work
+      - ./scripts:/scripts
+      - ${WORKSPACE_SHARED_FOLDER}:/share
+    # need this to debug
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
 volumes:
   work:
     name: build_rig_work

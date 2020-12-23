@@ -80,6 +80,18 @@ ubuntu_toolset()
 	esac
 }
 
+ubuntu_lts_toolset()
+{
+	case "${TOOLSET}" in
+		gcc9)
+			;;
+		*)
+			echo "unsupported toolset for ubuntu lts: ${TOOLSET}"
+			exit -1
+			;;
+	esac
+}
+
 do_cmake()
 {
 	if [ ! -f build.ninja ]
@@ -247,6 +259,9 @@ else
 			;;
 		ubuntu_builder)
 			ubuntu_toolset
+			;;
+		ubuntu_lts_builder)
+			ubuntu_lts_toolset
 			;;
 		*)
 			;;

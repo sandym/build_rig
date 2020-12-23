@@ -67,6 +67,17 @@
 			],
 			"default": "build-gcc10-debug",
 			"description": "action"
+		},
+		{
+			"id": "ubuntu_lts",
+			"type": "pickString",
+			"options": [
+				"build-gcc9-debug",
+				"test-gcc9-debug",
+				"clean-gcc9-debug"
+			],
+			"default": "build-gcc9-debug",
+			"description": "action"
 		}
 	],
 	"tasks": [
@@ -210,6 +221,42 @@
 			"options": {
 				"statusbar": {
 					"label": "$(chevron-right)ubuntu"
+				}
+			}
+		},
+		{
+			"label": "ubuntu lts build",
+			"type": "shell",
+			"group": "build",
+			"command": "scripts/driver.sh",
+			"args": [
+				"ubuntu_lts_builder",
+				"${input:ubuntu_lts}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(chevron-right)ubuntu_lts"
 				}
 			}
 		}
