@@ -5,10 +5,10 @@
 			"id": "alpine",
 			"type": "pickString",
 			"options": [
-				"gcc9-debug",
+				"gcc10-debug",
 				"clang-debug"
 			],
-			"default": "gcc9-debug",
+			"default": "gcc10-debug",
 			"description": "action"
 		},
 		{
@@ -35,7 +35,8 @@
 			"type": "pickString",
 			"options": [
 				"gcc8-debug",
-				"gcc9-debug"
+				"gcc9-debug",
+				"gcc10-debug"
 			],
 			"default": "gcc8-debug",
 			"description": "action"

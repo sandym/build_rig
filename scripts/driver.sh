@@ -2,13 +2,6 @@
 #
 # platform: darwin or container name
 #
-# triplet:  action-toolset-type
-#
-#	where:
-#		action: build, test, clean
-#		toolset: default, gcc9, gcc10, clang
-#		type:    debug, release, asan, tsan, ubsan
-#
 
 PLATFORM=$1
 TRIPLET=$2
@@ -24,8 +17,8 @@ usage()
 	echo "     triplet:   action-toolset-type"
 	echo "                where:"
 	echo "                   action:  build, test, clean"
-	echo "                   toolset: gcc8, gcc9, clang"
-	echo "                   type:    debug, release, asan, tsan"
+	echo "                   toolset: gcc8, gcc9, gcc10, clang"
+	echo "                   type:    debug, release, asan, tsan, ubsan"
 	echo "     project:   path to project to build, should have a"
 	echo "                CMakeLists.txt"
 	echo ""
@@ -45,6 +38,9 @@ centos7_toolset()
 		gcc9)
 			. /opt/rh/devtoolset-9/enable
 			;;
+		gcc10)
+			. /opt/rh/devtoolset-10/enable
+			;;
 		*)
 			echo "unsupported toolset for centos7: ${TOOLSET}"
 			exit -1
@@ -55,7 +51,7 @@ centos7_toolset()
 alpine_toolset()
 {
 	case "${TOOLSET}" in
-		gcc9)
+		gcc10)
 			;;
 		clang)
 			;;
@@ -227,7 +223,7 @@ then
 
 	source "../.env"
 
-	# build syndir of needed
+	# build syncdir if needed
 	if [ ! -f "syncdir_host" ] || [ "syncdir.go" -nt "syncdir_host" ]
 	then
 		echo "building syncdir..."
@@ -235,7 +231,7 @@ then
 	 	$(GOOS=linux GOARCH=amd64 go build -o syncdir_linux)
 	fi
 
-	"./syncdir_host" -scan "${PROJECT}"
+	./syncdir_host -scan "${PROJECT}"
 
 	cd "${SCRIPTS}/.."
 

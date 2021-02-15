@@ -30,30 +30,22 @@ func main() {
 	flag.Parse()
 
 	switch {
-	case *scanPtr && len(flag.Args()) >= 1:
+	case *scanPtr && flag.NArg() >= 1:
 		for _, path := range flag.Args() {
 			updateScan(path)
 		}
-	case *syncPtr && (len(flag.Args())&1) == 0:
-		for i := 0; i < len(flag.Args()); i += 2 {
+	case *syncPtr && (flag.NArg()&1) == 0:
+		for i := 0; i < flag.NArg(); i += 2 {
 			syncFolders(flag.Args()[i], flag.Args()[i+1])
 		}
-	case *cleanPtr && len(flag.Args()) >= 1:
+	case *cleanPtr && flag.NArg() >= 1:
 		for _, path := range flag.Args() {
 			cleanFolder(path)
 		}
 	case *headersPtr && len(flag.Args()) >= 2:
 		buildHeaders(flag.Args()[0], flag.Args()[1:])
 	default:
-		// take a guess
-		switch len(flag.Args()) {
-		case 1: // one argument: scan
-			updateScan(flag.Args()[0])
-		case 2: // two arguments: sync
-			syncFolders(flag.Args()[0], flag.Args()[1])
-		default:
-			flag.PrintDefaults()
-		}
+		flag.PrintDefaults()
 	}
 }
 func gitRevision(wd string) string {
