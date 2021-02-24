@@ -73,9 +73,9 @@
 
 			"pipeTransport": {
 				"pipeCwd": "${workspaceFolder:build_rig}",
-				"pipeProgram": "/usr/local/bin/docker-compose",
+				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
-					"run", "--rm",
+					"exec", "-i",
 					"centos7_builder",
 					"sh", "-c"
 				],
@@ -105,9 +105,9 @@
 
 			"pipeTransport": {
 				"pipeCwd": "${workspaceFolder:build_rig}",
-				"pipeProgram": "/usr/local/bin/docker-compose",
+				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
-					"run", "--rm",
+					"exec", "-i",
 					"alpine_builder",
 					"sh", "-c"
 				],
@@ -137,9 +137,9 @@
 
 			"pipeTransport": {
 				"pipeCwd": "${workspaceFolder:build_rig}",
-				"pipeProgram": "/usr/local/bin/docker-compose",
+				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
-					"run", "--rm",
+					"exec", "-i",
 					"ubuntu_builder",
 					"sh", "-c"
 				],
@@ -169,9 +169,9 @@
 
 			"pipeTransport": {
 				"pipeCwd": "${workspaceFolder:build_rig}",
-				"pipeProgram": "/usr/local/bin/docker-compose",
+				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
-					"run", "--rm",
+					"exec", "-i",
 					"ubuntu_lts_builder",
 					"sh", "-c"
 				],

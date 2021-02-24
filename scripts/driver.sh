@@ -227,6 +227,7 @@ then
 	if [ ! -f "syncdir_host" ] || [ "syncdir.go" -nt "syncdir_host" ]
 	then
 		echo "building syncdir..."
+		export GO111MODULE=auto
 	 	$(go build -o syncdir_host)
 	 	$(GOOS=linux GOARCH=amd64 go build -o syncdir_linux)
 	fi
