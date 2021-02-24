@@ -1,6 +1,6 @@
 FROM alpine
 
-RUN apk add --no-cache clang g++ gdb make linux-headers openssl-dev
+RUN apk add --no-cache clang g++ gdb make ninja linux-headers openssl-dev
 
 ARG CMAKE_VERSION
 
@@ -12,12 +12,5 @@ cd cmake-${CMAKE_VERSION} && \
 make -j$(nproc) && \
 make install  && \
 rm -rf /tmp/cmake-*
-
-ARG NINJA_VERSION
-
-RUN cd /usr/local/bin && \
-wget https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSION}/ninja-linux.zip && \
-cmake -E tar zxf ninja-linux.zip && \
-rm ninja-linux.zip
 
 ENV PS1='[\e[35malpine\e[m \W]# '

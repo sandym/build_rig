@@ -1,13 +1,11 @@
 FROM centos:7
 
-RUN yum -y update && \
-echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
+RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
 yum -y install centos-release-scl && \
 yum -y install \
 devtoolset-8-gcc-c++ \
 devtoolset-9 \
 openssl-devel \
-time \
 which && \
 yum clean all && rm -rf /var/cache/yum && \
 cd /usr/local/bin && \

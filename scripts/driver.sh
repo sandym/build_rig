@@ -132,7 +132,7 @@ do_cmake()
 	fi
 }
 
-run_build()
+do_build()
 {
 	echo "PATH = ${PATH}"
 	echo "building in ${BIN_DIR}"
@@ -152,11 +152,11 @@ run_build()
 	do_cmake
 	case ${ACTION} in
 		build)
-			/usr/bin/time -p ninja
+			time ninja
 			;;
 		test)
-			/usr/bin/time -p ninja
-			/usr/bin/time -p ctest --output-on-failure --parallel $(nproc)
+			time ninja
+			time ctest --output-on-failure --parallel $(nproc)
 			;;
 		*)
 			echo "unsupported action: ${action}"
@@ -205,7 +205,7 @@ then
 				exit 0
 			fi
 
-			run_build
+			do_build
 			;;
 		*)
 			echo "unsupported toolset for darwin: ${TOOLSET}"
@@ -233,8 +233,6 @@ then
 	fi
 
 	./syncdir_host -scan "${PROJECT}"
-
-	cd "${SCRIPTS}/.."
 
 	export MSYS_NO_PATHCONV=1
 	docker run --rm -t \
@@ -290,7 +288,7 @@ else
 	/scripts/syncdir_linux -sync "/share/${PROJECT_NAME}" "/work/${PROJECT_NAME}/src"
 	echo ""
 
-	run_build
+	do_build
 
 fi
 

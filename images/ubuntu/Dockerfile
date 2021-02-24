@@ -2,7 +2,7 @@ FROM ubuntu:20.10
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get -y update && apt-get -y upgrade && \
+RUN apt-get -y update && \
 apt-get -y install wget clang g++ gdb libssl-dev make time && \
 apt-get autoclean && \
 apt-get clean && \
@@ -26,3 +26,5 @@ rm ninja-linux.zip && \
 ln -s /usr/bin/gdb
 
 ENV PS1='[\e[35mubuntu\e[m \W]# '
+RUN echo "" >> /root/.bashrc && \
+echo "PS1='$PS1'" >> /root/.bashrc
