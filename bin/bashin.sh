@@ -13,17 +13,16 @@ then
 	SHELL=ash
 fi
 
-# docker ps
-
-docker run --rm -ti \
-	--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
-	--mount type=bind,source="${SCRIPTS}",target=/scripts \
-	--mount src=build_rig_work,target=/work \
-	${CONTAINER} ${SHELL}
-
-    # cap_add:
-    #   - SYS_PTRACE
-    # security_opt:
-    #   - seccomp:unconfined
-
-# docker exec -t ${CONTAINER} $(bash | ash | sh)
+docker ps | grep ${CONTAINER} > /dev/null
+if [ $? = 0 ]
+then
+	docker exec -ti ${CONTAINER} ${SHELL}
+else
+	docker run --rm -ti \
+		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+		--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
+		--mount type=bind,source="${SCRIPTS}",target=/scripts \
+		--mount src=build_rig_work,target=/work \
+		--name ${CONTAINER} \
+		${CONTAINER} ${SHELL}
+fi
