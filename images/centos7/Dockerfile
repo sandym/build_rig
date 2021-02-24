@@ -38,3 +38,5 @@ RUN cd /usr/local/bin && \
 curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSION}/ninja-linux.zip && \
 cmake -E tar zxf ninja-linux.zip && \
 rm ninja-linux.zip
+
+ENV PS1='[\e[35mcentos7\e[m \W]# '

@@ -236,8 +236,11 @@ then
 	cd "${SCRIPTS}/.."
 
 	export MSYS_NO_PATHCONV=1
-	docker-compose run --rm ${PLATFORM} \
-			/scripts/driver.sh ${PLATFORM} ${TRIPLET} ${PROJECT}
+	docker run --rm -t \
+		--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
+		--mount type=bind,source="${SCRIPTS}",target=/scripts \
+		--mount src=build_rig_work,target=/work \
+		${PLATFORM} /scripts/driver.sh ${PLATFORM} ${TRIPLET} ${PROJECT}
 
 	echo ""
 	echo "done: ${PLATFORM} ${TRIPLET}"

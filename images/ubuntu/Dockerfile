@@ -24,3 +24,5 @@ wget https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSION}/nin
 cmake -E tar zxf ninja-linux.zip && \
 rm ninja-linux.zip && \
 ln -s /usr/bin/gdb
+
+ENV PS1='[\e[35mubuntu\e[m \W]# '
