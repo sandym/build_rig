@@ -146,7 +146,7 @@ func updateScan(srcFullPath string) {
 	if !isDirectory(srcFullPath) {
 		log.Fatalf("%s is not a directory", srcFullPath)
 	}
-	fmt.Printf("scanning %s...\n", srcFullPath)
+	fmt.Printf("🔄 scanning %s...\n", srcFullPath)
 
 	file, err := os.Create(path.Join(srcFullPath, ".tosync"))
 	check(err)
@@ -244,7 +244,7 @@ func syncFolders(src, dst string) {
 	if !isDirectory(src) {
 		log.Fatalf("%s is not a directory", src)
 	}
-	fmt.Printf("sync'ing %s to %s\n", src, dst)
+	fmt.Printf("🔄 sync'ing %s to %s\n", src, dst)
 
 	lastSync, lastSyncFiles := readLastSync(dst)
 
@@ -367,7 +367,7 @@ func cleanFolder(dst string) {
 	if !isDirectory(dst) {
 		return
 	}
-	fmt.Printf("cleaning %s\n", dst)
+	fmt.Printf("🗑 cleaning %s\n", dst)
 
 	_, lastSyncFiles := readLastSync(dst)
 

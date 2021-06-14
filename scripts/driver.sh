@@ -35,15 +35,25 @@ centos7_toolset()
 		gcc8)
 			. /opt/rh/devtoolset-8/enable
 			;;
-		gcc9)
-			. /opt/rh/devtoolset-9/enable
-			;;
 		gcc10)
 			. /opt/rh/devtoolset-10/enable
 			;;
 		*)
 			echo "unsupported toolset for centos7: ${TOOLSET}"
-			exit -1
+			exit 1
+			;;
+	esac
+}
+
+centos8_toolset()
+{
+	case "${TOOLSET}" in
+		gcc10)
+			. /opt/rh/gcctoolset-10/enable
+			;;
+		*)
+			echo "unsupported toolset for centos8: ${TOOLSET}"
+			exit 1
 			;;
 	esac
 }
@@ -57,7 +67,7 @@ alpine_toolset()
 			;;
 		*)
 			echo "unsupported toolset for alpine: ${TOOLSET}"
-			exit -1
+			exit 1
 			;;
 	esac
 }
@@ -71,7 +81,7 @@ ubuntu_toolset()
 			;;
 		*)
 			echo "unsupported toolset for ubuntu: ${TOOLSET}"
-			exit -1
+			exit 1
 			;;
 	esac
 }
@@ -83,7 +93,7 @@ ubuntu_lts_toolset()
 			;;
 		*)
 			echo "unsupported toolset for ubuntu lts: ${TOOLSET}"
-			exit -1
+			exit 1
 			;;
 	esac
 }
@@ -128,7 +138,12 @@ do_cmake()
 		cmake -G Ninja \
 			-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
-			"/work/${PROJECT_NAME}/src" || exit -1
+			"/work/${PROJECT_NAME}/src"
+		if [ $? -ne 0 ]
+		then
+			echo "🔴"
+			exit 1
+		fi
 	fi
 }
 
@@ -150,19 +165,26 @@ do_build()
 	cd "${BIN_DIR}"
 
 	do_cmake
-	case ${ACTION} in
-		build)
-			time ninja
-			;;
-		test)
-			time ninja
-			time ctest --output-on-failure --parallel $(nproc)
-			;;
-		*)
-			echo "unsupported action: ${action}"
-			usage
-			;;
-	esac
+	if [ ${ACTION} -ne build ] && [ ${ACTION} -ne test ]
+	then
+		echo "unsupported action: ${action}"
+		usage
+	fi
+	time ninja
+	if [ $? -ne 0 ]
+	then
+		echo "🔴"
+		exit 1
+	fi
+	if [ ${ACTION} -eq test ]
+	then
+		time ctest --output-on-failure --parallel $(nproc)
+		if [ $? -ne 0 ]
+		then
+			echo "🔴"
+			exit 1
+		fi
+	if
 }
 
 if [ "${PLATFORM}" = "darwin" ]
@@ -175,6 +197,11 @@ then
 					mkdir -p "${BUILD_DIR}/xcode"
 					cd "${BUILD_DIR}/xcode"
 					cmake -G Xcode ${PROJECT_PATH}
+					if [ $? -ne 0 ]
+					then
+						echo "🔴"
+						exit 1
+					fi
 					open *.xcodeproj
 					exit 0
 					;;
@@ -209,7 +236,7 @@ then
 			;;
 		*)
 			echo "unsupported toolset for darwin: ${TOOLSET}"
-			exit -1
+			exit 1
 			;;
 	esac
 else
@@ -242,7 +269,7 @@ then
 		${PLATFORM} /scripts/driver.sh ${PLATFORM} ${TRIPLET} ${PROJECT}
 
 	echo ""
-	echo "done: ${PLATFORM} ${TRIPLET}"
+	echo "🟢 ${PLATFORM} ${TRIPLET}"
 
 else
 	# in container, for a linux build
@@ -251,6 +278,9 @@ else
 	case ${PLATFORM} in
 		centos7_builder)
 			centos7_toolset
+			;;
+		centos8_builder)
+			centos8_toolset
 			;;
 		alpine_builder)
 			alpine_toolset

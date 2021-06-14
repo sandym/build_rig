@@ -1,18 +1,12 @@
-FROM centos:7
+FROM quay.io/centos/centos:stream8
 
 RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
 yum -y install centos-release-scl && \
 yum -y install \
-devtoolset-8-gcc-c++ \
-devtoolset-10 \
+gcctoolset-10 \
 openssl-devel \
 which && \
-yum clean all && rm -rf /var/cache/yum && \
-cd /usr/local/bin && \
-ln -s /opt/rh/devtoolset-10/root/usr/bin/make && \
-ln -s /opt/rh/devtoolset-10/root/usr/bin/gdb && \
-ln -s /opt/rh/devtoolset-10/root/usr/bin/gcore && \
-ln -s /opt/rh/devtoolset-10/root/usr/bin/gstack
+yum clean all && rm -rf /var/cache/yum
 
 ARG CMAKE_VERSION
 
@@ -28,4 +22,4 @@ curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSIO
 cmake -E tar zxf ninja-linux.zip && \
 rm ninja-linux.zip
 
-ENV PS1='[\e[35mcentos7\e[m \W]# '
+ENV PS1='[\e[35mcentos8\e[m \W]# '

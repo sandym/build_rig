@@ -35,10 +35,19 @@
 			"type": "pickString",
 			"options": [
 				"gcc8-debug",
-				"gcc9-debug",
 				"gcc10-debug"
 			],
 			"default": "gcc8-debug",
+			"description": "action"
+		},
+		{
+			"id": "centos8",
+			"type": "pickString",
+			"options": [
+				"gcc10-debug",
+				"gcc10-release"
+			],
+			"default": "gcc10-debug",
 			"description": "action"
 		}
 	],
@@ -77,6 +86,38 @@
 				"pipeArgs": [
 					"exec", "-i",
 					"centos7_builder",
+					"sh", "-c"
+				],
+				"debuggerPath": "/usr/local/bin/gdb"
+			},
+			"setupCommands": [
+				{ "text": "set print thread-events off", "ignoreFailures": false },
+				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
+			],
+			"sourceFileMap":{
+				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
+			}
+		},
+		{
+			"name": "Launch centos8",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "/work/${config:build_rig.project_name}/centos8/${input:centos8}/${config:build_rig.target_name}",
+			"args": [],
+			"environment": [],
+			
+			"externalConsole": false,
+			"cwd": "/work",
+			"stopAtEntry": true,
+			"MIMode": "gdb",
+
+			"pipeTransport": {
+				"pipeCwd": "${workspaceFolder:build_rig}",
+				"pipeProgram": "/usr/local/bin/docker",
+				"pipeArgs": [
+					"exec", "-i",
+					"centos8_builder",
 					"sh", "-c"
 				],
 				"debuggerPath": "/usr/local/bin/gdb"

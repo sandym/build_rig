@@ -23,20 +23,31 @@
 			"id": "centos7",
 			"type": "pickString",
 			"options": [
-				"build-gcc9-debug",
-				"test-gcc9-debug",
-				"clean-gcc9-debug",
-				"build-gcc9-release",
-				"test-gcc9-release",
-				"clean-gcc9-release",
-				"build-gcc8-debug",
-				"test-gcc8-debug",
-				"clean-gcc-debug",
 				"build-gcc10-debug",
 				"test-gcc10-debug",
-				"clean-gcc10-debug"
+				"clean-gcc10-debug",
+				"build-gcc10-release",
+				"test-gcc10-release",
+				"clean-gcc10-release",
+				"build-gcc8-debug",
+				"test-gcc8-debug",
+				"clean-gcc8-debug"
 			],
-			"default": "build-gcc9-debug",
+			"default": "build-gcc10-debug",
+			"description": "action"
+		},
+		{
+			"id": "centos8",
+			"type": "pickString",
+			"options": [
+				"build-gcc10-debug",
+				"test-gcc10-debug",
+				"clean-gcc10-debug",
+				"build-gcc10-release",
+				"test-gcc10-release",
+				"clean-gcc10-release"
+			],
+			"default": "build-gcc10-debug",
 			"description": "action"
 		},
 		{
@@ -113,7 +124,7 @@
 				},
 				"options": {
 					"statusbar": {
-						"label": "$(chevron-right)macos",
+						"label": "$(arrow-right)macos",
 						"hide": false
 					}
 				}
@@ -151,7 +162,43 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(chevron-right)centos7"
+					"label": "$(arrow-right)centos7"
+				}
+			}
+		},
+		{
+			"label": "centos8 build",
+			"type": "shell",
+			"group": "build",
+			"command": "scripts/driver.sh",
+			"args": [
+				"centos8_builder",
+				"${input:centos8}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(arrow-right)centos8"
 				}
 			}
 		},
@@ -187,7 +234,7 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(chevron-right)alpine"
+					"label": "$(arrow-right)alpine"
 				}
 			}
 		},
@@ -223,7 +270,7 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(chevron-right)ubuntu"
+					"label": "$(arrow-right)ubuntu"
 				}
 			}
 		},
@@ -259,7 +306,7 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(chevron-right)ubuntu_lts"
+					"label": "$(arrow-right)ubuntu_lts"
 				}
 			}
 		}
