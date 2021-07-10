@@ -6,320 +6,64 @@
 PLATFORM=$1
 TRIPLET=$2
 PROJECT=$3
-PROJECT_NAME=$(basename "${PROJECT}")
-
-usage()
-{
-	echo "usage:"
-	echo "  ./driver.sh platform triplet project_path"
-	echo ""
-	echo "     platform: darwin or name of a container to run the build"
-	echo "     triplet:   action-toolset-type"
-	echo "                where:"
-	echo "                   action:  build, test, clean"
-	echo "                   toolset: gcc8, gcc9, gcc10, clang"
-	echo "                   type:    debug, release, asan, tsan, ubsan"
-	echo "     project:   path to project to build, should have a"
-	echo "                CMakeLists.txt"
-	echo ""
-	exit 0
-}
-
-ACTION=$(echo "${TRIPLET}" | cut -d "-" -f 1)
-TOOLSET=$(echo "${TRIPLET}" | cut -d "-" -f 2)
-TYPE=$(echo "${TRIPLET}" | cut -d "-" -f 3)
-
-centos7_toolset()
-{
-	case "${TOOLSET}" in
-		gcc8)
-			. /opt/rh/devtoolset-8/enable
-			;;
-		gcc10)
-			. /opt/rh/devtoolset-10/enable
-			;;
-		*)
-			echo "unsupported toolset for centos7: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
-centos8_toolset()
-{
-	case "${TOOLSET}" in
-		gcc10)
-			. /opt/rh/gcctoolset-10/enable
-			;;
-		*)
-			echo "unsupported toolset for centos8: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
-alpine_toolset()
-{
-	case "${TOOLSET}" in
-		gcc10)
-			;;
-		clang)
-			;;
-		*)
-			echo "unsupported toolset for alpine: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
-ubuntu_toolset()
-{
-	case "${TOOLSET}" in
-		gcc10)
-			;;
-		clang)
-			;;
-		*)
-			echo "unsupported toolset for ubuntu: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
-ubuntu_lts_toolset()
-{
-	case "${TOOLSET}" in
-		gcc9)
-			;;
-		*)
-			echo "unsupported toolset for ubuntu lts: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
-do_cmake()
-{
-	if [ ! -f build.ninja ]
-	then
-		BUILD_TYPE=Debug
-		if [ "${TOOLSET}" = "clang" ]
-		then
-			export CC=clang
-			export CXX=clang++
-		fi
-		case ${TYPE} in
-			release)
-				BUILD_TYPE=RelWithDebInfo
-				;;
-			asan)
-				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=address"
-				export CFLAGS="-fno-omit-frame-pointer -fsanitize=address"
-				export LDFLAGS="-fsanitize=address"
-				;;
-			tsan)
-				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=thread"
-				export CFLAGS="-fno-omit-frame-pointer -fsanitize=thread"
-				export LDFLAGS="-fsanitize=thread"
-				;;
-			ubsan)
-				export CXXFLAGS="-fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined"
-				export CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined"
-				export LDFLAGS="-fsanitize=undefined"
-				;;
-			debug)
-				;;
-			*)
-				echo "unsupported type: ${TYPE}"
-				usage
-				;;
-		esac
-
-		cmake -G Ninja \
-			-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-			-DCMAKE_EXPORT_COMPILE_COMMANDS=on \
-			"/work/${PROJECT_NAME}/src"
-		if [ $? -ne 0 ]
-		then
-			echo "🔴"
-			exit 1
-		fi
-	fi
-}
-
-do_build()
-{
-	echo "PATH = ${PATH}"
-	echo "building in ${BIN_DIR}"
-	echo ""
-	case ${TOOLSET} in
-		clang)
-			clang++ --version || exit 1
-			;;
-		*)
-			g++ --version || exit 1
-			;;
-	esac
-
-	mkdir -p "${BIN_DIR}"
-	cd "${BIN_DIR}"
-
-	do_cmake
-	if [ ${ACTION} -ne build ] && [ ${ACTION} -ne test ]
-	then
-		echo "unsupported action: ${action}"
-		usage
-	fi
-	time ninja
-	if [ $? -ne 0 ]
-	then
-		echo "🔴"
-		exit 1
-	fi
-	if [ ${ACTION} -eq test ]
-	then
-		time ctest --output-on-failure --parallel $(nproc)
-		if [ $? -ne 0 ]
-		then
-			echo "🔴"
-			exit 1
-		fi
-	if
-}
+SCRIPTS=$(dirname "$0")
+SCRIPTS=$(cd "${SCRIPTS}" ; pwd)
 
 if [ "${PLATFORM}" = "darwin" ]
 then
-	BUILD_DIR=~/darwin_build/"${PROJECT_NAME}"
-	case "${TOOLSET}" in
-		xcode)
-			case "${ACTION}" in
-				build)
-					mkdir -p "${BUILD_DIR}/xcode"
-					cd "${BUILD_DIR}/xcode"
-					cmake -G Xcode ${PROJECT_PATH}
-					if [ $? -ne 0 ]
-					then
-						echo "🔴"
-						exit 1
-					fi
-					open *.xcodeproj
-					exit 0
-					;;
-				clean)
-					rm -rf "${BUILD_DIR}/xcode"
-					exit 0
-					;;
-				*)
-					echo "unsupported action for xcode: ${ACTION}"
-					exit -1
-					;;
-			esac
-			;;
-		clang)
-			BIN_DIR=${BUILD_DIR}/${TYPE}
-			if [ "${ACTION}" = "clean" ]
-			then
-				if [ -d "${BIN_DIR}" ]
-				then
-					cd "${BIN_DIR}"
-					if [ -f build.ninja ]
-					then
-						ninja clean
-					else
-						rm -rf * .ninja*
-					fi
-				fi
-				exit 0
-			fi
 
-			do_build
-			;;
-		*)
-			echo "unsupported toolset for darwin: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-else
+	exec "${SCRIPTS}/build.sh" ${PLATFORM} ${TRIPLET} "${PROJECT}"
 
-if [ ! -f "/.dockerenv" ]
+fi
+
+PROJECT_NAME=$(basename "${PROJECT}")
+REMOTEBUILD=$(cd "${SCRIPTS}/../remotebuild" ; pwd)
+
+# build syncdir if needed
+"${REMOTEBUILD}/build.sh"
+
+CONFIG=$(cat <<END_HEREDOC
+{
+"folders": [
+  {
+    "src": "${PROJECT}",
+    "dst": "/work/$PROJECT_NAME/src"
+  },
+  {
+    "src": "${SCRIPTS}",
+    "dst": "/scripts"
+  }
+],
+
+"transport": [ "docker", "exec", "-i", "${PLATFORM}" ],
+"copy": [
+  "docker", "cp",
+  "${REMOTEBUILD}/remotebuild_linux",
+  "${PLATFORM}:/tmp/remotebuild_linux"
+],
+"remote": "/tmp/remotebuild_linux",
+
+"compress": false,
+
+"build_cmd": [
+  "/scripts/build.sh",
+  "${PLATFORM}",
+  "${TRIPLET}",
+  "/work/${PROJECT_NAME}" ]
+}
+END_HEREDOC
+)
+
+docker ps --filter "name=${PLATFORM}" | grep ${PLATFORM} > /dev/null
+if [ $? -ne 0 ]
 then
-	# in host
-	SCRIPTS=$(dirname "$0")
-	SCRIPTS=$(cd "${SCRIPTS}" ; pwd)
-	cd "${SCRIPTS}"
-
-	source "../.env"
-
-	# build syncdir if needed
-	if [ ! -f "syncdir_host" ] || [ "syncdir.go" -nt "syncdir_host" ]
-	then
-		echo "building syncdir..."
-		export GO111MODULE=auto
-	 	$(go build -o syncdir_host)
-	 	$(GOOS=linux GOARCH=amd64 go build -o syncdir_linux)
-	fi
-
-	./syncdir_host -scan "${PROJECT}"
-
-	export MSYS_NO_PATHCONV=1
-	docker run --rm -t \
-		--mount type=bind,source="${WORKSPACE_SHARED_FOLDER}",target=/share \
-		--mount type=bind,source="${SCRIPTS}",target=/scripts \
+	echo "--> Starting container ${PLATFORM}"
+	docker run --rm -ti -d \
+		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
 		--mount src=build_rig_work,target=/work \
-		${PLATFORM} /scripts/driver.sh ${PLATFORM} ${TRIPLET} ${PROJECT}
-
-	echo ""
-	echo "🟢 ${PLATFORM} ${TRIPLET}"
-
-else
-	# in container, for a linux build
-
-	# adjust TOOLSET
-	case ${PLATFORM} in
-		centos7_builder)
-			centos7_toolset
-			;;
-		centos8_builder)
-			centos8_toolset
-			;;
-		alpine_builder)
-			alpine_toolset
-			;;
-		ubuntu_builder)
-			ubuntu_toolset
-			;;
-		ubuntu_lts_builder)
-			ubuntu_lts_toolset
-			;;
-		*)
-			;;
-	esac
-
-	BIN_DIR=/work/${PROJECT_NAME}/${PLATFORM%_builder}/${TOOLSET}-${TYPE}
-
-	if [ "${ACTION}" = "clean" ]
-	then
-		if [ -d "${BIN_DIR}" ]
-		then
-			cd "${BIN_DIR}"
-
-			/script/syncdir_linux -clean "/work/${PROJECT_NAME}/src"
-			if [ -f build.ninja ]
-			then
-				ninja clean
-			else
-				rm -rf * .ninja*
-			fi
-		fi
-
-		exit 0
-	fi
-
-	/scripts/syncdir_linux -sync "/share/${PROJECT_NAME}" "/work/${PROJECT_NAME}/src"
-	echo ""
-
-	do_build
-
+		--name ${PLATFORM} \
+		${PLATFORM} sleep infinity
+	sleep 5
 fi
 
-fi
+"${REMOTEBUILD}/remotebuild_host" -config "$CONFIG"

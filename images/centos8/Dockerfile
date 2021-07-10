@@ -1,9 +1,8 @@
 FROM quay.io/centos/centos:stream8
 
 RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
-yum -y install centos-release-scl && \
 yum -y install \
-gcctoolset-10 \
+gcc-toolset-10 \
 openssl-devel \
 which && \
 yum clean all && rm -rf /var/cache/yum

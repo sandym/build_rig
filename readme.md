@@ -26,20 +26,14 @@
 ./bin/create.sh /path/to/folder
 
 build_rig has a build driver script that does:
-	- syncdir scan
-	- re-execute itself in the container
-	- syncdir sync
+	- synchronise folder
+	- execute itself in the container
 	- run build script from target
 
 the build driver needs:
 	- path to target project
 	- how to build target
 
-
-- document customisation points:
-	- shared folder
-
-
 # todo:
 - some c++ tools
-- msvc wine
+- msvc wine ?

@@ -1,28 +1,22 @@
 #!/bin/sh
 #
 # usage:
-#	./bin/create.sh {project_name}
+#	./bin/create.sh {project_path}
 #
 
-ROOT=`dirname "$0"`
-ROOT=`cd "$ROOT"/.. ; pwd`
-PROJECT_NAME=$1
+ROOT=$(dirname "$0")
+ROOT=$(cd "${ROOT}"/.. ; pwd)
+PROJECT_PATH=$1
+PROJECT_NAME=$(basename "${PROJECT_PATH}")
 
-if [[ "${PROJECT_NAME}" == *\/* ]] || [[ "${PROJECT_NAME}" == *\\* ]]
+if [[ "${PROJECT_PATH}" == "" ]]
 then
-	echo "project name cannot be a path."
-	exit -1
-fi
-
-if [[ "${PROJECT_NAME}" == "" ]]
-then
-	echo "need a project name."
+	echo "need a project path."
 	exit -1
 fi
 
 . ${ROOT}/.env
 
-PROJECT_PATH="${WORKSPACE_SHARED_FOLDER}/${PROJECT_NAME}"
 if [ ! -d "${PROJECT_PATH}" ]
 then
 

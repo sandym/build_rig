@@ -1,1 +1,2 @@
-scripts/syncdir_*
+remotebuild/remotebuild_host
+remotebuild/remotebuild_linux
