@@ -150,7 +150,7 @@ do_cmake()
 
 do_build()
 {
-	if [ ${ACTION} -ne build ] && [ ${ACTION} -ne test ]
+	if [ "${ACTION}" != "build" ] && [ "${ACTION}" != "test" ]
 	then
 		echo "unsupported action: ${action}"
 		usage

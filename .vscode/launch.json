@@ -37,7 +37,7 @@
 				"gcc8-debug",
 				"gcc10-debug"
 			],
-			"default": "gcc8-debug",
+			"default": "gcc10-debug",
 			"description": "action"
 		},
 		{
