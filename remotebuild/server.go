@@ -92,11 +92,11 @@ func handleScanMsg(scans scanMsg, serverOut *gob.Encoder) {
 
 	for _, scan := range scans {
 		lastSyncData, ok := lastSyncs[scan.Dst]
-		if !ok {
-			server_log("reading lastsync for %s", scan.Dst)
-			lastSyncData = readLastSync(scan.Dst)
-			lastSyncs[scan.Dst] = lastSyncData
+		if ok {
+			continue
 		}
+		server_log("reading lastsync for %s", scan.Dst)
+		lastSyncData = readLastSync(scan.Dst)
 
 		relpaths := make([]string, 0, len(scan.Scan))
 		for _, l := range scan.Scan {
@@ -152,9 +152,9 @@ func handleScanMsg(scans scanMsg, serverOut *gob.Encoder) {
 				if timestamp > lastSyncData.latest {
 					lastSyncData.latest = timestamp
 				}
-				lastSyncs[scan.Dst] = lastSyncData
 			}
 		}
+		lastSyncs[scan.Dst] = lastSyncData
 		request = append(request, requestData{scan.Dst, relpaths})
 	}
 	postMessage(serverOut, request)

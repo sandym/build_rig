@@ -167,8 +167,7 @@ func scanFolder(srcFullPath, currentPath string, output chan<- interface{}, coun
 		}
 
 		// skip those
-		if finfo.Name() == ".tosync" ||
-			finfo.Name() == ".vscode" ||
+		if finfo.Name() == ".vscode" ||
 			finfo.Name() == "node_modules" ||
 			strings.HasPrefix(finfo.Name(), ".git") {
 			continue

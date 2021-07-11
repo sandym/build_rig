@@ -47,11 +47,11 @@ type buildCmdMsg struct {
 	BuildCmd []string
 }
 
-// server send a buildStartingMsg when ready to start
+// server send a buildStartingMsg when ready to start the build
 type buildStartingMsg struct {
 }
 
-// client just forward server stdout until done
+// client just forward server stdout until server quits
 
 func registerMessages() {
 	gob.Register(fileToSync{})
@@ -73,13 +73,21 @@ func toString(o interface{}) string {
 	case revToSync:
 		return "revToSync: " + o.(revToSync).Relpath
 	case scanMsg:
-		return fmt.Sprintf("scanMsg: %d folders", len(o.(scanMsg)))
+		nbOfFiles := 0
+		for _, scan := range o.(scanMsg) {
+			nbOfFiles += len(scan.Scan)
+		}
+		return fmt.Sprintf("scanMsg: %d files for %d folders", nbOfFiles, len(o.(scanMsg)))
 	case buildCmdMsg:
 		return "buildCmdMsg"
 	case buildStartingMsg:
 		return "buildStartingMsg"
 	case requestMsg:
-		return fmt.Sprintf("requestMsg: %d folders", len(o.(requestMsg)))
+		nbOfFiles := 0
+		for _, request := range o.(requestMsg) {
+			nbOfFiles += len(request.Relpaths)
+		}
+		return fmt.Sprintf("requestMsg: %d files for %d folders", nbOfFiles, len(o.(requestMsg)))
 	case fileMsg:
 		return "fileMsg: " + o.(fileMsg).Relpath
 	}
