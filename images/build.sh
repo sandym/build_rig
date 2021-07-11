@@ -3,7 +3,8 @@
 cd $(dirname "$0")
 IMAGES=$(cd ../images ; pwd)
 
-. ./env
+NINJA_VERSION=v1.10.2
+CMAKE_VERSION=3.20.5
 
 cd "${IMAGES}/alpine" || exit -1
 docker build --build-arg CMAKE_VERSION=${CMAKE_VERSION} --build-arg NINJA_VERSION=${NINJA_VERSION} -t alpine_builder .
