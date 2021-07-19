@@ -44,10 +44,10 @@
 			"id": "centos8",
 			"type": "pickString",
 			"options": [
-				"gcc10-debug",
-				"gcc10-release"
+				"gcc11-debug",
+				"gcc11-release"
 			],
-			"default": "gcc10-debug",
+			"default": "gcc11-debug",
 			"description": "action"
 		}
 	],

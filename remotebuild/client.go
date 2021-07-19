@@ -171,6 +171,7 @@ func scanFolder(srcFullPath, currentPath string, output chan<- interface{}, coun
 			finfo.Name() == ".editorconfig" ||
 			finfo.Name() == ".clang-format" ||
 			finfo.Name() == ".vscode" ||
+			finfo.Name() == "Cargo.lock" ||
 			finfo.Name() == "node_modules" ||
 			strings.HasPrefix(finfo.Name(), ".git") {
 			continue

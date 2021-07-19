@@ -40,14 +40,14 @@
 			"id": "centos8",
 			"type": "pickString",
 			"options": [
-				"build-gcc10-debug",
-				"test-gcc10-debug",
-				"clean-gcc10-debug",
-				"build-gcc10-release",
-				"test-gcc10-release",
-				"clean-gcc10-release"
+				"build-gcc11-debug",
+				"test-gcc11-debug",
+				"clean-gcc11-debug",
+				"build-gcc11-release",
+				"test-gcc11-release",
+				"clean-gcc11-release"
 			],
-			"default": "build-gcc10-debug",
+			"default": "build-gcc11-debug",
 			"description": "action"
 		},
 		{

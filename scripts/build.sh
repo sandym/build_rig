@@ -49,8 +49,8 @@ centos7_toolset()
 centos8_toolset()
 {
 	case "${TOOLSET}" in
-		gcc10)
-			. /opt/rh/gcc-toolset-10/enable
+		gcc11)
+			. /opt/rh/gcc-toolset-11/enable
 			;;
 		*)
 			echo "unsupported toolset for centos8: ${TOOLSET}"
