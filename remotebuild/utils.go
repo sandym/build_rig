@@ -30,13 +30,12 @@ func (config *config) srcForDst(dst string) string {
 		}
 	}
 	return ""
-
 }
-
 func readConfig(configInput string) config {
 	data, err := ioutil.ReadFile(configInput)
 	if err != nil {
 		// not a file ?
+		// try as it as textual json
 		data = []byte(configInput)
 	}
 

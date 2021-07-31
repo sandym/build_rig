@@ -37,7 +37,7 @@
 			"description": "action"
 		},
 		{
-			"id": "centos8",
+			"id": "centos9",
 			"type": "pickString",
 			"options": [
 				"build-gcc11-debug",
@@ -167,13 +167,13 @@
 			}
 		},
 		{
-			"label": "centos8 build",
+			"label": "centos9 build",
 			"type": "shell",
 			"group": "build",
 			"command": "scripts/driver.sh",
 			"args": [
-				"centos8_builder",
-				"${input:centos8}",
+				"centos9_builder",
+				"${input:centos9}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -198,7 +198,7 @@
 			},
 			"options": {
 				"statusbar": {
-					"label": "$(arrow-right)centos8"
+					"label": "$(arrow-right)centos9"
 				}
 			}
 		},

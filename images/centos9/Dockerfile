@@ -1,8 +1,8 @@
-FROM quay.io/centos/centos:stream8
+FROM quay.io/centos/centos:stream9-development
 
 RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
 yum -y install \
-gcc-toolset-11 \
+gcc-c++ \
 openssl-devel \
 which && \
 yum clean all && rm -rf /var/cache/yum
@@ -21,4 +21,4 @@ curl -L -O https://github.com/ninja-build/ninja/releases/download/${NINJA_VERSIO
 cmake -E tar zxf ninja-linux.zip && \
 rm ninja-linux.zip
 
-ENV PS1='[\e[35mcentos8\e[m \W]# '
+ENV PS1='[\e[35mcentos9\e[m \W]# '

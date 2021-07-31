@@ -22,7 +22,6 @@ func client_check(e error) {
 		log.Fatalf("%s", e)
 	}
 }
-
 func client_log(format string, args ...interface{}) {
 	if debugOn {
 		fmt.Fprintf(os.Stderr, "DEBUG: "+format+"\n", args...)
@@ -167,13 +166,7 @@ func scanFolder(srcFullPath, currentPath string, output chan<- interface{}, coun
 		}
 
 		// skip those
-		if finfo.Name() == ".DS_Store" ||
-			finfo.Name() == ".editorconfig" ||
-			finfo.Name() == ".clang-format" ||
-			finfo.Name() == ".vscode" ||
-			finfo.Name() == "Cargo.lock" ||
-			finfo.Name() == "node_modules" ||
-			strings.HasPrefix(finfo.Name(), ".git") {
+		if shouldSkip(finfo.Name()) {
 			continue
 		}
 
@@ -216,7 +209,12 @@ func gitRevision(wd string) string {
 	return ""
 }
 func shouldSkip(name string) bool {
-	return name == ".vscode" ||
+	return name == ".DS_Store" ||
+		name == ".editorconfig" ||
+		name == ".clang-format" ||
+		name == ".vscode" ||
+		name == ".vs" ||
+		name == "Cargo.lock" ||
 		name == "node_modules" ||
 		strings.HasPrefix(name, ".git")
 }

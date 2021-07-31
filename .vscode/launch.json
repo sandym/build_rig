@@ -41,7 +41,7 @@
 			"description": "action"
 		},
 		{
-			"id": "centos8",
+			"id": "centos9",
 			"type": "pickString",
 			"options": [
 				"gcc11-debug",
@@ -99,11 +99,11 @@
 			}
 		},
 		{
-			"name": "Launch centos8",
+			"name": "Launch centos9",
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/centos8/${input:centos8}/${config:build_rig.target_name}",
+			"program": "/work/${config:build_rig.project_name}/centos9/${input:centos9}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
@@ -117,7 +117,7 @@
 				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
 					"exec", "-i",
-					"centos8_builder",
+					"centos9_builder",
 					"sh", "-c"
 				],
 				"debuggerPath": "/usr/local/bin/gdb"

@@ -46,14 +46,14 @@ centos7_toolset()
 	esac
 }
 
-centos8_toolset()
+centos9_toolset()
 {
 	case "${TOOLSET}" in
 		gcc11)
 			. /opt/rh/gcc-toolset-11/enable
 			;;
 		*)
-			echo "unsupported toolset for centos8: ${TOOLSET}"
+			echo "unsupported toolset for centos9: ${TOOLSET}"
 			exit 1
 			;;
 	esac
@@ -250,8 +250,8 @@ else
 		centos7_builder)
 			centos7_toolset
 			;;
-		centos8_builder)
-			centos8_toolset
+		centos9_builder)
+			centos9_toolset
 			;;
 		alpine_builder)
 			alpine_toolset
