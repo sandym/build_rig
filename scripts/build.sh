@@ -17,7 +17,7 @@ usage()
 	echo "     triplet:   action-toolset-type"
 	echo "                where:"
 	echo "                   action:  build, test, clean"
-	echo "                   toolset: gcc8, gcc9, gcc10, clang"
+	echo "                   toolset: gcc or clang"
 	echo "                   type:    debug, release, asan, tsan, ubsan"
 	echo "     project:   path to project to build, should have a"
 	echo "                CMakeLists.txt"
@@ -30,26 +30,10 @@ TOOLSET=$(echo "${TRIPLET}" | cut -d "-" -f 2)
 TYPE=$(echo "${TRIPLET}" | cut -d "-" -f 3)
 SOURCE_DIR=${PROJECT}
 
-centos7_toolset()
-{
-	case "${TOOLSET}" in
-		gcc8)
-			. /opt/rh/devtoolset-8/enable
-			;;
-		gcc10)
-			. /opt/rh/devtoolset-10/enable
-			;;
-		*)
-			echo "unsupported toolset for centos7: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
 centos9_toolset()
 {
 	case "${TOOLSET}" in
-		gcc11)
+		gcc)
 			. /opt/rh/gcc-toolset-11/enable
 			;;
 		*)
@@ -62,7 +46,7 @@ centos9_toolset()
 alpine_toolset()
 {
 	case "${TOOLSET}" in
-		gcc10)
+		gcc)
 			;;
 		clang)
 			;;
@@ -76,7 +60,7 @@ alpine_toolset()
 ubuntu_toolset()
 {
 	case "${TOOLSET}" in
-		gcc10)
+		gcc)
 			;;
 		clang)
 			;;
@@ -90,7 +74,7 @@ ubuntu_toolset()
 ubuntu_lts_toolset()
 {
 	case "${TOOLSET}" in
-		gcc9)
+		gcc)
 			;;
 		*)
 			echo "unsupported toolset for ubuntu lts: ${TOOLSET}"
@@ -247,9 +231,6 @@ else
 
 	# adjust TOOLSET
 	case ${PLATFORM} in
-		centos7_builder)
-			centos7_toolset
-			;;
 		centos9_builder)
 			centos9_toolset
 			;;

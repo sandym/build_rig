@@ -20,77 +20,60 @@
 			"description": "action"
 		},
 		{
-			"id": "centos7",
-			"type": "pickString",
-			"options": [
-				"build-gcc10-debug",
-				"test-gcc10-debug",
-				"clean-gcc10-debug",
-				"build-gcc10-release",
-				"test-gcc10-release",
-				"clean-gcc10-release",
-				"build-gcc8-debug",
-				"test-gcc8-debug",
-				"clean-gcc8-debug"
-			],
-			"default": "build-gcc10-debug",
-			"description": "action"
-		},
-		{
 			"id": "centos9",
 			"type": "pickString",
 			"options": [
-				"build-gcc11-debug",
-				"test-gcc11-debug",
-				"clean-gcc11-debug",
-				"build-gcc11-release",
-				"test-gcc11-release",
-				"clean-gcc11-release"
+				"build-gcc-debug",
+				"test-gcc-debug",
+				"clean-gcc-debug",
+				"build-gcc-release",
+				"test-gcc-release",
+				"clean-gcc-release"
 			],
-			"default": "build-gcc11-debug",
+			"default": "build-gcc-debug",
 			"description": "action"
 		},
 		{
 			"id": "alpine",
 			"type": "pickString",
 			"options": [
-				"build-gcc10-debug",
-				"test-gcc10-debug",
-				"clean-gcc10-debug",
-				"build-gcc10-release",
-				"test-gcc10-release",
-				"clean-gcc10-release",
+				"build-gcc-debug",
+				"test-gcc-debug",
+				"clean-gcc-debug",
+				"build-gcc-release",
+				"test-gcc-release",
+				"clean-gcc-release",
 				"build-clang-debug",
 				"test-clang-debug",
 				"build-clang-release"
 			],
-			"default": "build-gcc10-debug",
+			"default": "build-gcc-debug",
 			"description": "action"
 		},
 		{
 			"id": "ubuntu",
 			"type": "pickString",
 			"options": [
-				"build-gcc10-debug",
-				"test-gcc10-debug",
-				"clean-gcc10-debug",
+				"build-gcc-debug",
+				"test-gcc-debug",
+				"clean-gcc-debug",
 				"build-clang-debug",
 				"test-clang-debug",
 				"clean-clang-debug",
 				"build-clang-release"
 			],
-			"default": "build-gcc10-debug",
+			"default": "build-gcc-debug",
 			"description": "action"
 		},
 		{
 			"id": "ubuntu_lts",
 			"type": "pickString",
 			"options": [
-				"build-gcc9-debug",
-				"test-gcc9-debug",
-				"clean-gcc9-debug"
+				"build-gcc-debug",
+				"test-gcc-debug",
+				"clean-gcc-debug"
 			],
-			"default": "build-gcc9-debug",
+			"default": "build-gcc-debug",
 			"description": "action"
 		}
 	],
@@ -127,42 +110,6 @@
 						"label": "$(arrow-right)macos",
 						"hide": false
 					}
-				}
-			}
-		},
-		{
-			"label": "centos7 build",
-			"type": "shell",
-			"group": "build",
-			"command": "scripts/driver.sh",
-			"args": [
-				"centos7_builder",
-				"${input:centos7}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"problemMatcher": {
-				"base": "$gcc",
-				"fileLocation": [
-					"relative",
-					"${config:build_rig.project}/."
-				],
-				"pattern":[
-					{
-						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
-						"file": 1,
-						"line": 2,
-						"column": 3,
-						"severity": 4,
-						"message": 5
-					}
-				]
-			},
-			"options": {
-				"statusbar": {
-					"label": "$(arrow-right)centos7"
 				}
 			}
 		},

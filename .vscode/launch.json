@@ -5,49 +5,39 @@
 			"id": "alpine",
 			"type": "pickString",
 			"options": [
-				"gcc10-debug",
+				"gcc-debug",
 				"clang-debug"
 			],
-			"default": "gcc10-debug",
+			"default": "gcc-debug",
 			"description": "action"
 		},
 		{
 			"id": "ubuntu",
 			"type": "pickString",
 			"options": [
-				"gcc10-debug",
+				"gcc-debug",
 				"clang-debug"
 			],
-			"default": "gcc10-debug",
+			"default": "gcc-debug",
 			"description": "action"
 		},
 		{
 			"id": "ubuntu_lts",
 			"type": "pickString",
 			"options": [
-				"gcc9-debug"
+				"gcc-debug"
 			],
-			"default": "gcc9-debug",
-			"description": "action"
-		},
-		{
-			"id": "centos7",
-			"type": "pickString",
-			"options": [
-				"gcc8-debug",
-				"gcc10-debug"
-			],
-			"default": "gcc10-debug",
+			"default": "gcc-debug",
 			"description": "action"
 		},
 		{
 			"id": "centos9",
 			"type": "pickString",
 			"options": [
-				"gcc11-debug",
-				"gcc11-release"
+				"gcc-debug",
+				"gcc-release"
 			],
-			"default": "gcc11-debug",
+			"default": "gcc-debug",
 			"description": "action"
 		}
 	],
@@ -65,38 +55,6 @@
 			"cwd": "${workspaceFolder}",
 			"stopAtEntry": true,
 			"MIMode": "lldb"
-		},
-		{
-			"name": "Launch centos7",
-			"type": "cppdbg",
-			"request": "launch",
-
-			"program": "/work/${config:build_rig.project_name}/centos7/${input:centos7}/${config:build_rig.target_name}",
-			"args": [],
-			"environment": [],
-			
-			"externalConsole": false,
-			"cwd": "/work",
-			"stopAtEntry": true,
-			"MIMode": "gdb",
-
-			"pipeTransport": {
-				"pipeCwd": "${workspaceFolder:build_rig}",
-				"pipeProgram": "/usr/local/bin/docker",
-				"pipeArgs": [
-					"exec", "-i",
-					"centos7_builder",
-					"sh", "-c"
-				],
-				"debuggerPath": "/usr/local/bin/gdb"
-			},
-			"setupCommands": [
-				{ "text": "set print thread-events off", "ignoreFailures": false },
-				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
-			],
-			"sourceFileMap":{
-				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
-			}
 		},
 		{
 			"name": "Launch centos9",
