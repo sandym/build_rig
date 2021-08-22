@@ -1,5 +1,10 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name:  build-rig
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: build-rig-data
@@ -10,12 +15,13 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 5Gi
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: centos9-builder
+  namespace: build-rig
 spec:
   containers:
     - name: centos9-builder
@@ -33,6 +39,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: ubuntu-lts-builder
+  namespace: build-rig
 spec:
   containers:
     - name: ubuntu-lts-builder
@@ -50,6 +57,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: ubuntu-builder
+  namespace: build-rig
 spec:
   containers:
     - name: ubuntu-builder
@@ -67,6 +75,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: alpine-builder
+  namespace: build-rig
 spec:
   containers:
     - name: alpine-builder
@@ -90,3 +99,6 @@ spec:
 # docker push 192.168.1.24:32000/ubuntu_lts_builder:latest
 # docker push 192.168.1.24:32000/ubuntu_builder:latest
 # docker push 192.168.1.24:32000/alpine_builder:latest
+
+# kubectl apply -f start_all.yaml
+

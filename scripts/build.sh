@@ -34,7 +34,6 @@ centos9_toolset()
 {
 	case "${TOOLSET}" in
 		gcc)
-			. /opt/rh/gcc-toolset-11/enable
 			;;
 		*)
 			echo "unsupported toolset for centos9: ${TOOLSET}"
@@ -156,7 +155,7 @@ do_build()
 	cd "${BIN_DIR}"
 
 	do_cmake
-	time ninja
+	ninja
 	if [ $? -ne 0 ]
 	then
 		echo "🔴"
@@ -164,7 +163,7 @@ do_build()
 	fi
 	if [ "${ACTION}" = "test" ]
 	then
-		time ctest --output-on-failure --parallel $(nproc)
+		ctest --output-on-failure --parallel $(nproc)
 		if [ $? -ne 0 ]
 		then
 			echo "🔴"
