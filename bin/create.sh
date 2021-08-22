@@ -15,8 +15,6 @@ then
 	exit -1
 fi
 
-. ${ROOT}/.env
-
 if [ ! -d "${PROJECT_PATH}" ]
 then
 

@@ -35,9 +35,13 @@ CONFIG=$(cat <<END_HEREDOC
   }
 ],
 
-"transport": [ "docker", "exec", "-i", "${PLATFORM}" ],
+"transport": [
+	"kubectl", "exec", "--namespace", "build-rig", "-i",
+	"${PLATFORM}",
+	"--"
+],
 "copy": [
-  "docker", "cp",
+  "kubectl", "cp", "--namespace", "build-rig",
   "${REMOTEBUILD}/remotebuild_linux",
   "${PLATFORM}:/tmp/remotebuild_linux"
 ],
@@ -49,21 +53,24 @@ CONFIG=$(cat <<END_HEREDOC
   "/scripts/build.sh",
   "${PLATFORM}",
   "${TRIPLET}",
-  "/work/${PROJECT_NAME}" ]
+  "/work/${PROJECT_NAME}"
+]
 }
 END_HEREDOC
 )
 
-docker ps --filter "name=${PLATFORM}" | grep ${PLATFORM} > /dev/null
-if [ $? -ne 0 ]
-then
-	echo "--> Starting container ${PLATFORM}"
-	docker run --rm -ti -d \
-		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
-		--mount src=build_rig_work,target=/work \
-		--name ${PLATFORM} \
-		${PLATFORM} sleep infinity
-	sleep 5
-fi
+# docker ps --filter "name=${PLATFORM}" | grep ${PLATFORM} > /dev/null
+# if [ $? -ne 0 ]
+# then
+# 	echo "--> Starting container ${PLATFORM}"
+# 	docker run --rm -ti -d \
+# 		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+# 		--mount src=build_rig_work,target=/work \
+# 		--name ${PLATFORM} \
+# 		${PLATFORM} sleep infinity
+# 	sleep 5
+# fi
 
-"${REMOTEBUILD}/remotebuild_host" -config "$CONFIG"
+# echo "${CONFIG}"
+
+"${REMOTEBUILD}/remotebuild_host" -config "${CONFIG}"

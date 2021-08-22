@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: build-rig-data
+  namespace: build-rig
+spec:
+  storageClassName: microk8s-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: centos9-builder
+spec:
+  containers:
+    - name: centos9-builder
+      image: localhost:32000/centos9_builder:latest
+      command: ["sleep","infinity"]
+      volumeMounts:
+        - name: work
+          mountPath: /work
+  volumes:
+    - name: work
+      persistentVolumeClaim:
+        claimName: build-rig-data
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-lts-builder
+spec:
+  containers:
+    - name: ubuntu-lts-builder
+      image: localhost:32000/ubuntu_lts_builder:latest
+      command: ["sleep","infinity"]
+      volumeMounts:
+        - name: work
+          mountPath: /work
+  volumes:
+    - name: work
+      persistentVolumeClaim:
+        claimName: build-rig-data
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-builder
+spec:
+  containers:
+    - name: ubuntu-builder
+      image: localhost:32000/ubuntu_builder:latest
+      command: ["sleep","infinity"]
+      volumeMounts:
+        - name: work
+          mountPath: /work
+  volumes:
+    - name: work
+      persistentVolumeClaim:
+        claimName: build-rig-data
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine-builder
+spec:
+  containers:
+    - name: alpine-builder
+      image: localhost:32000/alpine_builder:latest
+      command: ["sleep","infinity"]
+      volumeMounts:
+        - name: work
+          mountPath: /work
+  volumes:
+    - name: work
+      persistentVolumeClaim:
+        claimName: build-rig-data
+---
+
+# docker tag centos9_builder 192.168.1.24:32000/centos9_builder:latest
+# docker tag ubuntu_lts_builder 192.168.1.24:32000/ubuntu_lts_builder:latest
+# docker tag ubuntu_builder 192.168.1.24:32000/ubuntu_builder:latest
+# docker tag alpine_builder 192.168.1.24:32000/alpine_builder:latest
+#
+# docker push 192.168.1.24:32000/centos9_builder:latest
+# docker push 192.168.1.24:32000/ubuntu_lts_builder:latest
+# docker push 192.168.1.24:32000/ubuntu_builder:latest
+# docker push 192.168.1.24:32000/alpine_builder:latest
