@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-lts-builder
+  namespace: build-rig
+spec:
+  containers:
+    - name: ubuntu-lts-builder
+      image: localhost:32000/ubuntu_lts_builder:latest
+      imagePullPolicy: Always
+      command: ["sleep","infinity"]
+      volumeMounts:
+        - name: work
+          mountPath: /work
+  volumes:
+    - name: work
+      persistentVolumeClaim:
+        claimName: build-rig-data

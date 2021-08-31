@@ -29,6 +29,7 @@ ACTION=$(echo "${TRIPLET}" | cut -d "-" -f 1)
 TOOLSET=$(echo "${TRIPLET}" | cut -d "-" -f 2)
 TYPE=$(echo "${TRIPLET}" | cut -d "-" -f 3)
 SOURCE_DIR=${PROJECT}
+CXX=g++
 
 centos9_toolset()
 {
@@ -147,13 +148,13 @@ do_build()
 			clang++ --version || exit 1
 			;;
 		*)
-			g++ --version || exit 1
+			${CXX} --version || exit 1
 			;;
 	esac
 
 	mkdir -p "${BIN_DIR}"
 	cd "${BIN_DIR}"
-
+	
 	do_cmake
 	ninja
 	if [ $? -ne 0 ]
@@ -175,6 +176,8 @@ do_build()
 if [ "${PLATFORM}" = "darwin" ]
 then
 	BUILD_DIR=~/darwin_build/"${PROJECT_NAME}"
+	CXX=/opt/local/bin/g++-mp-11
+	CC=/opt/local/bin/gcc-mp-11
 	case "${TOOLSET}" in
 		xcode)
 			case "${ACTION}" in
@@ -200,8 +203,8 @@ then
 					;;
 			esac
 			;;
-		clang)
-			BIN_DIR=${BUILD_DIR}/${TYPE}
+		clang|gcc)
+			BIN_DIR=${BUILD_DIR}/${TOOLSET}/${TYPE}
 			if [ "${ACTION}" = "clean" ]
 			then
 				if [ -d "${BIN_DIR}" ]
@@ -215,6 +218,12 @@ then
 					fi
 				fi
 				exit 0
+			fi
+
+			if [ "${TOOLSET}" = "gcc" ]
+			then
+				export CC=${CC}
+				export CXX=${CXX}
 			fi
 
 			do_build

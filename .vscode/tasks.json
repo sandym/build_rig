@@ -13,10 +13,16 @@
 				"build-clang-release",
 				"test-clang-release",
 				"clean-clang-release",
+				"build-gcc-debug",
+				"test-gcc-debug",
+				"clean-gcc-debug",
+				"build-gcc-release",
+				"test-gcc-release",
+				"clean-gcc-release",
 				"build-xcode-all",
 				"clean-xcode-all"
 			],
-			"default": "build-debug",
+			"default": "build-gcc-debug",
 			"description": "action"
 		},
 		{
