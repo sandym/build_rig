@@ -204,7 +204,7 @@ then
 			esac
 			;;
 		clang|gcc)
-			BIN_DIR=${BUILD_DIR}/${TOOLSET}/${TYPE}
+			BIN_DIR=${BUILD_DIR}/${TOOLSET}-${TYPE}
 			if [ "${ACTION}" = "clean" ]
 			then
 				if [ -d "${BIN_DIR}" ]

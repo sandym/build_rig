@@ -2,6 +2,16 @@
 	"version": "0.2.0",
 	"inputs": [
 		{
+			"id": "darwin",
+			"type": "pickString",
+			"options": [
+				"gcc-debug",
+				"clang-debug"
+			],
+			"default": "gcc-debug",
+			"description": "action"
+		},
+		{
 			"id": "alpine",
 			"type": "pickString",
 			"options": [
@@ -43,11 +53,11 @@
 	],
 	"configurations": [
 		{
-			"name": "Launch macos",
+			"name": "Launch darwin",
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/debug/${config:build_rig.target_name}",
+			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/${input:darwin}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 
