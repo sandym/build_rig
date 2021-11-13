@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: centos9-builder
+  name: centos7-builder
   namespace: build-rig
 spec:
   containers:
-    - name: centos9-builder
-      image: localhost:32000/centos9_builder:latest
+    - name: centos7-builder
+      image: localhost:32000/centos7_builder:latest
       imagePullPolicy: Always
       command: ["sleep","infinity"]
       volumeMounts:

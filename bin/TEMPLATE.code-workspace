@@ -12,7 +12,8 @@
 		"build_rig.project_name": "${PROJECT_NAME}",
 		"build_rig.target_name": "${PROJECT_NAME}",
 		"C_Cpp.default.cStandard": "c11",
-		"C_Cpp.default.cppStandard": "c++17"
+		"C_Cpp.default.cppStandard": "c++17",
+		"C_Cpp.default.compileCommands": "${env:HOME}/darwin_build/${PROJECT_NAME}/clang-debug/compile_commands.json "
 	},
 	"extensions": {
 		"recommendations": [

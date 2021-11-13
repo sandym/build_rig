@@ -26,7 +26,7 @@
 			"description": "action"
 		},
 		{
-			"id": "centos9",
+			"id": "gcc_only_choices",
 			"type": "pickString",
 			"options": [
 				"build-gcc-debug",
@@ -40,7 +40,7 @@
 			"description": "action"
 		},
 		{
-			"id": "alpine",
+			"id": "gcc_or_clang_choices",
 			"type": "pickString",
 			"options": [
 				"build-gcc-debug",
@@ -52,32 +52,6 @@
 				"build-clang-debug",
 				"test-clang-debug",
 				"build-clang-release"
-			],
-			"default": "build-gcc-debug",
-			"description": "action"
-		},
-		{
-			"id": "ubuntu",
-			"type": "pickString",
-			"options": [
-				"build-gcc-debug",
-				"test-gcc-debug",
-				"clean-gcc-debug",
-				"build-clang-debug",
-				"test-clang-debug",
-				"clean-clang-debug",
-				"build-clang-release"
-			],
-			"default": "build-gcc-debug",
-			"description": "action"
-		},
-		{
-			"id": "ubuntu_lts",
-			"type": "pickString",
-			"options": [
-				"build-gcc-debug",
-				"test-gcc-debug",
-				"clean-gcc-debug"
 			],
 			"default": "build-gcc-debug",
 			"description": "action"
@@ -120,13 +94,49 @@
 			}
 		},
 		{
+			"label": "centos7 build",
+			"type": "shell",
+			"group": "build",
+			"command": "scripts/driver.sh",
+			"args": [
+				"centos7_builder",
+				"${input:gcc_only_choices}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(arrow-right)centos7"
+				}
+			}
+		},
+		{
 			"label": "centos9 build",
 			"type": "shell",
 			"group": "build",
 			"command": "scripts/driver.sh",
 			"args": [
 				"centos9_builder",
-				"${input:centos9}",
+				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -162,7 +172,7 @@
 			"command": "scripts/driver.sh",
 			"args": [
 				"alpine_builder",
-				"${input:alpine}",
+				"${input:gcc_or_clang_choices}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -198,7 +208,7 @@
 			"command": "scripts/driver.sh",
 			"args": [
 				"ubuntu_builder",
-				"${input:ubuntu}",
+				"${input:gcc_or_clang_choices}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -234,7 +244,7 @@
 			"command": "scripts/driver.sh",
 			"args": [
 				"ubuntu_lts_builder",
-				"${input:ubuntu_lts}",
+				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {

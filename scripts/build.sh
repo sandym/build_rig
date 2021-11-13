@@ -31,19 +31,18 @@ TYPE=$(echo "${TRIPLET}" | cut -d "-" -f 3)
 SOURCE_DIR=${PROJECT}
 CXX=g++
 
-centos9_toolset()
+gcc_only_toolset()
 {
 	case "${TOOLSET}" in
 		gcc)
 			;;
 		*)
-			echo "unsupported toolset for centos9: ${TOOLSET}"
+			echo "unsupported toolset for centos7: ${TOOLSET}"
 			exit 1
 			;;
 	esac
 }
-
-alpine_toolset()
+gcc_or_clang_toolset()
 {
 	case "${TOOLSET}" in
 		gcc)
@@ -52,32 +51,6 @@ alpine_toolset()
 			;;
 		*)
 			echo "unsupported toolset for alpine: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
-ubuntu_toolset()
-{
-	case "${TOOLSET}" in
-		gcc)
-			;;
-		clang)
-			;;
-		*)
-			echo "unsupported toolset for ubuntu: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
-ubuntu_lts_toolset()
-{
-	case "${TOOLSET}" in
-		gcc)
-			;;
-		*)
-			echo "unsupported toolset for ubuntu lts: ${TOOLSET}"
 			exit 1
 			;;
 	esac
@@ -239,17 +212,14 @@ else
 
 	# adjust TOOLSET
 	case ${PLATFORM} in
+		centos7_builder)
 		centos9_builder)
-			centos9_toolset
+		ubuntu_lts_builder)
+			gcc_only_toolset
 			;;
 		alpine_builder)
-			alpine_toolset
-			;;
 		ubuntu_builder)
-			ubuntu_toolset
-			;;
-		ubuntu_lts_builder)
-			ubuntu_lts_toolset
+			gcc_or_clang_toolset
 			;;
 		*)
 			;;

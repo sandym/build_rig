@@ -12,6 +12,10 @@ spec:
       volumeMounts:
         - name: work
           mountPath: /work
+      resources:
+        limits:
+          memory: 2G
+          cpu: 750m
   volumes:
     - name: work
       persistentVolumeClaim:

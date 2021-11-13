@@ -44,6 +44,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 EOF
 
+cp "${ROOT}/.editorconfig" "${PROJECT_PATH}/.editorconfig"
+cp "${ROOT}/bin/.clang-format" "${PROJECT_PATH}/.clang-format"
+
 fi
 
 echo "creating workspace for ${PROJECT_PATH}"
@@ -59,11 +62,6 @@ then
 	exit -1;
 fi
 
-which cygpath.exe > /dev/null
-if [ $? = 0 ]
-then
-	ROOT=`cygpath.exe -m "${ROOT}"`
-fi
 echo "workspace file : ${WORKSPACE}"
 
 export PROJECT_PATH=${PROJECT_PATH}

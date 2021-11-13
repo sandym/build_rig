@@ -2,50 +2,23 @@
 	"version": "0.2.0",
 	"inputs": [
 		{
-			"id": "darwin",
-			"type": "pickString",
-			"options": [
-				"gcc-debug",
-				"clang-debug"
-			],
-			"default": "gcc-debug",
-			"description": "action"
-		},
-		{
-			"id": "alpine",
-			"type": "pickString",
-			"options": [
-				"gcc-debug",
-				"clang-debug"
-			],
-			"default": "gcc-debug",
-			"description": "action"
-		},
-		{
-			"id": "ubuntu",
-			"type": "pickString",
-			"options": [
-				"gcc-debug",
-				"clang-debug"
-			],
-			"default": "gcc-debug",
-			"description": "action"
-		},
-		{
-			"id": "ubuntu_lts",
-			"type": "pickString",
-			"options": [
-				"gcc-debug"
-			],
-			"default": "gcc-debug",
-			"description": "action"
-		},
-		{
-			"id": "centos9",
+			"id": "gcc_only_choices",
 			"type": "pickString",
 			"options": [
 				"gcc-debug",
 				"gcc-release"
+			],
+			"default": "gcc-debug",
+			"description": "action"
+		},
+		{
+			"id": "gcc_or_clang_choices",
+			"type": "pickString",
+			"options": [
+				"gcc-debug",
+				"gcc-release",
+				"clang-debug",
+				"clang-release"
 			],
 			"default": "gcc-debug",
 			"description": "action"
@@ -57,7 +30,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/${input:darwin}/${config:build_rig.target_name}",
+			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/${input:gcc_only_choices}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 
@@ -67,11 +40,43 @@
 			"MIMode": "lldb"
 		},
 		{
+			"name": "Launch centos7",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "/work/${config:build_rig.project_name}/centos7/${input:gcc_only_choices}/${config:build_rig.target_name}",
+			"args": [],
+			"environment": [],
+			
+			"externalConsole": false,
+			"cwd": "/work",
+			"stopAtEntry": true,
+			"MIMode": "gdb",
+
+			"pipeTransport": {
+				"pipeCwd": "${workspaceFolder:build_rig}",
+				"pipeProgram": "/usr/local/bin/docker",
+				"pipeArgs": [
+					"exec", "-i",
+					"centos7_builder",
+					"sh", "-c"
+				],
+				"debuggerPath": "/usr/local/bin/gdb"
+			},
+			"setupCommands": [
+				{ "text": "set print thread-events off", "ignoreFailures": false },
+				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
+			],
+			"sourceFileMap":{
+				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
+			}
+		},
+		{
 			"name": "Launch centos9",
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/centos9/${input:centos9}/${config:build_rig.target_name}",
+			"program": "/work/${config:build_rig.project_name}/centos9/${input:gcc_only_choices}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
@@ -103,7 +108,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/alpine/${input:alpine}/${config:build_rig.target_name}",
+			"program": "/work/${config:build_rig.project_name}/alpine/${input:gcc_only_choices}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
@@ -135,7 +140,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/ubuntu/${input:ubuntu}/${config:build_rig.target_name}",
+			"program": "/work/${config:build_rig.project_name}/ubuntu/${input:gcc_only_choices}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
@@ -167,7 +172,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/ubuntu_lts/${input:ubuntu_lts}/${config:build_rig.target_name}",
+			"program": "/work/${config:build_rig.project_name}/ubuntu_lts/${input:gcc_only_choices}/${config:build_rig.target_name}",
 			"args": [],
 			"environment": [],
 			
