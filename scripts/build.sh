@@ -113,7 +113,13 @@ do_build()
 		usage
 	fi
 
-	echo "PATH = $PATH"
+	echo "PATH:"
+	for comp in $(echo ${PATH} | tr ":" "\n")
+	do
+		echo "  - ${comp}"
+	done
+	echo ""
+
 	echo "building in ${BIN_DIR}"
 	echo ""
 	case ${TOOLSET} in
@@ -146,6 +152,8 @@ do_build()
 	fi
 }
 
+echo "--> ${PLATFORM} ${TRIPLET} ${PROJECT_NAME}"
+echo ""
 if [ "${PLATFORM}" = "darwin" ]
 then
 	BUILD_DIR=~/darwin_build/"${PROJECT_NAME}"
@@ -212,13 +220,10 @@ else
 
 	# adjust TOOLSET
 	case ${PLATFORM} in
-		centos7_builder)
-		centos9_builder)
-		ubuntu_lts_builder)
+		centos7_builder|centos9_builder|ubuntu_lts_builder)
 			gcc_only_toolset
 			;;
-		alpine_builder)
-		ubuntu_builder)
+		alpine_builder|ubuntu_builder)
 			gcc_or_clang_toolset
 			;;
 		*)
