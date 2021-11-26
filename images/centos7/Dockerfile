@@ -6,7 +6,9 @@ yum -y install \
 devtoolset-10 \
 openssl-devel \
 which && \
-yum clean all && rm -rf /var/cache/yum
+yum clean all && rm -rf /var/cache/yum && \
+cd /usr/local/bin && \
+ln -s /opt/rh/devtoolset-10/root/usr/bin/gdb
 
 ARG CMAKE_VERSION
 
@@ -27,7 +29,5 @@ make -j$(nproc) && \
 make install
 
 RUN echo ". /opt/rh/devtoolset-10/enable" >> /root/.bashrc
-
-WORKDIR /build
 
 ENV PS1='[\e[35mcentos7\e[m \W]# '

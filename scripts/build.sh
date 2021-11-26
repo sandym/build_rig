@@ -35,6 +35,10 @@ gcc_only_toolset()
 {
 	case "${TOOLSET}" in
 		gcc)
+			if [ -f /opt/rh/devtoolset-10/enable ]
+			then
+				. /opt/rh/devtoolset-10/enable
+			fi
 			;;
 		*)
 			echo "unsupported toolset for centos7: ${TOOLSET}"

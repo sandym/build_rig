@@ -36,12 +36,11 @@ CONFIG=$(cat <<END_HEREDOC
 ],
 
 "transport": [
-	"kubectl", "exec", "--namespace", "build-rig", "-i",
-	"${PLATFORM}",
-	"--"
+	"docker", "exec", "-i",
+	"${PLATFORM}"
 ],
 "copy": [
-  "kubectl", "cp", "--namespace", "build-rig",
+  "docker", "cp",
   "${REMOTEBUILD}/remotebuild_linux",
   "${PLATFORM}:/tmp/remotebuild_linux"
 ],
@@ -59,17 +58,17 @@ CONFIG=$(cat <<END_HEREDOC
 END_HEREDOC
 )
 
-# docker ps --filter "name=${PLATFORM}" | grep ${PLATFORM} > /dev/null
-# if [ $? -ne 0 ]
-# then
-# 	echo "--> Starting container ${PLATFORM}"
-# 	docker run --rm -ti -d \
-# 		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
-# 		--mount src=build_rig_work,target=/work \
-# 		--name ${PLATFORM} \
-# 		${PLATFORM} sleep infinity
-# 	sleep 5
-# fi
+docker ps --filter "name=${PLATFORM}" | grep ${PLATFORM} > /dev/null
+if [ $? -ne 0 ]
+then
+	echo "--> Starting container ${PLATFORM}"
+	docker run --rm -ti -d \
+		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+		--mount src=build_rig_work,target=/work \
+		--name ${PLATFORM} \
+		${PLATFORM} sleep infinity
+	sleep 5
+fi
 
 # echo "${CONFIG}"
 
