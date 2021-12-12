@@ -1,7 +1,8 @@
-FROM quay.io/centos/centos:stream9-development
+FROM quay.io/centos/centos:stream9
 
 RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
 yum -y install \
+file \
 gcc-c++ \
 gdb \
 openssl-devel \

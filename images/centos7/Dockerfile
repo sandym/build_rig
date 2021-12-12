@@ -4,6 +4,7 @@ RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
 yum -y install centos-release-scl && \
 yum -y install \
 devtoolset-10 \
+file \
 openssl-devel \
 which && \
 yum clean all && rm -rf /var/cache/yum && \

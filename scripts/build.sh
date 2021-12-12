@@ -257,3 +257,6 @@ else
 	do_build
 
 fi
+
+echo ""
+echo "--> done ${PLATFORM} ${TRIPLET} ${PROJECT_NAME}"
