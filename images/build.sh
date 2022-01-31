@@ -3,8 +3,8 @@
 cd $(dirname "$0")
 IMAGES=$(cd ../images ; pwd)
 
-NINJA_VERSION=1.10.2
-CMAKE_VERSION=3.21.4
+NINJA_VERSION=$(ninja --version)
+CMAKE_VERSION=$(cmake --version | perl -n -e 'print $1 if(/cmake version\s(\S+)\s*$/)')
 
 cd "${IMAGES}/alpine" || exit -1
 docker build --build-arg CMAKE_VERSION=${CMAKE_VERSION} -t alpine_builder .
