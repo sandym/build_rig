@@ -1,7 +1,9 @@
 FROM quay.io/centos/centos:stream9
 
 RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
-yum -y install \
+dnf install -y dnf-plugins-core && \
+dnf config-manager --set-enabled crb && \
+dnf -y install \
 file \
 gcc-c++ \
 gdb \
