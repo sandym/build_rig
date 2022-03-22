@@ -161,8 +161,6 @@ echo ""
 if [ "${PLATFORM}" = "darwin" ]
 then
 	BUILD_DIR=~/darwin_build/"${PROJECT_NAME}"
-	CXX=/opt/local/bin/g++-mp-11
-	CC=/opt/local/bin/gcc-mp-11
 	case "${TOOLSET}" in
 		xcode)
 			case "${ACTION}" in
@@ -207,8 +205,10 @@ then
 
 			if [ "${TOOLSET}" = "gcc" ]
 			then
-				export CC=${CC}
-				export CXX=${CXX}
+				# not supported on M1
+				exit 1
+				# export CC=${CC}
+				# export CXX=${CXX}
 			fi
 
 			do_build

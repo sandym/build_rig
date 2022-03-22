@@ -8,6 +8,7 @@ ROOT=$(dirname "$0")
 ROOT=$(cd "${ROOT}"/.. ; pwd)
 PROJECT_PATH=$1
 PROJECT_NAME=$(basename "${PROJECT_PATH}")
+PROJECT_PATH=$(cd "$(dirname "${PROJECT_PATH}")"; pwd)/${PROJECT_NAME}
 
 if [[ "${PROJECT_PATH}" == "" ]]
 then
@@ -31,10 +32,10 @@ int main( int argc, char **argv )
 EOF
 
 cat <<EOF > "${PROJECT_PATH}/CMakeLists.txt"
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.22)
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # enable_testing()
 
@@ -47,13 +48,16 @@ EOF
 cp "${ROOT}/.editorconfig" "${PROJECT_PATH}/.editorconfig"
 cp "${ROOT}/bin/.clang-format" "${PROJECT_PATH}/.clang-format"
 
+cd "${PROJECT_PATH}"
+git init
+
 fi
 
 echo "creating workspace for ${PROJECT_PATH}"
 
 TEMPLATE="${ROOT}/bin/TEMPLATE.code-workspace"
 mkdir -p ~/Workspaces
-WORKSPACE=`cd ~/Workspaces ; pwd`
+WORKSPACE=$(cd ~/Workspaces ; pwd)
 WORKSPACE=${WORKSPACE}/${PROJECT_NAME}.code-workspace
 
 if [ -f "${WORKSPACE}" ]
