@@ -208,7 +208,7 @@
 			"command": "scripts/driver.sh",
 			"args": [
 				"ubuntu_builder",
-				"${input:gcc_or_clang_choices}",
+				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {

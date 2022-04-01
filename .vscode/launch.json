@@ -93,7 +93,7 @@
 					"centos9_builder",
 					"sh", "-c"
 				],
-				"debuggerPath": "/usr/local/bin/gdb"
+				"debuggerPath": "/usr/bin/gdb"
 			},
 			"setupCommands": [
 				{ "text": "set print thread-events off", "ignoreFailures": false },
@@ -157,7 +157,7 @@
 					"ubuntu_builder",
 					"sh", "-c"
 				],
-				"debuggerPath": "/usr/local/bin/gdb"
+				"debuggerPath": "/usr/bin/gdb"
 			},
 			"setupCommands": [
 				{ "text": "set print thread-events off", "ignoreFailures": true },

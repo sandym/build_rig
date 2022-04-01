@@ -3,7 +3,7 @@ FROM ubuntu:21.10
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && \
-apt-get -y install wget clang g++ gdb libssl-dev make ninja-build time && \
+apt-get -y install wget g++ gdb libssl-dev make ninja-build time && \
 apt-get autoclean && \
 apt-get clean && \
 apt-get autoremove --purge && \
