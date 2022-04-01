@@ -35,7 +35,10 @@ gcc_only_toolset()
 {
 	case "${TOOLSET}" in
 		gcc)
-			if [ -f /opt/rh/devtoolset-10/enable ]
+			if [ -f /opt/rh/devtoolset-11/enable ]
+			then
+				. /opt/rh/devtoolset-11/enable
+			elif [ -f /opt/rh/devtoolset-10/enable ]
 			then
 				. /opt/rh/devtoolset-10/enable
 			fi
