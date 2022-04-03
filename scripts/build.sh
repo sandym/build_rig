@@ -16,7 +16,7 @@ usage()
 	echo "     platform: darwin or name of a container to run the build"
 	echo "     triplet:   action-toolset-type"
 	echo "                where:"
-	echo "                   action:  build, test, clean"
+	echo "                   action:  build, test, run, clean"
 	echo "                   toolset: gcc or clang"
 	echo "                   type:    debug, release, asan, tsan, ubsan"
 	echo "     project:   path to project to build, should have a"
@@ -114,7 +114,7 @@ do_cmake()
 
 do_build()
 {
-	if [ "${ACTION}" != "build" ] && [ "${ACTION}" != "test" ]
+	if [ "${ACTION}" != "build" ] && [ "${ACTION}" != "test" ] && [ "${ACTION}" != "run" ]
 	then
 		echo "unsupported action: ${action}"
 		usage
@@ -147,6 +147,15 @@ do_build()
 	then
 		echo "🔴"
 		exit 1
+	fi
+	if [ "${ACTION}" = "run" ]
+	then
+		"${SOURCE_DIR}/run.sh"
+		if [ $? -ne 0 ]
+		then
+			echo "🔴"
+			exit 1
+		fi
 	fi
 	if [ "${ACTION}" = "test" ]
 	then
@@ -230,7 +239,7 @@ else
 		centos7_builder|centos9_builder|ubuntu_lts_builder)
 			gcc_only_toolset
 			;;
-		alpine_builder|ubuntu_builder)
+		alpine_builder)
 			gcc_or_clang_toolset
 			;;
 		*)

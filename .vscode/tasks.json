@@ -9,15 +9,19 @@
 			"options": [
 				"build-clang-debug",
 				"test-clang-debug",
+				"run-clang-debug",
 				"clean-clang-debug",
 				"build-clang-release",
 				"test-clang-release",
+				"run-clang-release",
 				"clean-clang-release",
 				// "build-gcc-debug",
 				// "test-gcc-debug",
+				// "run-gcc-debug",
 				// "clean-gcc-debug",
 				// "build-gcc-release",
 				// "test-gcc-release",
+				// "run-gcc-release",
 				// "clean-gcc-release",
 				"build-xcode-all",
 				"clean-xcode-all"
@@ -31,9 +35,11 @@
 			"options": [
 				"build-gcc-debug",
 				"test-gcc-debug",
+				"run-gcc-debug",
 				"clean-gcc-debug",
 				"build-gcc-release",
 				"test-gcc-release",
+				"run-gcc-release",
 				"clean-gcc-release"
 			],
 			"default": "build-gcc-debug",
@@ -45,12 +51,15 @@
 			"options": [
 				"build-gcc-debug",
 				"test-gcc-debug",
+				"run-gcc-debug",
 				"clean-gcc-debug",
 				"build-gcc-release",
 				"test-gcc-release",
+				"run-gcc-release",
 				"clean-gcc-release",
 				"build-clang-debug",
 				"test-clang-debug",
+				"run-clang-debug",
 				"build-clang-release"
 			],
 			"default": "build-gcc-debug",
