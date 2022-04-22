@@ -15,7 +15,7 @@ docker ps --filter "name=${CONTAINER}" | grep ${CONTAINER} > /dev/null
 if [ $? -ne 0 ]
 then
 	docker run --rm -ti -d \
-		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+		--cap-add=ALL --security-opt seccomp=unconfined \
 		--mount src=build_rig_work,target=/work \
 		--name ${CONTAINER} \
 		${CONTAINER} sleep infinity

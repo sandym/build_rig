@@ -22,6 +22,16 @@ REMOTEBUILD=$(cd "${SCRIPTS}/../remotebuild" ; pwd)
 # build syncdir if needed
 "${REMOTEBUILD}/build.sh"
 
+if [ "${PLATFORM}" = "windows" ]
+then
+
+	echo "@todo ${PLATFORM}"
+	exit 1
+
+fi
+
+# @todo: handle k8s ?
+
 CONFIG=$(cat <<END_HEREDOC
 {
 "folders": [

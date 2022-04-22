@@ -141,8 +141,13 @@ do_build()
 	mkdir -p "${BIN_DIR}"
 	cd "${BIN_DIR}"
 	
+	if [ -f "${SOURCE_DIR}/build.sh" ]
+	then
+		"${SOURCE_DIR}/build.sh"
+	else
 	do_cmake
 	ninja
+	fi
 	if [ $? -ne 0 ]
 	then
 		echo "🔴"
