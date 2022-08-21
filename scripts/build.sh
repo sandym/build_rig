@@ -35,7 +35,10 @@ gcc_only_toolset()
 {
 	case "${TOOLSET}" in
 		gcc)
-			if [ -f /opt/rh/devtoolset-11/enable ]
+			if [ -f /opt/rh/gcc-toolset-12/enable ]
+			then
+				. /opt/rh/gcc-toolset-12/enable
+			elif [ -f /opt/rh/devtoolset-11/enable ]
 			then
 				. /opt/rh/devtoolset-11/enable
 			elif [ -f /opt/rh/devtoolset-10/enable ]
@@ -45,19 +48,6 @@ gcc_only_toolset()
 			;;
 		*)
 			echo "unsupported toolset for centos7: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-gcc_or_clang_toolset()
-{
-	case "${TOOLSET}" in
-		gcc)
-			;;
-		clang)
-			;;
-		*)
-			echo "unsupported toolset for alpine: ${TOOLSET}"
 			exit 1
 			;;
 	esac
@@ -145,8 +135,8 @@ do_build()
 	then
 		"${SOURCE_DIR}/build.sh"
 	else
-	do_cmake
-	ninja
+		do_cmake
+		ninja
 	fi
 	if [ $? -ne 0 ]
 	then
@@ -241,11 +231,8 @@ else
 
 	# adjust TOOLSET
 	case ${PLATFORM} in
-		centos7_builder|centos9_builder|ubuntu_lts_builder)
+		centos7_builder|centos9_builder|centos7_amd64_builder)
 			gcc_only_toolset
-			;;
-		alpine_builder)
-			gcc_or_clang_toolset
 			;;
 		*)
 			;;

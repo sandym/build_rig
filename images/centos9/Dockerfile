@@ -4,9 +4,11 @@ RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
 dnf install -y dnf-plugins-core && \
 dnf config-manager --set-enabled crb && \
 dnf -y install \
+autoconf \
+automake \
 file \
-gcc-c++ \
-gdb \
+gcc-toolset-12 \
+libtool \
 openssl-devel \
 which && \
 yum clean all && rm -rf /var/cache/yum
