@@ -166,6 +166,38 @@
 			"sourceFileMap":{
 				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
 			}
+		},
+		{
+			"name": "Launch ubuntu lts",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "/work/${config:build_rig.project_name}/ubuntu_lts/${input:gcc_only_choices}/${config:build_rig.target_name}",
+			"args": [],
+			"environment": [],
+			
+			"externalConsole": false,
+			"cwd": "/work",
+			"stopAtEntry": true,
+			"MIMode": "gdb",
+
+			"pipeTransport": {
+				"pipeCwd": "${workspaceFolder:build_rig}",
+				"pipeProgram": "/usr/local/bin/docker",
+				"pipeArgs": [
+					"exec", "-i",
+					"ubuntu_lts_builder",
+					"sh", "-c"
+				],
+				"debuggerPath": "/usr/bin/gdb"
+			},
+			"setupCommands": [
+				{ "text": "set print thread-events off", "ignoreFailures": true },
+				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
+			],
+			"sourceFileMap":{
+				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
+			}
 		}
 	]
 }

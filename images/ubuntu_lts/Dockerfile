@@ -1,4 +1,4 @@
-FROM ubuntu:22.10
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -17,6 +17,6 @@ wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-
 sh cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh --skip-license --prefix=/usr/local && \
 rm -rf /tmp/cmake-*
 
-ENV PS1='[\e[35mubuntu\e[m \W]# '
+ENV PS1='[\e[35mubuntu_lts\e[m \W]# '
 RUN echo "" >> /root/.bashrc && \
 echo "PS1='$PS1'" >> /root/.bashrc

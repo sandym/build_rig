@@ -1,13 +1,14 @@
-FROM quay.io/centos/centos:stream9
+FROM --platform=linux/amd64 centos:7
+
+ARG DEVTOOLSET=devtoolset-11
 
 RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
-dnf install -y dnf-plugins-core && \
-dnf config-manager --set-enabled crb && \
-dnf -y install \
+yum -y install centos-release-scl && \
+yum -y install \
+${DEVTOOLSET} \
 autoconf \
 automake \
 file \
-gcc-toolset-12 \
 libtool \
 openssl-devel \
 which && \
@@ -23,12 +24,11 @@ rm -rf /tmp/cmake-*
 ARG NINJA_VERSION
 
 RUN cd /tmp && \
-curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz && \
-. /opt/rh/gcc-toolset-12/enable && \
-cmake -E tar zxf v${NINJA_VERSION}.tar.gz && \
-cd ninja-${NINJA_VERSION} && \
-cmake -DCMAKE_BUILD_TYPE=Release . && \
-make -j$(nproc) && \
-make install
+curl -L -O https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip && \
+cmake -E tar zxf ninja-linux.zip && \
+mv ninja /usr/local/bin/ninja && \
+rm -rf /tmp/ninja-*
 
-ENV PS1='[\e[35mcentos9\e[m \W]# '
+RUN echo ". /opt/rh/${DEVTOOLSET}/enable" >> /root/.bashrc
+
+ENV PS1='[\e[35mcentos7:amd64\e[m \W]# '
