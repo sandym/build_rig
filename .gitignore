@@ -1,2 +1,4 @@
 remotebuild/remotebuild_host
 remotebuild/remotebuild_linux
+watcher/node_modules/
+watcher/dist/

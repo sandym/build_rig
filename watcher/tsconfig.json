@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"target": "ES2019",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"module": "commonjs",
+		"inlineSourceMap": true,
+		"noEmitOnError": true,
+		"moduleResolution": "node"
+	}
+}
+
