@@ -50,7 +50,7 @@ watcher.on( 'all',
 				console.log( cmd );
 				var cmake = exec( cmd, { cwd: binary_dir } );
 				cmake.stdout.pipe( process.stdout );
-				inProgress = false;
+				cmake.on( 'exit', () => { inProgress = false; } );
 			}, 100
 		);
 	}
