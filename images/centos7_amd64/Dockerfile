@@ -14,6 +14,9 @@ openssl-devel \
 which && \
 yum clean all && rm -rf /var/cache/yum
 
+###
+# cmake
+###
 ARG CMAKE_VERSION
 
 RUN cd /tmp && \
@@ -21,6 +24,9 @@ curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/
 sh cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh --skip-license --prefix=/usr/local && \
 rm -rf /tmp/cmake-*
 
+###
+# ninja
+###
 ARG NINJA_VERSION
 
 RUN cd /tmp && \

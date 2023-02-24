@@ -47,7 +47,7 @@ watcher.on( 'all',
 					cmd += ` ${options}`;
 				}
 				cmd += ` ${source_dir}`;
-				console.log( cmd );
+				console.log( `RUNNING: ${cmd}` );
 				var cmake = exec( cmd, { cwd: binary_dir } );
 				cmake.stdout.pipe( process.stdout );
 				cmake.on( 'exit', () => { inProgress = false; } );

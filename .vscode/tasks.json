@@ -317,6 +317,49 @@
 					"label": "$(arrow-right)centos7:amd64"
 				}
 			}
+		},
+		{
+			"label": "compile_command setup",
+			"type": "shell",
+			"group": "none",
+			"command": "npm",
+			"args": [
+				"install"
+			],
+			"options": {
+				"cwd": "${workspaceFolder:build_rig}/watcher",
+				"statusbar": {
+					"hide": true
+				}
+			}
+		},
+		{
+			"label": "compile_command",
+			"type": "shell",
+			"group": "none",
+			"command": "npm",
+			"args": [
+				"run",
+				"start"
+			],
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"isBackground": true,
+			
+			"problemMatcher": [
+			],
+			"options": {
+				"env": {
+					"SOURCE_DIR": "${config:build_rig.project}",
+					"BINARY_DIR": "${userHome}/darwin_build/${config:build_rig.project_name}"
+				},
+				"cwd": "${workspaceFolder:build_rig}/watcher",
+				"statusbar": {
+					"hide": true
+				}
+			},
+			"dependsOn": [ "compile_command setup" ]
 		}
 	]
 }
