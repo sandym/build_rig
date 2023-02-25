@@ -25,7 +25,10 @@ if ( binary_dir == null )
 }
 
 const watcher = chokidar.watch(
-	`${source_dir}/**`,
+	[
+		`${source_dir}/**.cmake`,
+		`${source_dir}/**/CMakeLists.txt`
+	],
 	{ persistent: true }
 );
 

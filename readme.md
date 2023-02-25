@@ -1,5 +1,5 @@
 
-## Solution for working on large cross-platform cmake-based c++ projects using docker
+## Solution for working on large cross-platform cmake-based c++ projects using docker (macos)
 ---
 
 ### The problem
@@ -8,9 +8,9 @@
 
 ### Goals
 - a single source code tree
-- source code edition on the host with vscode
+- source code edition on the host
 - build & debug in different linux containers
-- build & debug natively on host (macos or windows)
+- build & debug natively on macos  host
 
 ### Setup
 
@@ -36,4 +36,3 @@ the build driver needs:
 
 # todo:
 - some c++ tools
-- msvc wine ?

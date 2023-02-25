@@ -334,6 +334,21 @@
 			}
 		},
 		{
+			"label": "compile_command mkdir",
+			"type": "shell",
+			"group": "none",
+			"command": "mkdir",
+			"args": [
+				"-p",
+				"${userHome}/darwin_build/${config:build_rig.project_name}/clang-debug"
+			],
+			"options": {
+				"statusbar": {
+					"hide": true
+				}
+			}
+		},
+		{
 			"label": "compile_command",
 			"type": "shell",
 			"group": "none",
@@ -352,14 +367,14 @@
 			"options": {
 				"env": {
 					"SOURCE_DIR": "${config:build_rig.project}",
-					"BINARY_DIR": "${userHome}/darwin_build/${config:build_rig.project_name}"
+					"BINARY_DIR": "${userHome}/darwin_build/${config:build_rig.project_name}/clang-debug"
 				},
 				"cwd": "${workspaceFolder:build_rig}/watcher",
 				"statusbar": {
 					"hide": true
 				}
 			},
-			"dependsOn": [ "compile_command setup" ]
+			"dependsOn": [ "compile_command setup", "compile_command mkdir" ]
 		}
 	]
 }
