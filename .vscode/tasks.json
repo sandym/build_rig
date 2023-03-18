@@ -331,6 +331,13 @@
 				"statusbar": {
 					"hide": true
 				}
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"focus": false,
+				"close": true,
+				"clear": true
 			}
 		},
 		{
@@ -346,6 +353,13 @@
 				"statusbar": {
 					"hide": true
 				}
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"focus": false,
+				"close": true,
+				"clear": true
 			}
 		},
 		{
@@ -361,7 +375,7 @@
 				"runOn": "folderOpen"
 			},
 			"isBackground": true,
-			
+
 			"problemMatcher": [
 			],
 			"options": {
