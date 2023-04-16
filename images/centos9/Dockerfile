@@ -1,6 +1,6 @@
 FROM quay.io/centos/centos:stream9
 
-RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
+RUN echo "skip_missing_names_on_install=0" >> /etc/dnf/dnf.conf && \
 dnf install -y dnf-plugins-core && \
 dnf config-manager --set-enabled crb && \
 dnf -y install \
@@ -10,8 +10,9 @@ file \
 gcc-toolset-12 \
 libtool \
 openssl-devel \
+procps \
 which && \
-yum clean all && rm -rf /var/cache/yum
+dnf clean all && rm -rf /var/cache/dnf
 
 ###
 # cmake
@@ -35,6 +36,8 @@ cmake -E tar zxf v${NINJA_VERSION}.tar.gz && \
 cd ninja-${NINJA_VERSION} && \
 cmake -DCMAKE_BUILD_TYPE=Release . && \
 make -j$(nproc) && \
-make install
+make install && \
+rm -rf /tmp/v${NINJA_VERSION}.tar.gz /tmp/ninja-*
+
 
 ENV PS1='[\e[35mcentos9\e[m \W]# '

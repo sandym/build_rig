@@ -1,19 +1,19 @@
-FROM centos:7
+FROM --platform=linux/amd64 quay.io/centos/centos:stream9
 
-ARG DEVTOOLSET=devtoolset-10
-
-RUN echo "skip_missing_names_on_install=0" >> /etc/yum.conf && \
-yum -y install centos-release-scl && \
-yum -y install \
-${DEVTOOLSET} \
+RUN echo "skip_missing_names_on_install=0" >> /etc/dnf/dnf.conf && \
+dnf install -y dnf-plugins-core && \
+dnf config-manager --set-enabled crb && \
+dnf -y install \
 autoconf \
 automake \
 file \
+gcc-toolset-12 \
 libtool \
 openssl-devel \
-python3 \
+procps \
+python \
 which && \
-yum clean all && rm -rf /var/cache/yum
+dnf clean all && rm -rf /var/cache/dnf
 
 ###
 # cmake
@@ -32,14 +32,13 @@ ARG NINJA_VERSION
 
 RUN cd /tmp && \
 curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz && \
+. /opt/rh/gcc-toolset-12/enable && \
 cmake -E tar zxf v${NINJA_VERSION}.tar.gz && \
 cd ninja-${NINJA_VERSION} && \
-. /opt/rh/${DEVTOOLSET}/enable && \
 cmake -DCMAKE_BUILD_TYPE=Release . && \
-make -j$(nproc) && \
-make install && \
-rm -rf /tmp/ninja-*
+which make && \
+python -c 'import pty; pty.spawn("make")' && \
+python -c 'import pty; pty.spawn("make install")' && \
+rm -rf /tmp/v${NINJA_VERSION}.tar.gz /tmp/ninja-*
 
-RUN echo ". /opt/rh/${DEVTOOLSET}/enable" >> /root/.bashrc
-
-ENV PS1='[\e[35mcentos7\e[m \W]# '
+ENV PS1='[\e[35mcentos9:amd64\e[m \W]# '

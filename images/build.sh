@@ -11,6 +11,7 @@ for d in * ; do
 	if [ -d "${d}" ]
 	then
 		cd ${d}
+		echo "--> building ${d}"
 		docker build \
 			--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
 			--build-arg NINJA_VERSION=${NINJA_VERSION} \

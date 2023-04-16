@@ -14,6 +14,10 @@
 
 ### Setup
 
+```
+> colima start --cpu 6 --memory 24 --disk 120 --vm-type=vz --vz-rosetta --kubernetes
+```
+
 ### Usage
 
 

@@ -38,16 +38,10 @@ gcc_only_toolset()
 			if [ -f /opt/rh/gcc-toolset-12/enable ]
 			then
 				. /opt/rh/gcc-toolset-12/enable
-			elif [ -f /opt/rh/devtoolset-11/enable ]
-			then
-				. /opt/rh/devtoolset-11/enable
-			elif [ -f /opt/rh/devtoolset-10/enable ]
-			then
-				. /opt/rh/devtoolset-10/enable
 			fi
 			;;
 		*)
-			echo "unsupported toolset for centos7: ${TOOLSET}"
+			echo "unsupported toolset for centos: ${TOOLSET}"
 			exit 1
 			;;
 	esac
@@ -130,7 +124,7 @@ do_build()
 
 	mkdir -p "${BIN_DIR}"
 	cd "${BIN_DIR}"
-	
+
 	if [ -f "${SOURCE_DIR}/build.sh" ]
 	then
 		"${SOURCE_DIR}/build.sh"
@@ -231,7 +225,7 @@ else
 
 	# adjust TOOLSET
 	case ${PLATFORM} in
-		centos7_builder|centos9_builder|centos7_amd64_builder)
+		centos9_builder|centos9_amd64_builder)
 			gcc_only_toolset
 			;;
 		*)
