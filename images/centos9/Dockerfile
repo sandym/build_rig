@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1
+# syntax=docker/dockerfile:1
 FROM quay.io/centos/centos:stream9
 
 RUN --mount=type=cache,target=/var/cache/dnf <<EOT

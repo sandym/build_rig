@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1
+# syntax=docker/dockerfile:1
 FROM --platform=linux/amd64 quay.io/centos/centos:stream9
 
 RUN --mount=type=cache,target=/var/cache/dnf <<EOT
@@ -35,13 +35,9 @@ EOT
 ARG NINJA_VERSION
 
 RUN --mount=type=cache,target=/tmp <<EOT
-curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
-. /opt/rh/gcc-toolset-12/enable
-cmake -E tar zxf v${NINJA_VERSION}.tar.gz
-cd ninja-${NINJA_VERSION}
-cmake -DCMAKE_BUILD_TYPE=Release .
-python -c 'import pty; pty.spawn("make")'
-python -c 'import pty; pty.spawn("make install")'
+curl -L -O https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip
+cmake -E tar zxf ninja-linux.zip
+cp ninja /usr/local/bin/.
 EOT
 
 WORKDIR /

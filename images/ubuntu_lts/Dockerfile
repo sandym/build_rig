@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1
+# syntax=docker/dockerfile:1
 FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
