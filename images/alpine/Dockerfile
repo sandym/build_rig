@@ -21,4 +21,4 @@ EOT
 
 WORKDIR /
 
-ENV PS1='[\e[35malpine\e[m \W]# '
+ENV PS1='[\e[35malpine:$(uname -m)\e[m \W]# '

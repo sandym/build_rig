@@ -103,42 +103,6 @@
 			}
 		},
 		{
-			"label": "centos9 build",
-			"type": "shell",
-			"group": "build",
-			"command": "scripts/driver.sh",
-			"args": [
-				"centos9_builder",
-				"${input:gcc_only_choices}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"problemMatcher": {
-				"base": "$gcc",
-				"fileLocation": [
-					"relative",
-					"${config:build_rig.project}/."
-				],
-				"pattern":[
-					{
-						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
-						"file": 1,
-						"line": 2,
-						"column": 3,
-						"severity": 4,
-						"message": 5
-					}
-				]
-			},
-			"options": {
-				"statusbar": {
-					"label": "$(arrow-right)centos9"
-				}
-			}
-		},
-		{
 			"label": "alpine build",
 			"type": "shell",
 			"group": "build",
@@ -243,6 +207,42 @@
 			"options": {
 				"statusbar": {
 					"label": "$(arrow-right)ubuntu lts"
+				}
+			}
+		},
+		{
+			"label": "centos9 build",
+			"type": "shell",
+			"group": "build",
+			"command": "scripts/driver.sh",
+			"args": [
+				"centos9_builder",
+				"${input:gcc_only_choices}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(arrow-right)centos9"
 				}
 			}
 		},

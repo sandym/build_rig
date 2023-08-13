@@ -27,7 +27,8 @@ go build \
 	-ldflags "-X main.BuildID=${BUILD_ID}" \
 	-o remotebuild/remotebuild_host ./remotebuild
 
-GOOS=linux GOARCH=amd64 go build \
+# GOARCH=amd64
+GOOS=linux go build \
 	-ldflags "-X main.BuildID=${BUILD_ID}" \
 	-o remotebuild/remotebuild_linux ./remotebuild
 

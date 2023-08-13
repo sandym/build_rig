@@ -11,6 +11,7 @@ then
 	SHELL=ash
 fi
 
+# start comtainer if not running
 docker ps --filter "name=${CONTAINER}" | grep ${CONTAINER} > /dev/null
 if [ $? -ne 0 ]
 then
@@ -21,4 +22,5 @@ then
 		${CONTAINER} sleep infinity
 fi
 
+# start shell
 docker exec -ti ${CONTAINER} ${SHELL}

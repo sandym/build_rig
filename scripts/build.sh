@@ -35,9 +35,9 @@ gcc_only_toolset()
 {
 	case "${TOOLSET}" in
 		gcc)
-			if [ -f /opt/rh/gcc-toolset-12/enable ]
+			if [ -f /opt/rh/gcc-toolset-13/enable ]
 			then
-				. /opt/rh/gcc-toolset-12/enable
+				. /opt/rh/gcc-toolset-13/enable
 			fi
 			;;
 		*)

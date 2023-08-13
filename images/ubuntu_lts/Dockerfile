@@ -10,6 +10,9 @@ EOT
 
 WORKDIR /tmp
 
+###
+# cmake
+###
 ARG CMAKE_VERSION
 
 RUN --mount=type=cache,target=/tmp <<EOT
@@ -17,7 +20,7 @@ wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-
 sh cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh --skip-license --prefix=/usr/local
 EOT
 
-ENV PS1='[\e[35mubuntu_lts\e[m \W]# '
+ENV PS1='[\e[35mubuntu_lts:$(uname -m)\e[m \W]# '
 RUN <<EOT
 echo "" >> /root/.bashrc
 echo "PS1='$PS1'" >> /root/.bashrc
