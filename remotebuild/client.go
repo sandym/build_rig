@@ -7,7 +7,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -83,7 +82,7 @@ func runClient(configOption string) {
 	wg.Add(1)
 
 	go func() {
-		buf := make([]byte, 1024, 1024)
+		buf := make([]byte, 1024)
 		for {
 			n, err := serverDef.stdout.Read(buf[:])
 			if n > 0 {
@@ -201,7 +200,7 @@ func gitRevision(wd string) string {
 	cmd.Stdout = &stdout
 	err := cmd.Run()
 	if err == nil {
-		lines := strings.Split(string(stdout.Bytes()), "\n")
+		lines := strings.Split(stdout.String(), "\n")
 		if len(lines) > 0 {
 			return lines[0]
 		}
@@ -285,10 +284,10 @@ func serviceServerRequests(config config, serverDef serverDef, msgQueue chan int
 		err := serverDef.decoder.Decode(&request)
 		client_check(err)
 
-		switch request.(type) {
+		switch request := request.(type) {
 		case requestMsg:
 			client_log("received request %s", toString(request))
-			go handleRequestMsg(config, msgQueue, request.(requestMsg))
+			go handleRequestMsg(config, msgQueue, request)
 		case buildStartingMsg:
 			fmt.Printf("--> starting build\n")
 			done = true
@@ -337,7 +336,7 @@ func handleRequestMsg(config config, msgQueue chan<- interface{}, requests reque
 				data, err = readFileCompressed(srcFullPath)
 				client_check(err)
 			} else {
-				data, err = ioutil.ReadFile(srcFullPath)
+				data, err = os.ReadFile(srcFullPath)
 				client_check(err)
 			}
 			msgQueue <- fileMsg{request.Dst, relpath, isExe, compressFiles, data}

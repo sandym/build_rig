@@ -1,7 +1,16 @@
 # syntax=docker/dockerfile:1
 FROM alpine
 
-RUN apk add --no-cache clang g++ gdb make ninja linux-headers openssl-dev
+RUN <<EOT
+apk add --no-cache \
+	clang \
+	g++ \
+	gdb \
+	make \
+	ninja \
+	linux-headers \
+	openssl-dev
+EOT
 
 WORKDIR /tmp
 

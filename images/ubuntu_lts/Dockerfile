@@ -5,7 +5,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN <<EOT
 apt-get -y update
-apt-get -y install --no-install-recommends wget g++ gdb libssl-dev make ninja-build time
+apt-get -y install --no-install-recommends \
+	wget \
+	g++ \
+	gdb \
+	libssl-dev \
+	make \
+	ninja-build
 EOT
 
 WORKDIR /tmp

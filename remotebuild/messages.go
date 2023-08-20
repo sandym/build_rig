@@ -65,31 +65,31 @@ func registerMessages() {
 }
 
 func toString(o interface{}) string {
-	switch o.(type) {
+	switch o := o.(type) {
 	case fileToSync:
-		return "fileToSync: " + o.(fileToSync).Relpath
+		return "fileToSync: " + o.Relpath
 	case symLinkToSync:
-		return "symLinkToSync: " + o.(symLinkToSync).Relpath + "->" + o.(symLinkToSync).Target
+		return "symLinkToSync: " + o.Relpath + "->" + o.Target
 	case revToSync:
-		return "revToSync: " + o.(revToSync).Relpath
+		return "revToSync: " + o.Relpath
 	case scanMsg:
 		nbOfFiles := 0
-		for _, scan := range o.(scanMsg) {
+		for _, scan := range o {
 			nbOfFiles += len(scan.Scan)
 		}
-		return fmt.Sprintf("scanMsg: %d files for %d folders", nbOfFiles, len(o.(scanMsg)))
+		return fmt.Sprintf("scanMsg: %d files for %d folders", nbOfFiles, len(o))
 	case buildCmdMsg:
 		return "buildCmdMsg"
 	case buildStartingMsg:
 		return "buildStartingMsg"
 	case requestMsg:
 		nbOfFiles := 0
-		for _, request := range o.(requestMsg) {
+		for _, request := range o {
 			nbOfFiles += len(request.Relpaths)
 		}
-		return fmt.Sprintf("requestMsg: %d files for %d folders", nbOfFiles, len(o.(requestMsg)))
+		return fmt.Sprintf("requestMsg: %d files for %d folders", nbOfFiles, len(o))
 	case fileMsg:
-		return "fileMsg: " + o.(fileMsg).Relpath
+		return "fileMsg: " + o.Relpath
 	}
 	return fmt.Sprintf("%v", o)
 }

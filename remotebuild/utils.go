@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -32,7 +31,7 @@ func (config *config) srcForDst(dst string) string {
 	return ""
 }
 func readConfig(configInput string) config {
-	data, err := ioutil.ReadFile(configInput)
+	data, err := os.ReadFile(configInput)
 	if err != nil {
 		// not a file ?
 		// try as it as textual json

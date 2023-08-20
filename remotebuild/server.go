@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -66,15 +65,15 @@ func runServer() {
 		server_check(err)
 		server_log("received msg %s", toString(msg))
 
-		switch msg.(type) {
+		switch msg := msg.(type) {
 		case scanMsg:
-			handleScanMsg(msg.(scanMsg), serverEncoder)
+			handleScanMsg(msg, serverEncoder)
 			serverOut.Flush()
 		case fileMsg:
-			handleFileMsg(msg.(fileMsg))
+			handleFileMsg(msg)
 			serverOut.Flush()
 		case buildCmdMsg:
-			handleBuildCmdMsg(serverEncoder, serverOut, msg.(buildCmdMsg).BuildCmd)
+			handleBuildCmdMsg(serverEncoder, serverOut, msg.BuildCmd)
 			done = true
 		default:
 			server_log("unexpected msg: %T%v", msg)
@@ -104,17 +103,17 @@ func handleScanMsg(scans scanMsg, serverOut *gob.Encoder) {
 			var timestamp int64
 			var relpath, ln, gitRevision string
 
-			switch l.(type) {
+			switch l := l.(type) {
 			case fileToSync:
-				relpath = l.(fileToSync).Relpath
-				timestamp = l.(fileToSync).T
+				relpath = l.Relpath
+				timestamp = l.T
 			case revToSync:
-				relpath = l.(revToSync).Relpath
-				gitRevision = l.(revToSync).Revision
+				relpath = l.Relpath
+				gitRevision = l.Revision
 			case symLinkToSync:
-				relpath = l.(symLinkToSync).Relpath
-				timestamp = l.(symLinkToSync).T
-				ln = l.(symLinkToSync).Target
+				relpath = l.Relpath
+				timestamp = l.T
+				ln = l.Target
 			}
 			if len(relpath) == 0 {
 				continue
@@ -123,7 +122,7 @@ func handleScanMsg(scans scanMsg, serverOut *gob.Encoder) {
 			if len(gitRevision) > 0 {
 				dstDir := path.Join(scan.Dst, relpath)
 				os.MkdirAll(dstDir, 0755)
-				ioutil.WriteFile(path.Join(dstDir, ".gitrevision"),
+				os.WriteFile(path.Join(dstDir, ".gitrevision"),
 					[]byte(gitRevision+"\n"), 0644)
 			} else {
 				// add to the list of files being sync
@@ -140,7 +139,7 @@ func handleScanMsg(scans scanMsg, serverOut *gob.Encoder) {
 						// it's a symlink
 						if runtime.GOOS == "windows" {
 							// that's what git does on windows...
-							ioutil.WriteFile(dstFile, []byte(ln+"\n"), 0644)
+							os.WriteFile(dstFile, []byte(ln+"\n"), 0644)
 						} else {
 							os.Symlink(ln, dstFile)
 						}
@@ -248,7 +247,7 @@ func handleFileMsg(file fileMsg) {
 	if file.IsCompressed {
 		WriteFileCompressed(fullPath, file.Data, fm)
 	} else {
-		ioutil.WriteFile(fullPath, file.Data, fm)
+		os.WriteFile(fullPath, file.Data, fm)
 	}
 	os.Chmod(fullPath, fm)
 }
