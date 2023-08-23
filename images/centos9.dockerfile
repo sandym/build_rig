@@ -37,13 +37,20 @@ EOT
 ARG NINJA_VERSION
 
 RUN --mount=type=cache,target=/tmp <<EOT
-curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
-. /opt/rh/${TOOLSET}/enable
-cmake -E tar zxf v${NINJA_VERSION}.tar.gz
-cd ninja-${NINJA_VERSION}
-cmake -DCMAKE_BUILD_TYPE=Release .
-make -j$(nproc)
-make install
+if [ "$(uname -m)" = "x86_64" ]
+then
+	curl -L -O https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip
+	cmake -E tar zxf ninja-linux.zip
+	mv ninja /usr/local/bin/.
+else
+	curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
+	. /opt/rh/${TOOLSET}/enable
+	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
+	cd ninja-${NINJA_VERSION}
+	cmake -DCMAKE_BUILD_TYPE=Release .
+	make
+	make install
+fi
 EOT
 
 WORKDIR /
