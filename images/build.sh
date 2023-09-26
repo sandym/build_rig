@@ -12,6 +12,7 @@ for df in *.dockerfile ; do
 	os="${df%.*}"
 	echo "--> building ${os}"
 	docker build \
+		--pull \
 		--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
 		--build-arg NINJA_VERSION=${NINJA_VERSION} \
 		-t ${os}_builder \
@@ -23,6 +24,7 @@ if [ "$(uname -m)" = "arm64" ]
 then
 	echo "--> building centos9:amd64"
 	docker build \
+		--pull \
 		--platform=linux/amd64 \
 		--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
 		--build-arg NINJA_VERSION=${NINJA_VERSION} \

@@ -258,7 +258,6 @@ func startServer(config config) serverDef {
 					client_log("BuildIDs are equal")
 					break
 				}
-				client_log("BuildID is different '%s' != '%s'", BuildID, serverBuildID)
 				cmd.Process.Kill()
 				err = fmt.Errorf("BuildID: expecting '%s' got '%s'", BuildID, serverBuildID)
 			}
