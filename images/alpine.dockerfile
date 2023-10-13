@@ -18,7 +18,7 @@ WORKDIR /tmp
 ###
 ARG CMAKE_VERSION
 
-RUN --mount=type=cache,target=/tmp <<EOT
+RUN --mount=type=tmpfs,target=/tmp <<EOT
 wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz
 tar -zxf cmake-${CMAKE_VERSION}.tar.gz
 cd cmake-${CMAKE_VERSION}
@@ -32,7 +32,7 @@ EOT
 ###
 ARG NINJA_VERSION
 
-RUN --mount=type=cache,target=/tmp <<EOT
+RUN --mount=type=tmpfs,target=/tmp <<EOT
 	wget https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
 	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
 	cd ninja-${NINJA_VERSION}
@@ -43,4 +43,4 @@ EOT
 
 WORKDIR /
 
-ENV PS1='[\e[35malpine:$(uname -m)\e[m \W]# '
+ENV PS1='[\e[35m$(source /etc/os-release ; echo ${ID}):$(uname -m)\e[m \W]# '

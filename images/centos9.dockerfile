@@ -26,7 +26,7 @@ WORKDIR /tmp
 ###
 ARG CMAKE_VERSION
 
-RUN --mount=type=cache,target=/tmp <<EOT
+RUN --mount=type=tmpfs,target=/tmp <<EOT
 curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh
 sh cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh --skip-license --prefix=/usr/local
 EOT
@@ -36,13 +36,7 @@ EOT
 ###
 ARG NINJA_VERSION
 
-RUN --mount=type=cache,target=/tmp <<EOT
-if [ "$(uname -m)" = "x86_64" ]
-then
-	curl -L -O https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip
-	cmake -E tar zxf ninja-linux.zip
-	mv ninja /usr/local/bin/.
-else
+RUN --mount=type=tmpfs,target=/tmp <<EOT
 	curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
 	. /opt/rh/${TOOLSET}/enable
 	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
@@ -50,9 +44,8 @@ else
 	cmake -DCMAKE_BUILD_TYPE=Release .
 	make
 	make install
-fi
 EOT
 
 WORKDIR /
 
-ENV PS1='[\e[35mcentos9:$(uname -m)\e[m \W]# '
+ENV PS1='[\e[35m$(source /etc/os-release ; echo ${ID}${VERSION_ID}):$(uname -m)\e[m \W]# '
