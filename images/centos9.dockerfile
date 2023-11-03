@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM quay.io/centos/centos:stream9
 
-ARG TOOLSET=gcc-toolset-13
+ENV GCC_TOOLSET=gcc-toolset-13
 
-RUN --mount=type=cache,target=/var/cache/dnf <<EOT
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked <<EOT
 echo "skip_missing_names_on_install=0" >> /etc/dnf/dnf.conf
 dnf install -y dnf-plugins-core
 dnf config-manager --set-enabled crb
@@ -11,12 +11,15 @@ dnf -y install \
 	autoconf \
 	automake \
 	file \
-	${TOOLSET} \
+	${GCC_TOOLSET} \
 	libtool \
 	openssl-devel \
 	procps \
 	python \
 	which
+cd /usr/local/bin
+ln -s /opt/rh/${GCC_TOOLSET}/root/usr/bin/gdb
+ln -s /opt/rh/${GCC_TOOLSET}/root/usr/bin/gcore
 EOT
 
 WORKDIR /tmp
@@ -38,7 +41,7 @@ ARG NINJA_VERSION
 
 RUN --mount=type=tmpfs,target=/tmp <<EOT
 	curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
-	. /opt/rh/${TOOLSET}/enable
+	. /opt/rh/${GCC_TOOLSET}/enable
 	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
 	cd ninja-${NINJA_VERSION}
 	cmake -DCMAKE_BUILD_TYPE=Release .

@@ -20,7 +20,8 @@ PROJECT_NAME=$(basename "${PROJECT}")
 REMOTEBUILD=$(cd "${SCRIPTS}/../remotebuild" ; pwd)
 
 # build syncdir if needed
-"${REMOTEBUILD}/build.sh"
+cd "${REMOTEBUILD}"
+make
 
 if [ "${PLATFORM}" = "windows" ]
 then

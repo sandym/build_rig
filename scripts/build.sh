@@ -31,22 +31,6 @@ TYPE=$(echo "${TRIPLET}" | cut -d "-" -f 3)
 SOURCE_DIR=${PROJECT}
 CXX=g++
 
-gcc_only_toolset()
-{
-	case "${TOOLSET}" in
-		gcc)
-			if [ -f /opt/rh/gcc-toolset-13/enable ]
-			then
-				. /opt/rh/gcc-toolset-13/enable
-			fi
-			;;
-		*)
-			echo "unsupported toolset for centos: ${TOOLSET}"
-			exit 1
-			;;
-	esac
-}
-
 do_cmake()
 {
 	if [ ! -f build.ninja ]
@@ -206,7 +190,7 @@ then
 
 			if [ "${TOOLSET}" = "gcc" ]
 			then
-				# not supported on M1
+				# not supported on apple silicon
 				exit 1
 				# export CC=${CC}
 				# export CXX=${CXX}
@@ -223,14 +207,11 @@ else
 
 	# in container, for a linux build
 
-	# adjust TOOLSET
-	case ${PLATFORM} in
-		centos9_builder|centos9_amd64_builder)
-			gcc_only_toolset
-			;;
-		*)
-			;;
-	esac
+	# adjust TOOLSET if needed
+	if [ -f /opt/rh/${GCC_TOOLSET}/enable ]
+	then
+		. /opt/rh/${GCC_TOOLSET}/enable
+	fi
 
 	BIN_DIR=/work/${PROJECT_NAME}/${PLATFORM%_builder}/${TOOLSET}-${TYPE}
 

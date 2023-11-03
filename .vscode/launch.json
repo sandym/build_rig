@@ -2,23 +2,11 @@
 	"version": "0.2.0",
 	"inputs": [
 		{
-			"id": "gcc_only_choices",
-			"type": "pickString",
-			"options": [
-				"gcc-debug",
-				"gcc-release"
-			],
-			"default": "gcc-debug",
-			"description": "action"
-		},
-		{
 			"id": "gcc_or_clang_choices",
 			"type": "pickString",
 			"options": [
 				"gcc-debug",
-				"gcc-release",
-				"clang-debug",
-				"clang-release"
+				"clang-debug"
 			],
 			"default": "gcc-debug",
 			"description": "action"
@@ -30,7 +18,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/${input:gcc_only_choices}/${config:build_rig.project_name}",
+			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/gcc-debug/${config:build_rig.project_name}",
 			"args": [],
 			"environment": [],
 
@@ -40,43 +28,11 @@
 			"MIMode": "lldb"
 		},
 		{
-			"name": "Launch centos9",
-			"type": "cppdbg",
-			"request": "launch",
-
-			"program": "/work/${config:build_rig.project_name}/centos9/${input:gcc_only_choices}/${config:build_rig.project_name}",
-			"args": [],
-			"environment": [],
-
-			"externalConsole": false,
-			"cwd": "/work",
-			"stopAtEntry": true,
-			"MIMode": "gdb",
-
-			"pipeTransport": {
-				"pipeCwd": "${workspaceFolder:build_rig}",
-				"pipeProgram": "/usr/local/bin/docker",
-				"pipeArgs": [
-					"exec", "-i",
-					"centos9_builder",
-					"sh", "-c"
-				],
-				"debuggerPath": "/usr/bin/gdb"
-			},
-			"setupCommands": [
-				{ "text": "set print thread-events off", "ignoreFailures": false },
-				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
-			],
-			"sourceFileMap":{
-				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
-			}
-		},
-		{
 			"name": "Launch alpine",
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/alpine/${input:gcc_only_choices}/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/alpine/gcc-debug/${config:build_rig.project_name}",
 			"args": [],
 			"environment": [],
 
@@ -108,7 +64,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/ubuntu/${input:gcc_only_choices}/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/ubuntu/gcc-debug/${config:build_rig.project_name}",
 			"args": [],
 			"environment": [],
 
@@ -129,6 +85,38 @@
 			},
 			"setupCommands": [
 				{ "text": "set print thread-events off", "ignoreFailures": true },
+				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
+			],
+			"sourceFileMap":{
+				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
+			}
+		},
+		{
+			"name": "Launch centos9",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "/work/${config:build_rig.project_name}/centos9/gcc-debug/${config:build_rig.project_name}",
+			"args": [],
+			"environment": [],
+
+			"externalConsole": false,
+			"cwd": "/work",
+			"stopAtEntry": true,
+			"MIMode": "gdb",
+
+			"pipeTransport": {
+				"pipeCwd": "${workspaceFolder:build_rig}",
+				"pipeProgram": "/usr/local/bin/docker",
+				"pipeArgs": [
+					"exec", "-i",
+					"centos9_builder",
+					"sh", "-c"
+				],
+				"debuggerPath": "/usr/local/bin/gdb"
+			},
+			"setupCommands": [
+				{ "text": "set print thread-events off", "ignoreFailures": false },
 				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
 			],
 			"sourceFileMap":{

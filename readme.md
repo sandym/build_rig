@@ -7,16 +7,20 @@
 
 
 ### Goals
-- a single source code tree
-- source code edition on the host
-- build & debug in different linux containers
-- build & debug natively on macos  host
+- A single source code tree (done)
+- Source code edition on the host (done)
+- Build & debug in different linux containers (done)
+- Build & debug natively on macos host (done)
+- Support x86_64 on apple silicon (debugging is missing)
+- Support Windows in a VM (todo)
 
 ### Setup
 
 ```
-> colima start --cpu 6 --memory 24 --disk 120 --vm-type=vz --vz-rosetta --kubernetes
+> colima start --cpu 6 --memory 24 --disk 120 --vm-type=vz --vz-rosetta
 ```
+
+or docker-desktop.
 
 ### Usage
 
@@ -26,11 +30,12 @@
 - sync:
 	- host to container
 
-
+```
 ./bin/create.sh /path/to/folder
+```
 
 build_rig has a build driver script that does:
-	- synchronise folder
+	- synchronise source folder
 	- execute itself in the container
 	- run build script from target
 
