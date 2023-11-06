@@ -3,6 +3,8 @@ FROM quay.io/centos/centos:stream9
 
 ENV GCC_TOOLSET=gcc-toolset-13
 
+ADD files/rosetta_gdb_wrapper.sh /
+
 RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked <<EOT
 echo "skip_missing_names_on_install=0" >> /etc/dnf/dnf.conf
 dnf install -y dnf-plugins-core

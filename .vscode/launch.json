@@ -37,7 +37,7 @@
 			"environment": [],
 
 			"externalConsole": false,
-			"cwd": "/work",
+			"cwd": ".",
 			"stopAtEntry": true,
 			"MIMode": "gdb",
 
@@ -69,7 +69,7 @@
 			"environment": [],
 
 			"externalConsole": false,
-			"cwd": "/work",
+			"cwd": ".",
 			"stopAtEntry": true,
 			"MIMode": "gdb",
 
@@ -101,7 +101,7 @@
 			"environment": [],
 
 			"externalConsole": false,
-			"cwd": "/work",
+			"cwd": ".",
 			"stopAtEntry": true,
 			"MIMode": "gdb",
 
@@ -115,6 +115,31 @@
 				],
 				"debuggerPath": "/usr/local/bin/gdb"
 			},
+			"setupCommands": [
+				{ "text": "set print thread-events off", "ignoreFailures": false },
+				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
+			],
+			"sourceFileMap":{
+				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
+			}
+		},
+		{
+			"name": "Launch centos9:amd64",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
+			"args": [],
+			"environment": [],
+
+			"externalConsole": false,
+			"cwd": ".",
+			"stopAtEntry": true,
+			"MIMode": "gdb",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "${workspaceFolder:build_rig}/images/files/rosetta_gdb_wrapper.sh",
+			"miDebuggerArgs": "--container=centos9_amd64_builder --executable=/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
+
 			"setupCommands": [
 				{ "text": "set print thread-events off", "ignoreFailures": false },
 				{ "text": "-enable-pretty-printing", "ignoreFailures": true }

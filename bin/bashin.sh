@@ -15,7 +15,7 @@ fi
 docker ps --filter "name=${CONTAINER}" | grep ${CONTAINER} > /dev/null
 if [ $? -ne 0 ]
 then
-	docker run --rm -ti -d \
+	docker run --rm --init -ti -d \
 		--cap-add=ALL --security-opt seccomp=unconfined \
 		--mount src=build_rig_work,target=/work \
 		--name ${CONTAINER} \

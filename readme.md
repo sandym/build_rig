@@ -11,7 +11,7 @@
 - Source code edition on the host (done)
 - Build & debug in different linux containers (done)
 - Build & debug natively on macos host (done)
-- Support x86_64 on apple silicon (debugging is missing)
+- Support x86_64 on apple silicon (done)
 - Support Windows in a VM (todo)
 
 ### Setup

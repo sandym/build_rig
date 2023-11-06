@@ -73,7 +73,7 @@ docker ps --filter "name=${PLATFORM}" | grep ${PLATFORM} > /dev/null
 if [ $? -ne 0 ]
 then
 	echo "--> Starting container ${PLATFORM}"
-	docker run --rm -ti -d \
+	docker run --rm --init -ti -d \
 		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
 		--mount src=build_rig_work,target=/work \
 		--name ${PLATFORM} \
