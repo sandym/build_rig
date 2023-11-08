@@ -1,4 +1,5 @@
 remotebuild/remotebuild_host
 remotebuild/remotebuild_linux
+remotebuild/remotebuild_win
 watcher/node_modules/
 watcher/dist/

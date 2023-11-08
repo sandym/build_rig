@@ -4,7 +4,7 @@
 	"version": "2.0.0",
 	"inputs": [
 		{
-			"id": "darwin",
+			"id": "darwin_choices",
 			"type": "pickString",
 			"options": [
 				"build-clang-debug",
@@ -64,6 +64,23 @@
 			],
 			"default": "build-gcc-debug",
 			"description": "action"
+		},
+		{
+			"id": "win_choices",
+			"type": "pickString",
+			"options": [
+				"build-win-debug",
+				"test-win-debug",
+				"run-win-debug",
+				"clean-win-debug",
+				"build-win-release",
+				"test-win-release",
+				"run-win-release",
+				"clean-win-release",
+				"build-msvc-all"
+			],
+			"default": "build-win-debug",
+			"description": "action"
 		}
 	],
 	"tasks": [
@@ -71,10 +88,10 @@
 			"label": "macos build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/driver.sh",
+			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
 				"darwin",
-				"${input:darwin}",
+				"${input:darwin_choices}",
 				"${config:build_rig.project}"
 			],
 			"presentation": {
@@ -106,7 +123,7 @@
 			"label": "alpine build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/driver.sh",
+			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
 				"alpine_builder",
 				"${input:gcc_or_clang_choices}",
@@ -142,7 +159,7 @@
 			"label": "ubuntu build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/driver.sh",
+			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
 				"ubuntu_builder",
 				"${input:gcc_only_choices}",
@@ -178,7 +195,7 @@
 			"label": "centos9 build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/driver.sh",
+			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
 				"centos9_builder",
 				"${input:gcc_only_choices}",
@@ -214,7 +231,7 @@
 			"label": "centos9 amd64 build",
 			"type": "shell",
 			"group": "build",
-			"command": "scripts/driver.sh",
+			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
 				"centos9_amd64_builder",
 				"${input:gcc_only_choices}",
@@ -243,6 +260,41 @@
 			"options": {
 				"statusbar": {
 					"label": "$(arrow-right)centos9:amd64"
+				}
+			}
+		},
+		{
+			"label": "windows build",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
+			"args": [
+				"windows",
+				"${input:win_choices}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$msCompile",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/."
+				],
+				"pattern":[
+					{
+						"regexp": "^C:\\\\work\\\\.*\\\\(.*)\\((\\d+)\\):\\s+(fatal error|error)\\s+\\w\\d{4}:\\s*(.*)$",
+						"file": 1,
+						"line": 2,
+						"severity": 3,
+						"message": 4
+					}
+				]
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(arrow-right)win"
 				}
 			}
 		},

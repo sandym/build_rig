@@ -26,10 +26,43 @@ make
 if [ "${PLATFORM}" = "windows" ]
 then
 
-	echo "@todo ${PLATFORM}"
-	exit 1
+WINHOST="sandy-win"
 
-fi
+CONFIG=$(cat <<END_HEREDOC
+{
+"folders": [
+  {
+    "src": "${PROJECT}",
+    "dst": "C:/work/${PROJECT_NAME}/src"
+  },
+  {
+    "src": "${SCRIPTS}",
+    "dst": "C:/scripts"
+  }
+],
+
+"transport": [
+	"ssh", "${WINHOST}"
+],
+"copy": [
+  "scp",
+  "${REMOTEBUILD}/remotebuild_win",
+  "${WINHOST}:C:/work/remotebuild_win.exe"
+],
+"remote": "C:/work/remotebuild_win.exe",
+
+"compress": false,
+
+"build_cmd": [
+  "C:/scripts/build.bat",
+  "${TRIPLET}",
+  "C:/work/${PROJECT_NAME}"
+]
+}
+END_HEREDOC
+)
+
+else
 
 # @todo: handle k8s ?
 
@@ -38,7 +71,7 @@ CONFIG=$(cat <<END_HEREDOC
 "folders": [
   {
     "src": "${PROJECT}",
-    "dst": "/work/$PROJECT_NAME/src"
+    "dst": "/work/${PROJECT_NAME}/src"
   },
   {
     "src": "${SCRIPTS}",
@@ -79,6 +112,8 @@ then
 		--name ${PLATFORM} \
 		${PLATFORM} sleep infinity
 	sleep 5
+fi
+
 fi
 
 # echo "${CONFIG}"
