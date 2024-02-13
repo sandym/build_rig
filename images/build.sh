@@ -15,21 +15,21 @@ for df in *.dockerfile ; do
 		--pull \
 		--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
 		--build-arg NINJA_VERSION=${NINJA_VERSION} \
-		-t ${os}_builder \
+		-t ${os}_builder:$(uname -m) \
 		-f ${df} .
 done
 
-# build centos9 as amd64 too, if we're on arm64
-if [ "$(uname -m)" = "arm64" ]
-then
-	echo "--> building centos9:amd64"
+# build as amd64 too, if we're on arm64
+for df in *.dockerfile ; do
+	os="${df%.*}"
+	echo "--> building ${os}:amd64"
 	docker build \
 		--pull \
 		--platform=linux/amd64 \
 		--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
 		--build-arg NINJA_VERSION=${NINJA_VERSION} \
-		-t centos9_amd64_builder \
-		-f centos9.dockerfile .
-fi
+		-t ${os}_builder:amd64 \
+		-f ${df} .
+done
 
 docker volume create build_rig_work

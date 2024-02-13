@@ -46,7 +46,7 @@
 				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
 					"exec", "-i",
-					"alpine_builder",
+					"alpine_builder:arm64",
 					"sh", "-c"
 				],
 				"debuggerPath": "/usr/bin/gdb"
@@ -78,7 +78,7 @@
 				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
 					"exec", "-i",
-					"ubuntu_builder",
+					"ubuntu_builder:arm64",
 					"sh", "-c"
 				],
 				"debuggerPath": "/usr/bin/gdb"
@@ -110,7 +110,7 @@
 				"pipeProgram": "/usr/local/bin/docker",
 				"pipeArgs": [
 					"exec", "-i",
-					"centos9_builder",
+					"centos9_builder:arm64",
 					"sh", "-c"
 				],
 				"debuggerPath": "/usr/local/bin/gdb"
@@ -138,7 +138,7 @@
 			"MIMode": "gdb",
 			"miDebuggerServerAddress": "localhost:1234",
 			"miDebuggerPath": "${workspaceFolder:build_rig}/images/files/rosetta_gdb_wrapper.sh",
-			"miDebuggerArgs": "--container=centos9_amd64_builder --executable=/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
+			"miDebuggerArgs": "--container=centos9_builder:amd64 --executable=/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
 
 			"setupCommands": [
 				{ "text": "set print thread-events off", "ignoreFailures": false },

@@ -2,11 +2,17 @@
 
 cd $(dirname "$0")
 CONTAINER=$(basename ${0/\.sh/})
-CONTAINER=${CONTAINER}_builder
+if [[ "${CONTAINER}" == *"_amd64"* ]]
+then
+	CONTAINER=${CONTAINER/_amd64/}
+	CONTAINER=${CONTAINER}_builder:amd64
+else
+	CONTAINER=${CONTAINER}_builder:$(uname -m)
+fi
 SCRIPTS=$(cd ../scripts ; pwd)
 
 SHELL=bash
-if [ "${CONTAINER}" = "alpine_builder" ]
+if [[ "${CONTAINER}" == *"alpine"* ]]
 then
 	SHELL=ash
 fi
