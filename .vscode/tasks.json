@@ -81,13 +81,48 @@
 			],
 			"default": "build-win-debug",
 			"description": "action"
+		},
+		{
+			"id": "arch",
+			"type": "pickString",
+			"options": [
+				"arm64",
+				"amd64"
+			],
+			"default": "arm64",
+			"description": "action"
 		}
 	],
 	"tasks": [
 		{
+			"label": "arch",
+			"type": "shell",
+			"group": "none",
+			"command": "perl",
+			"args": [
+				"-pi",
+				"-e",
+				"'s/\"build_rig.target_arch\".*,/\"build_rig.target_arch\": \"${input:arch}\",/'",
+				"${config:build_rig.this}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(arrow-right)arch",
+					"hide": false
+				}
+			}
+
+		},
+		{
 			"label": "macos build",
 			"type": "shell",
-			"group": "build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
 				"darwin",
@@ -99,24 +134,13 @@
 			},
 			"options": {
 				"statusbar": {
-					"hide": true
+					"label": "$(arrow-right)macos",
+					"hide": false
 				}
 			},
 			"problemMatcher": {
 				"base": "$gcc",
 				"fileLocation": "autoDetect"
-			},
-			"osx": {
-				"group": {
-					"kind": "build",
-					"isDefault": true
-				},
-				"options": {
-					"statusbar": {
-						"label": "$(arrow-right)macos",
-						"hide": false
-					}
-				}
 			}
 		},
 		{
@@ -125,7 +149,7 @@
 			"group": "build",
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
-				"alpine_builder:arm64",
+				"alpine_builder:${config:build_rig.target_arch}",
 				"${input:gcc_or_clang_choices}",
 				"${config:build_rig.project}"
 			],
@@ -161,7 +185,7 @@
 			"group": "build",
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
-				"ubuntu_builder:arm64",
+				"ubuntu_builder:${config:build_rig.target_arch}",
 				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],
@@ -197,7 +221,7 @@
 			"group": "build",
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
-				"centos9_builder:arm64",
+				"centos9_builder:${config:build_rig.target_arch}",
 				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],
@@ -224,42 +248,6 @@
 			"options": {
 				"statusbar": {
 					"label": "$(arrow-right)centos9"
-				}
-			}
-		},
-		{
-			"label": "centos9 amd64 build",
-			"type": "shell",
-			"group": "build",
-			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
-			"args": [
-				"centos9_builder:amd64",
-				"${input:gcc_only_choices}",
-				"${config:build_rig.project}"
-			],
-			"presentation": {
-				"clear": true
-			},
-			"problemMatcher": {
-				"base": "$gcc",
-				"fileLocation": [
-					"relative",
-					"${config:build_rig.project}/."
-				],
-				"pattern":[
-					{
-						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
-						"file": 1,
-						"line": 2,
-						"column": 3,
-						"severity": 4,
-						"message": 5
-					}
-				]
-			},
-			"options": {
-				"statusbar": {
-					"label": "$(arrow-right)centos9:amd64"
 				}
 			}
 		},

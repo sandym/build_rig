@@ -8,8 +8,10 @@
 		}
 	],
 	"settings": {
+		"build_rig.this": "${WORKSPACE}",
 		"build_rig.project": "${PROJECT_PATH}",
 		"build_rig.project_name": "${PROJECT_NAME}",
+		"build_rig.target_arch": "arm64",
 		"clangd.arguments": [
 			"--clang-tidy",
 			"--compile-commands-dir=${env:HOME}/darwin_build/${PROJECT_NAME}/clang-debug"
