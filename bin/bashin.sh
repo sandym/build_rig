@@ -17,6 +17,8 @@ then
 	SHELL=ash
 fi
 
+CONTAINER_NAME=${CONTAINER//:/_}
+
 # start comtainer if not running
 docker ps --filter "name=${CONTAINER}" | grep ${CONTAINER} > /dev/null
 if [ $? -ne 0 ]
@@ -24,9 +26,9 @@ then
 	docker run --rm --init -ti -d \
 		--cap-add=ALL --security-opt seccomp=unconfined \
 		--mount src=build_rig_work,target=/work \
-		--name ${CONTAINER} \
+		--name ${CONTAINER_NAME} \
 		${CONTAINER} sleep infinity
 fi
 
 # start shell
-docker exec -ti ${CONTAINER} ${SHELL}
+docker exec -ti ${CONTAINER_NAME} ${SHELL}
