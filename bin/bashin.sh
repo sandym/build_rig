@@ -20,7 +20,7 @@ fi
 CONTAINER_NAME=${CONTAINER//:/_}
 
 # start comtainer if not running
-docker ps --filter "name=${CONTAINER}" | grep ${CONTAINER} > /dev/null
+docker ps --filter "name=${CONTAINER_NAME}" | grep ${CONTAINER_NAME} > /dev/null
 if [ $? -ne 0 ]
 then
 	docker run --rm --init -ti -d \

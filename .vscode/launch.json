@@ -147,6 +147,63 @@
 			"sourceFileMap":{
 				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
 			}
+		},
+		{
+			"name": "Launch centos10",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "/work/${config:build_rig.project_name}/centos10/gcc-debug/${config:build_rig.project_name}",
+			"args": [],
+			"environment": [],
+
+			"externalConsole": false,
+			"cwd": ".",
+			"stopAtEntry": true,
+			"MIMode": "gdb",
+
+			"pipeTransport": {
+				"pipeCwd": "${workspaceFolder:build_rig}",
+				"pipeProgram": "/usr/local/bin/docker",
+				"pipeArgs": [
+					"exec", "-i",
+					"centos10_builder:arm64",
+					"sh", "-c"
+				],
+				"debuggerPath": "/usr/local/bin/gdb"
+			},
+			"setupCommands": [
+				{ "text": "set print thread-events off", "ignoreFailures": false },
+				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
+			],
+			"sourceFileMap":{
+				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
+			}
+		},
+		{
+			"name": "Launch centos10:amd64",
+			"type": "cppdbg",
+			"request": "launch",
+
+			"program": "/work/${config:build_rig.project_name}/centos10_amd64/gcc-debug/${config:build_rig.project_name}",
+			"args": [],
+			"environment": [],
+
+			"externalConsole": false,
+			"cwd": ".",
+			"stopAtEntry": true,
+			"MIMode": "gdb",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "${workspaceFolder:build_rig}/images/files/rosetta_gdb_wrapper.sh",
+			"miDebuggerArgs": "--container=centos10_builder:amd64 --executable=/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
+
+			"setupCommands": [
+				{ "text": "set print thread-events off", "ignoreFailures": false },
+				{ "text": "-enable-pretty-printing", "ignoreFailures": true }
+			],
+			"sourceFileMap":{
+				"/work/${config:build_rig.project_name}/src": "${config:build_rig.project}"
+			}
 		}
 	]
 }

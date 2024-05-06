@@ -252,6 +252,42 @@
 			}
 		},
 		{
+			"label": "centos10 build",
+			"type": "shell",
+			"group": "build",
+			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
+			"args": [
+				"centos10_builder:${config:build_rig.target_arch}",
+				"${input:gcc_only_choices}",
+				"${config:build_rig.project}"
+			],
+			"presentation": {
+				"clear": true
+			},
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${config:build_rig.project}/."
+				],
+				"pattern":[
+					{
+						"regexp": "^/work/.*/src/(.*):(\\d+):(\\d+):\\s+(error|note):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				]
+			},
+			"options": {
+				"statusbar": {
+					"label": "$(arrow-right)centos10"
+				}
+			}
+		},
+		{
 			"label": "windows build",
 			"type": "shell",
 			"group": "build",

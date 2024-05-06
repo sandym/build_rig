@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
-FROM quay.io/centos/centos:stream9
+FROM quay.io/centos/centos:stream10-development
 
-ENV GCC_TOOLSET=gcc-toolset-13
+# ENV GCC_TOOLSET=gcc-toolset-13
 
 ADD files/rosetta_gdb_wrapper.sh /
 
@@ -13,7 +13,7 @@ dnf -y install \
 	autoconf \
 	automake \
 	file \
-	${GCC_TOOLSET} \
+	gcc-c++ \
 	libtool \
 	openssl-devel \
 	procps \
@@ -43,7 +43,6 @@ ARG NINJA_VERSION
 
 RUN --mount=type=tmpfs,target=/tmp <<EOT
 	curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
-	. /opt/rh/${GCC_TOOLSET}/enable
 	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
 	cd ninja-${NINJA_VERSION}
 	cmake -DCMAKE_BUILD_TYPE=Release .

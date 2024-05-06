@@ -27,6 +27,13 @@ wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-
 sh cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh --skip-license --prefix=/usr/local
 EOT
 
+# setup
+ADD files/setup.sh /tmp/
+RUN --mount=type=tmpfs,target=/tmp <<EOT
+/bin/sh /tmp/setup.sh
+rm /tmp/setup.sh
+EOT
+
 WORKDIR /
 
 ENV PS1='[\e[35m$(source /etc/os-release ; echo ${ID}${VERSION_ID}):$(uname -m)\e[m \W]# '
