@@ -52,10 +52,10 @@ RUN --mount=type=tmpfs,target=/tmp <<EOT
 EOT
 
 # setup
-ADD files/setup.sh /tmp/
+ADD files/setup.sh /
 RUN --mount=type=tmpfs,target=/tmp <<EOT
-/bin/sh /tmp/setup.sh
-rm /tmp/setup.sh
+/setup.sh
+rm /setup.sh
 EOT
 
 WORKDIR /
