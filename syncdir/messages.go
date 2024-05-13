@@ -42,13 +42,12 @@ type fileMsg struct {
 	Data         []byte
 }
 
-// followed by a buildCmdMsg
-type buildCmdMsg struct {
-	BuildCmd []string
+// followed by a doneFileMsg
+type doneFileMsg struct {
 }
 
-// server send a buildStartingMsg when ready to start the build
-type buildStartingMsg struct {
+// server send a doneSync when finish
+type doneSync struct {
 }
 
 // client just forward server stdout until server quits
@@ -60,8 +59,8 @@ func registerMessages() {
 	gob.Register(scanMsg{})
 	gob.Register(requestMsg{})
 	gob.Register(fileMsg{})
-	gob.Register(buildCmdMsg{})
-	gob.Register(buildStartingMsg{})
+	gob.Register(doneFileMsg{})
+	gob.Register(doneSync{})
 }
 
 func toString(o interface{}) string {
@@ -78,10 +77,10 @@ func toString(o interface{}) string {
 			nbOfFiles += len(scan.Scan)
 		}
 		return fmt.Sprintf("scanMsg: %d files for %d folders", nbOfFiles, len(o))
-	case buildCmdMsg:
-		return "buildCmdMsg"
-	case buildStartingMsg:
-		return "buildStartingMsg"
+	case doneFileMsg:
+		return "doneFileMsg"
+	case doneSync:
+		return "doneSync"
 	case requestMsg:
 		nbOfFiles := 0
 		for _, request := range o {

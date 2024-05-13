@@ -9,7 +9,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -72,8 +71,8 @@ func runServer() {
 		case fileMsg:
 			handleFileMsg(msg)
 			serverOut.Flush()
-		case buildCmdMsg:
-			handleBuildCmdMsg(serverEncoder, serverOut, msg.BuildCmd)
+		case doneFileMsg:
+			handleDoneFileMsg(serverEncoder, serverOut)
 			done = true
 		default:
 			server_log("unexpected msg: %T%v", msg)
@@ -189,22 +188,10 @@ func handleScanMsg(scans scanMsg, serverOut *gob.Encoder) {
 		}
 	}
 }
-func handleBuildCmdMsg(serverEncoder *gob.Encoder, serverOut *bufio.Writer, buildCmd []string) {
+func handleDoneFileMsg(serverEncoder *gob.Encoder, serverOut *bufio.Writer) {
 
-	postMessage(serverEncoder, buildStartingMsg{})
+	postMessage(serverEncoder, doneSync{})
 	serverOut.Flush()
-	if len(buildCmd) < 1 {
-		return
-	}
-	// execute, redirect output to Stdout
-	cmd := exec.Command(buildCmd[0], buildCmd[1:]...)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	server_log("running %s", buildCmd[0])
-	err := cmd.Run()
-	if err != nil {
-		fmt.Printf("%s", err)
-	}
 }
 
 type lastSyncData struct {

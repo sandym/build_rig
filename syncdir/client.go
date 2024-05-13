@@ -287,8 +287,8 @@ func serviceServerRequests(config config, serverDef serverDef, msgQueue chan int
 		case requestMsg:
 			client_log("received request %s", toString(request))
 			go handleRequestMsg(config, msgQueue, request)
-		case buildStartingMsg:
-			fmt.Printf("--> starting build\n")
+		case doneSync:
+			fmt.Printf("--> sync done\n")
 			done = true
 		default:
 			client_log("unexpected request: %v", request)
@@ -341,7 +341,7 @@ func handleRequestMsg(config config, msgQueue chan<- interface{}, requests reque
 			msgQueue <- fileMsg{request.Dst, relpath, isExe, compressFiles, data}
 		}
 	}
-	msgQueue <- buildCmdMsg{config.BuildCmd}
+	msgQueue <- doneFileMsg{}
 }
 func readFileCompressed(path string) ([]byte, error) {
 	file, err := os.Open(path)

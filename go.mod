@@ -1,3 +1,3 @@
-module build_rig.com/remotebuild
+module build_rig.com/syncdir
 
-go 1.16
+go 1.22

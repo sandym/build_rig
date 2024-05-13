@@ -11,7 +11,7 @@ PROJECT_NAME=$(basename "${PROJECT}")
 usage()
 {
 	echo "usage:"
-	echo "  ./driver.sh platform triplet project_path"
+	echo "  ./build.sh platform triplet project_path"
 	echo ""
 	echo "     platform: darwin or name of a container to run the build"
 	echo "     triplet:   action-toolset-type"
@@ -114,7 +114,7 @@ do_build()
 		"${SOURCE_DIR}/build.sh"
 	else
 		do_cmake
-		ninja
+		CLICOLOR_FORCE=1 ninja
 	fi
 	if [ $? -ne 0 ]
 	then
@@ -141,7 +141,7 @@ do_build()
 	fi
 }
 
-echo "--> ${PLATFORM} ${TRIPLET} ${PROJECT_NAME}"
+echo "--> starting ${PLATFORM} ${TRIPLET} ${PROJECT_NAME}"
 echo ""
 if [ "${PLATFORM}" = "darwin" ]
 then

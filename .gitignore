@@ -1,5 +1,6 @@
-remotebuild/remotebuild_host
-remotebuild/remotebuild_linux
-remotebuild/remotebuild_win
+syncdir/syncdir_host
+syncdir/syncdir_linux_arm64
+syncdir/syncdir_linux_amd64
+syncdir/syncdir_win_arm64
 watcher/node_modules/
 watcher/dist/

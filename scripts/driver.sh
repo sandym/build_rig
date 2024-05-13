@@ -17,10 +17,10 @@ then
 fi
 
 PROJECT_NAME=$(basename "${PROJECT}")
-REMOTEBUILD=$(cd "${SCRIPTS}/../remotebuild" ; pwd)
+SYNCDIR=$(cd "${SCRIPTS}/../syncdir" ; pwd)
 
 # build syncdir if needed
-cd "${REMOTEBUILD}"
+cd "${SYNCDIR}"
 make
 
 if [ "${PLATFORM}" = "windows" ]
@@ -46,25 +46,29 @@ CONFIG=$(cat <<END_HEREDOC
 ],
 "copy": [
   "scp",
-  "${REMOTEBUILD}/remotebuild_win",
-  "${WINHOST}:C:/work/remotebuild_win.exe"
+  "${SYNCDIR}/syncdir_win_arm64",
+  "${WINHOST}:C:/work/syncdir_win_arm64.exe"
 ],
-"remote": "C:/work/remotebuild_win.exe",
+"remote": "C:/work/syncdir_win_arm64.exe",
 
-"compress": false,
-
-"build_cmd": [
-  "C:/scripts/build.bat",
-  "${TRIPLET}",
-  "C:/work/${PROJECT_NAME}"
-]
+"compress": false
 }
 END_HEREDOC
 )
 
+# echo "${CONFIG}"
+"${SYNCDIR}/syncdir_host" -config "${CONFIG}"
+
+ssh ${WINHOST} \
+  C:/scripts/build.bat \
+  ${TRIPLET} \
+  C:/work/${PROJECT_NAME}
+
 else
 
-# @todo: handle k8s ?
+# @todo: handle k8s, ssh ?
+
+CONTAINER_NAME=${PLATFORM//:/_}
 
 CONFIG=$(cat <<END_HEREDOC
 {
@@ -81,41 +85,40 @@ CONFIG=$(cat <<END_HEREDOC
 
 "transport": [
 	"docker", "exec", "-i",
-	"${PLATFORM}"
+	"${CONTAINER_NAME}"
 ],
 "copy": [
   "docker", "cp",
-  "${REMOTEBUILD}/remotebuild_linux",
-  "${PLATFORM}:/tmp/remotebuild_linux"
+  "${SYNCDIR}/syncdir_linux_arm64",
+  "${CONTAINER_NAME}:/tmp/syncdir_linux_arm64"
 ],
-"remote": "/tmp/remotebuild_linux",
+"remote": "/tmp/syncdir_linux_arm64",
 
-"compress": false,
-
-"build_cmd": [
-  "/scripts/build.sh",
-  "${PLATFORM}",
-  "${TRIPLET}",
-  "/work/${PROJECT_NAME}"
-]
+"compress": false
 }
 END_HEREDOC
 )
 
-docker ps --filter "name=${PLATFORM}" | grep ${PLATFORM} > /dev/null
+docker ps --filter "name=${CONTAINER_NAME}" | grep ${PLATFORM} > /dev/null
 if [ $? -ne 0 ]
 then
-	echo "--> Starting container ${PLATFORM}"
+	echo "--> Starting container ${CONTAINER_NAME}"
 	docker run --rm --init -ti -d \
 		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
 		--mount src=build_rig_work,target=/work \
-		--name ${PLATFORM} \
+		--name ${CONTAINER_NAME} \
 		${PLATFORM} sleep infinity
 	sleep 5
 fi
 
+# echo "${CONFIG}"
+"${SYNCDIR}/syncdir_host" -config "${CONFIG}"
+
+docker exec -ti ${CONTAINER_NAME} \
+	/scripts/build.sh \
+	${CONTAINER_NAME} \
+	${TRIPLET} \
+	/work/${PROJECT_NAME}
+
 fi
 
-# echo "${CONFIG}"
-
-"${REMOTEBUILD}/remotebuild_host" -config "${CONFIG}"
