@@ -14,7 +14,7 @@
 		"build_rig.target_arch": "arm64",
 		"clangd.arguments": [
 			"--clang-tidy",
-			"--compile-commands-dir=${env:HOME}/darwin_build/${PROJECT_NAME}/clang-debug"
+			"--compile-commands-dir=${env:HOME}/darwin_builds/${PROJECT_NAME}/clang-debug"
 		]
 	},
 	"extensions": {

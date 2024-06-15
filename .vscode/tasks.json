@@ -351,7 +351,7 @@
 			"command": "mkdir",
 			"args": [
 				"-p",
-				"${userHome}/darwin_build/${config:build_rig.project_name}/clang-debug"
+				"${userHome}/darwin_builds/${config:build_rig.project_name}/clang-debug"
 			],
 			"options": {
 				"statusbar": {
@@ -385,7 +385,7 @@
 			"options": {
 				"env": {
 					"SOURCE_DIR": "${config:build_rig.project}",
-					"BINARY_DIR": "${userHome}/darwin_build/${config:build_rig.project_name}/clang-debug"
+					"BINARY_DIR": "${userHome}/darwin_builds/${config:build_rig.project_name}/clang-debug"
 				},
 				"cwd": "${workspaceFolder:build_rig}/watcher",
 				"statusbar": {

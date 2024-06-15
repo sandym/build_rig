@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM quay.io/centos/centos:stream10-development
 
-# ENV GCC_TOOLSET=gcc-toolset-13
+# ENV GCC_TOOLSET=gcc-toolset-15
 
 ADD files/rosetta_gdb_wrapper.sh /
 
@@ -19,9 +19,6 @@ dnf -y install \
 	procps \
 	python \
 	which
-cd /usr/local/bin
-ln -s /opt/rh/${GCC_TOOLSET}/root/usr/bin/gdb
-ln -s /opt/rh/${GCC_TOOLSET}/root/usr/bin/gcore
 EOT
 
 WORKDIR /tmp

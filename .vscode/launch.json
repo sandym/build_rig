@@ -18,7 +18,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "${env:HOME}/darwin_build/${config:build_rig.project_name}/gcc-debug/${config:build_rig.project_name}",
+			"program": "${env:HOME}/darwin_builds/${config:build_rig.project_name}/clang-debug/${config:build_rig.project_name}",
 			"args": [],
 			"environment": [],
 

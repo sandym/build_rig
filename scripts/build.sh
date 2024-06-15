@@ -145,7 +145,7 @@ echo "--> starting ${PLATFORM} ${TRIPLET} ${PROJECT_NAME}"
 echo ""
 if [ "${PLATFORM}" = "darwin" ]
 then
-	BUILD_DIR=~/darwin_build/"${PROJECT_NAME}"
+	BUILD_DIR=~/darwin_builds/"${PROJECT_NAME}"
 	case "${TOOLSET}" in
 		xcode)
 			case "${ACTION}" in
