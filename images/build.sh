@@ -17,31 +17,79 @@ function dockerBuild
 	fi
 }
 
-# build each image
 cd "${IMAGES}"
-for df in *.dockerfile ; do
-	os="${df%.*}"
-	echo "--> building ${os}"
-	dockerBuild \
-		--pull \
-		--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
-		--build-arg NINJA_VERSION=${NINJA_VERSION} \
-		-t ${os}_builder:$(uname -m) \
-		-f ${df} .
-done
 
-# build as amd64 too, if we're on arm64
-for df in *.dockerfile ; do
-	os="${df%.*}"
-	echo "--> building ${os}:amd64"
-	dockerBuild \
-		--pull \
-		--platform=linux/amd64 \
-		--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
-		--build-arg NINJA_VERSION=${NINJA_VERSION} \
-		-t ${os}_builder:amd64 \
-		-f ${df} .
-done
+# build alpine_builder
+echo "--> building alpine"
+dockerBuild \
+	--pull \
+	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+	-t alpine_builder:arm64 \
+	-f alpine.dockerfile .
+
+echo "--> building alpine x86_64"
+dockerBuild \
+	--pull \
+	--platform=linux/amd64 \
+	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+	-t alpine_builder:x86_64 \
+	-f alpine.dockerfile .
+
+# build ubuntu_builder
+echo "--> building ubuntu"
+dockerBuild \
+	--pull \
+	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+	-t ubuntu_builder:arm64 \
+	-f ubuntu.dockerfile .
+
+echo "--> building ubuntu x86_64"
+dockerBuild \
+	--pull \
+	--platform=linux/amd64 \
+	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+	-t ubuntu_builder:x86_64 \
+	-f ubuntu.dockerfile .
+
+# build centos9_builder
+echo "--> building centos9"
+dockerBuild \
+	--pull \
+	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+	-t centos9_builder:arm64 \
+	-f centos9.dockerfile .
+
+echo "--> building centos9 x86_64"
+dockerBuild \
+	--pull \
+	--platform=linux/amd64 \
+	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+	-t centos9_builder:x86_64 \
+	-f centos9.dockerfile .
+
+# build centos10_builder
+echo "--> building centos10"
+dockerBuild \
+	--pull \
+	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+	-t centos10_builder:arm64 \
+	-f centos10.dockerfile .
+
+# echo "--> building centos10 x86_64"
+# dockerBuild \
+# 	--pull \
+# 	--platform=linux/amd64 \
+# 	--build-arg CMAKE_VERSION=${CMAKE_VERSION} \
+# 	--build-arg NINJA_VERSION=${NINJA_VERSION} \
+# 	-t centos10_builder:x86_64 \
+# 	-f centos10.dockerfile .
 
 if [ $DRY_RUN = 0 ]
 then

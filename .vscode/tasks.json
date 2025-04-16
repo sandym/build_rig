@@ -87,7 +87,7 @@
 			"type": "pickString",
 			"options": [
 				"arm64",
-				"amd64"
+				"x86_64"
 			],
 			"default": "arm64",
 			"description": "action"

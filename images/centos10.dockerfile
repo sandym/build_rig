@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM quay.io/centos/centos:stream10-development
+FROM quay.io/centos/centos:stream10
 
 # ENV GCC_TOOLSET=gcc-toolset-15
 
@@ -42,7 +42,7 @@ RUN --mount=type=tmpfs,target=/tmp <<EOT
 	curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
 	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
 	cd ninja-${NINJA_VERSION}
-	cmake -DCMAKE_BUILD_TYPE=Release .
+	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF .
 	make
 	make install
 EOT

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 docker pull quay.io/centos/centos:stream9
-docker pull quay.io/centos/centos:stream10-development
+docker pull quay.io/centos/centos:stream10
 docker pull alpine
 docker pull ubuntu
 

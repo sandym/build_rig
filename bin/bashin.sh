@@ -2,13 +2,16 @@
 
 cd $(dirname "$0")
 CONTAINER=$(basename ${0/\.sh/})
-if [[ "${CONTAINER}" == *"_amd64"* ]]
+
+if [[ "$(pwd)" == *"x86_64"* ]]
 then
-	CONTAINER=${CONTAINER/_amd64/}
-	CONTAINER=${CONTAINER}_builder:amd64
+	CONTAINER=${CONTAINER/_x86_64/}
+	CONTAINER=${CONTAINER}_builder:x86_64
+	cd ..
 else
 	CONTAINER=${CONTAINER}_builder:$(uname -m)
 fi
+
 SCRIPTS=$(cd ../scripts ; pwd)
 
 SHELL=bash

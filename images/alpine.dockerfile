@@ -36,7 +36,7 @@ RUN --mount=type=tmpfs,target=/tmp <<EOT
 	wget https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
 	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
 	cd ninja-${NINJA_VERSION}
-	cmake -DCMAKE_BUILD_TYPE=Release .
+	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF .
 	make
 	make install
 EOT

@@ -124,11 +124,11 @@
 			}
 		},
 		{
-			"name": "Launch centos9:amd64",
+			"name": "Launch centos9:x86_64",
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/centos9_x86_64/gcc-debug/${config:build_rig.project_name}",
 			"args": [],
 			"environment": [],
 
@@ -138,7 +138,7 @@
 			"MIMode": "gdb",
 			"miDebuggerServerAddress": "localhost:1234",
 			"miDebuggerPath": "${workspaceFolder:build_rig}/images/files/rosetta_gdb_wrapper.sh",
-			"miDebuggerArgs": "--container=centos9_builder:amd64 --executable=/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
+			"miDebuggerArgs": "--container=centos9_builder:x86_64 --executable=/work/${config:build_rig.project_name}/centos9_x86_64/gcc-debug/${config:build_rig.project_name}",
 
 			"setupCommands": [
 				{ "text": "set print thread-events off", "ignoreFailures": false },
@@ -181,11 +181,11 @@
 			}
 		},
 		{
-			"name": "Launch centos10:amd64",
+			"name": "Launch centos10:x86_64",
 			"type": "cppdbg",
 			"request": "launch",
 
-			"program": "/work/${config:build_rig.project_name}/centos10_amd64/gcc-debug/${config:build_rig.project_name}",
+			"program": "/work/${config:build_rig.project_name}/centos10_x86_64/gcc-debug/${config:build_rig.project_name}",
 			"args": [],
 			"environment": [],
 
@@ -195,7 +195,7 @@
 			"MIMode": "gdb",
 			"miDebuggerServerAddress": "localhost:1234",
 			"miDebuggerPath": "${workspaceFolder:build_rig}/images/files/rosetta_gdb_wrapper.sh",
-			"miDebuggerArgs": "--container=centos10_builder:amd64 --executable=/work/${config:build_rig.project_name}/centos9_amd64/gcc-debug/${config:build_rig.project_name}",
+			"miDebuggerArgs": "--container=centos10_builder:x86_64 --executable=/work/${config:build_rig.project_name}/centos9_x86_64/gcc-debug/${config:build_rig.project_name}",
 
 			"setupCommands": [
 				{ "text": "set print thread-events off", "ignoreFailures": false },

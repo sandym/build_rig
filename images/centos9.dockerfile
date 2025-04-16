@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM quay.io/centos/centos:stream9
 
-ENV GCC_TOOLSET=gcc-toolset-13
+ENV GCC_TOOLSET=gcc-toolset-14
 
 ADD files/rosetta_gdb_wrapper.sh /
 
@@ -13,15 +13,13 @@ dnf -y install \
 	autoconf \
 	automake \
 	file \
+	gdb \
 	${GCC_TOOLSET} \
 	libtool \
 	openssl-devel \
 	procps \
 	python \
 	which
-cd /usr/local/bin
-ln -s /opt/rh/${GCC_TOOLSET}/root/usr/bin/gdb
-ln -s /opt/rh/${GCC_TOOLSET}/root/usr/bin/gcore
 EOT
 
 WORKDIR /tmp
@@ -46,7 +44,7 @@ RUN --mount=type=tmpfs,target=/tmp <<EOT
 	. /opt/rh/${GCC_TOOLSET}/enable
 	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
 	cd ninja-${NINJA_VERSION}
-	cmake -DCMAKE_BUILD_TYPE=Release .
+	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF .
 	make
 	make install
 EOT
