@@ -149,7 +149,7 @@
 			"group": "build",
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
-				"alpine_builder:${config:build_rig.target_arch}",
+				"alpine:${config:build_rig.target_arch}",
 				"${input:gcc_or_clang_choices}",
 				"${config:build_rig.project}"
 			],
@@ -185,7 +185,7 @@
 			"group": "build",
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
-				"ubuntu_builder:${config:build_rig.target_arch}",
+				"ubuntu:${config:build_rig.target_arch}",
 				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],
@@ -221,7 +221,7 @@
 			"group": "build",
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
-				"centos9_builder:${config:build_rig.target_arch}",
+				"centos9:${config:build_rig.target_arch}",
 				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],
@@ -257,7 +257,7 @@
 			"group": "build",
 			"command": "${workspaceFolder:build_rig}/scripts/driver.sh",
 			"args": [
-				"centos10_builder:${config:build_rig.target_arch}",
+				"centos10:${config:build_rig.target_arch}",
 				"${input:gcc_only_choices}",
 				"${config:build_rig.project}"
 			],

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# platform: darwin or container name
+# platform: darwin or platform name
 #
 
 PLATFORM=$1
@@ -66,9 +66,8 @@ ssh ${WINHOST} \
 
 else
 
-# @todo: handle k8s, ssh ?
-
-CONTAINER_NAME=${PLATFORM//:/_}
+SERVICE=${PLATFORM//:/_}
+SERVICE=${SERVICE%_arm64}
 
 CONFIG=$(cat <<END_HEREDOC
 {
@@ -84,13 +83,13 @@ CONFIG=$(cat <<END_HEREDOC
 ],
 
 "transport": [
-	"docker", "exec", "-i",
-	"${CONTAINER_NAME}"
+	"docker", "compose", "exec", "-i",
+	"${SERVICE}"
 ],
 "copy": [
-  "docker", "cp",
+  "docker", "compose", "cp",
   "${SYNCDIR}/syncdir_linux_arm64",
-  "${CONTAINER_NAME}:/tmp/syncdir_linux_arm64"
+  "${SERVICE}:/tmp/syncdir_linux_arm64"
 ],
 "remote": "/tmp/syncdir_linux_arm64",
 
@@ -99,26 +98,21 @@ CONFIG=$(cat <<END_HEREDOC
 END_HEREDOC
 )
 
-docker ps --filter "name=${CONTAINER_NAME}" | grep ${PLATFORM} > /dev/null
+docker compose ps --services | grep "^${SERVICE}$" > /dev/null
 if [ $? -ne 0 ]
 then
 	echo "--> Starting container ${CONTAINER_NAME}"
-	docker run --rm --init -ti -d \
-		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
-		--mount src=build_rig_work,target=/work \
-		--name ${CONTAINER_NAME} \
-		${PLATFORM} sleep infinity
+	docker compose up -d ${SERVICE}
 	sleep 5
 fi
 
 # echo "${CONFIG}"
 "${SYNCDIR}/syncdir_host" -config "${CONFIG}"
 
-docker exec -ti ${CONTAINER_NAME} \
+docker compose exec -ti ${SERVICE} \
 	/scripts/build.sh \
-	${CONTAINER_NAME} \
+	${PLATFORM} \
 	${TRIPLET} \
 	/work/${PROJECT_NAME}
 
 fi
-

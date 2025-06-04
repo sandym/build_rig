@@ -13,7 +13,7 @@ usage()
 	echo "usage:"
 	echo "  ./build.sh platform triplet project_path"
 	echo ""
-	echo "     platform: darwin or name of a container to run the build"
+	echo "     platform: darwin or name of an image to run the build"
 	echo "     triplet:   action-toolset-type"
 	echo "                where:"
 	echo "                   action:  build, test, run, clean"
@@ -213,7 +213,7 @@ else
 		. /opt/rh/${GCC_TOOLSET}/enable
 	fi
 
-	BIN_DIR=/work/${PROJECT_NAME}/${PLATFORM%_builder}/${TOOLSET}-${TYPE}
+	BIN_DIR=/work/${PROJECT_NAME}/${PLATFORM//:/_}/${TOOLSET}-${TYPE}
 
 	if [ "${ACTION}" = "clean" ]
 	then
