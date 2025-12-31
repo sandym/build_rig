@@ -1,8 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM quay.io/centos/centos:stream10
 
-# ENV GCC_TOOLSET=gcc-toolset-15
-
 ADD files/rosetta_gdb_wrapper.sh /
 
 RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked <<EOT
@@ -13,8 +11,10 @@ dnf -y install \
 	autoconf \
 	automake \
 	file \
-	gcc-c++ \
+	gcc-toolset-15 \
+	gdb \
 	libtool \
+	lldb \
 	openssl-devel \
 	procps \
 	python \
@@ -29,8 +29,8 @@ WORKDIR /tmp
 ARG CMAKE_VERSION
 
 RUN --mount=type=tmpfs,target=/tmp <<EOT
-curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh
-sh cmake-${CMAKE_VERSION}-Linux-$(uname -m).sh --skip-license --prefix=/usr/local
+curl -L -O https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-$(uname -m).sh
+sh cmake-${CMAKE_VERSION}-linux-$(uname -m).sh --skip-license --prefix=/usr/local
 EOT
 
 ###
@@ -40,11 +40,11 @@ ARG NINJA_VERSION
 
 RUN --mount=type=tmpfs,target=/tmp <<EOT
 	curl -L -O https://github.com/ninja-build/ninja/archive/refs/tags/v${NINJA_VERSION}.tar.gz
-	cmake -E tar zxf v${NINJA_VERSION}.tar.gz
+	gcc-toolset-15-env cmake -E tar zxf v${NINJA_VERSION}.tar.gz
 	cd ninja-${NINJA_VERSION}
-	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF .
-	make
-	make install
+	gcc-toolset-15-env cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF .
+	gcc-toolset-15-env make
+	gcc-toolset-15-env make install
 EOT
 
 # setup
@@ -52,6 +52,8 @@ ADD files/setup.sh /
 RUN --mount=type=tmpfs,target=/tmp <<EOT
 /setup.sh
 rm /setup.sh
+cd
+echo ". /usr/lib/gcc-toolset/15-env.source" >> .bashrc
 EOT
 
 WORKDIR /

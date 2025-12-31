@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM quay.io/centos/centos:stream9
 
-ENV GCC_TOOLSET=gcc-toolset-14
+ENV GCC_TOOLSET=gcc-toolset-15
 
 ADD files/rosetta_gdb_wrapper.sh /
 
@@ -16,6 +16,7 @@ dnf -y install \
 	gdb \
 	${GCC_TOOLSET} \
 	libtool \
+	lldb \
 	openssl-devel \
 	procps \
 	python \
@@ -54,6 +55,7 @@ ADD files/setup.sh /
 RUN --mount=type=tmpfs,target=/tmp <<EOT
 /setup.sh
 rm /setup.sh
+echo ". /opt/rh/${GCC_TOOLSET}/enable" >> .bashrc
 EOT
 
 WORKDIR /

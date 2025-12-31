@@ -8,4 +8,4 @@ CMAKE_VERSION=$(cmake --version | perl -n -e 'print $1 if(/cmake version\s(\S+)\
 
 cd "${ROOT}/" || exit 1
 
-docker compose build
+docker compose build "$@"
